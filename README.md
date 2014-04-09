@@ -11,6 +11,7 @@ We are currently implementing v1 of the application.  Our focus is on the extens
 Our Timeline
 ========
 The following is a timeline of where we plan to be for the 10 week period from March 31 to June 10.
+
 1. Organization and Design, explore android programming and extensibility options
 2. Define an extensible structure for application data and implement a version that supports videos
 3. Extend the application to support images and quizzes and improve UI
