@@ -1,0 +1,17 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:fillViewport="true">
+
+
+	<LinearLayout
+	    android:orientation="vertical"
+	    android:id="@+id/activity_training_package_linear_layout"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    tools:context="com.example.laostrainingapp.PackageActivity"
+	    tools:ignore="MergeRootFrame">
+	    </LinearLayout>
+</ScrollView>

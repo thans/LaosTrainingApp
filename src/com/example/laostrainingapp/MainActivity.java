@@ -3,23 +3,21 @@ package com.example.laostrainingapp;
 import java.io.File;
 
 import android.app.Activity;
-import android.app.ActionBar;
-import android.app.Fragment;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.os.Build;
 
 public class MainActivity extends Activity {
 
@@ -29,11 +27,29 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		String baseDir = Environment.getExternalStorageDirectory().getAbsolutePath();
-		addTextProgrammatically(baseDir);
-		addImage(baseDir);
+		addTrainingPackageButtons(baseDir);
+		//addTextProgrammatically(baseDir);
+		//addImage(baseDir);
+	}
+	
+	public void addTrainingPackageButtons(String baseDir) {
+	    LinearLayout layout = 
+		        (LinearLayout) this.findViewById(R.id.activity_main_linear_layout);
+	    
+	    File appRoot = new File(baseDir + "/LaosTrainingApp/");
+	    File[] files = appRoot.listFiles();
+		for (File f : files) {
+			Button toTrainingPackage = new Button(this);
+			toTrainingPackage.setText(f.getName());
+			toTrainingPackage.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+			Intent intent = new Intent(MainActivity.this, TrainingPackageActivity.class);
+	        intent.putExtra(TrainingPackageActivity.INTENT_KEY_NAME, f.getPath());
+			toTrainingPackage.setOnClickListener(new TrainingPackageClickListener((Activity) this, intent));
+			layout.addView(toTrainingPackage);
+		}
 	}
 
-	public String addTextProgrammatically(String baseDir) {
+	public void addTextProgrammatically(String baseDir) {
 	    LinearLayout layout = 
 	        (LinearLayout) this.findViewById(R.id.activity_main_linear_layout);
 	    
@@ -50,8 +66,6 @@ public class MainActivity extends Activity {
 			layout.addView(tv);
 			Log.e(TAG, f.getPath());
 		}
-	    
-	    return baseDir;
 	}
 	
 	public void addImage(String baseDir) {
