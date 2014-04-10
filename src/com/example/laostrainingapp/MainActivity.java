@@ -35,15 +35,17 @@ public class MainActivity extends Activity {
 	public void addTrainingPackageButtons(String baseDir) {
 	    LinearLayout layout = 
 		        (LinearLayout) this.findViewById(R.id.activity_main_linear_layout);
-	    
-	    File appRoot = new File(baseDir + "/LaosTrainingApp/");
+	    Log.e(TAG, "checking in: " + R.string.local_storage_folder);
+	    File appRoot = new File(baseDir + "/" + getString(R.string.local_storage_folder));
 	    File[] files = appRoot.listFiles();
 		for (File f : files) {
 			Button toTrainingPackage = new Button(this);
+			Log.e(TAG, f.getName());
+			Log.e(TAG, f.getPath());
 			toTrainingPackage.setText(f.getName());
 			toTrainingPackage.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 			Intent intent = new Intent(MainActivity.this, TrainingPackageActivity.class);
-	        intent.putExtra(TrainingPackageActivity.INTENT_KEY_NAME, f.getPath());
+	        intent.putExtra(TrainingPackageActivity.INTENT_KEY_NAME, f.getAbsolutePath());
 			toTrainingPackage.setOnClickListener(new TrainingPackageClickListener((Activity) this, intent));
 			layout.addView(toTrainingPackage);
 		}
@@ -79,7 +81,7 @@ public class MainActivity extends Activity {
 			
 			ImageView image = new ImageView(this);
 			String fileName = f.getAbsolutePath();
-			File imgFile = new  File(fileName);
+			File imgFile = new File(fileName);
 		
 			if(imgFile.exists()){
 			    Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
