@@ -3,19 +3,26 @@ package com.example.laostrainingapp;
 import java.io.File;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnPreparedListener;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.MediaController;
 import android.widget.TextView;
+import android.widget.VideoView;
 
 public class TrainingPackageActivity extends Activity {
 	private static final String TAG = TrainingPackageActivity.class.getSimpleName();
@@ -85,6 +92,7 @@ public class TrainingPackageActivity extends Activity {
 		for (File f : files) {
 			String name = f.getName();
 			Filetype type = getType(name);
+			final String path = f.getAbsolutePath();
 			switch (type)  {
 				case IMAGE:
 					ImageView image = new ImageView(this);	
@@ -94,7 +102,19 @@ public class TrainingPackageActivity extends Activity {
 					break;
 				case VIDEO:
 					// TODO - add the video in a VideoView to the page
-					break;
+					
+					Button toVideo = new Button(this);
+					toVideo.setText(path);
+					toVideo.setOnClickListener(new OnClickListener() {
+						public void onClick(View arg0) {
+							Intent myIntent = new Intent(TrainingPackageActivity.this, VideoActivity.class);
+							
+							myIntent.putExtra("VIDEO_NAME", path);
+							startActivity(myIntent);
+						}
+						
+					});
+					layout.addView(toVideo);
 				case TEXT:
 					// TODO - parse the text file (though if this is our package_details, then we will actually do this first.
 					break;

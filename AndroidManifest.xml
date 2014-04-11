@@ -29,6 +29,10 @@
             android:name="com.example.laostrainingapp.TrainingPackageActivity"
             android:label="@string/title_activity_training_package" >
         </activity>
+        <activity
+             android:name="com.example.laostrainingapp.VideoActivity">
+            <!--  android:label="@string/title_activity_video" >-->
+        </activity>
     </application>
 
 </manifest>
