@@ -97,11 +97,6 @@ public class TrainingPackageActivity extends Activity {
 		        (LinearLayout) this.findViewById(R.id.activity_training_package_linear_layout);
 	    File currentDir = new File(directory);
 	    File[] files = currentDir.listFiles();
-	    
-	    // for debugging
-        for (File f : files) {
-            showToast(f.getName());
-        }
         
 		for (File f : files) {
 			String name = f.getName();
@@ -149,7 +144,6 @@ public class TrainingPackageActivity extends Activity {
         File[] files = currentDir.listFiles();
         
         List<File> fileList = findTextFileAndParse(files);
-        //List<String> fileNames = new ArrayList<String>();
         
         // shows ordered files
         for (File f : fileList) {
@@ -204,7 +198,6 @@ public class TrainingPackageActivity extends Activity {
                     showToast("Inconsistency between text file and directory.");
                 }
                 fileList = parser.getOrderedFiles();
-                //fileNames = parser.getOrderedFileNames();
                 break;
             } else {
                 continue;
