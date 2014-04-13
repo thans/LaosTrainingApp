@@ -61,16 +61,16 @@ public class TextParser {
         }
     }
     
-    public List<String> getOrderedFileNames() {
-        return orderedFileNames;
+    public String[] getOrderedFileNames() {
+        return orderedFileNames.toArray(new String[orderedFileNames.size()]);
     }
     
     /**
      * Assumes that there will be only 1 text file per package
      * @return the ordered list of files
      */
-    public List<File> getOrderedFiles() {
-        return orderedFiles;
+    public File[] getOrderedFiles() {
+        return orderedFiles.toArray(new File[orderedFiles.size()]);
     }
     
     /**

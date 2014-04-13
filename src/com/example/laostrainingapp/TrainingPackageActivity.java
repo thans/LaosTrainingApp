@@ -143,10 +143,35 @@ public class TrainingPackageActivity extends Activity {
         File currentDir = new File(directory);
         File[] files = currentDir.listFiles();
         
-        List<File> fileList = findTextFileAndParse(files);
+        // finds and parses the text file for order;
+        // if text file is found, the files array will be ordered;
+        // if not found, the array will remain the same
+        boolean textFileFound = false;
+        for (File f : files) {
+            String name = f.getName();
+            Filetype type = getType(name);
+            String path = f.getAbsolutePath();
+            if (type == Filetype.TEXT) {
+                textFileFound = true;
+                TextParser parser = new TextParser(path, files);
+                // gets the ordered files
+                if (parser.getNumInconsistency() > 0) {
+                    showToast("Inconsistency between text file and directory.");
+                }
+                files = parser.getOrderedFiles();
+                break;
+            } else {
+                continue;
+            }
+        }
+        
+        // if text file is not found, alert user
+        if (!textFileFound) {
+            showToast("text file not found;  order is random");
+        }
         
         // shows ordered files
-        for (File f : fileList) {
+        for (File f : files) {
             String name = f.getName();
             Filetype type = getType(name);
             final String path = f.getAbsolutePath();
@@ -158,8 +183,6 @@ public class TrainingPackageActivity extends Activity {
                     layout.addView(image);
                     break;
                 case VIDEO:
-                    // TODO - add the video in a VideoView to the page
-                    
                     Button toVideo = new Button(this);
                     toVideo.setText(path);
                     toVideo.setOnClickListener(new OnClickListener() {
@@ -183,28 +206,6 @@ public class TrainingPackageActivity extends Activity {
             }
         }
     }
-	
-	// finds and parses the text file that contains the order of the packages
-	private List<File> findTextFileAndParse(File[] files) {
-	    List<File> fileList = new ArrayList<File>();
-	    for (File f : files) {
-            String name = f.getName();
-            Filetype type = getType(name);
-            String path = f.getAbsolutePath();
-            if (type == Filetype.TEXT) {
-                TextParser parser = new TextParser(path, files);
-                // gets the ordered files, minus the text file
-                if (parser.getNumInconsistency() > 0) {
-                    showToast("Inconsistency between text file and directory.");
-                }
-                fileList = parser.getOrderedFiles();
-                break;
-            } else {
-                continue;
-            }
-        }
-	    return fileList;
-	}
 
 	@Override
     public boolean onCreateOptionsMenu(Menu menu) {
