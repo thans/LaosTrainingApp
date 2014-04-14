@@ -6,9 +6,12 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -42,8 +45,25 @@ public class MainActivity extends Activity {
 			Button toTrainingPackage = new Button(this);
 			Log.e(TAG, f.getName());
 			Log.e(TAG, f.getPath());
+			
+			// Gets the size of the current window and stores it using a Point
+			Display display = getWindowManager().getDefaultDisplay(); 
+			Point size = new Point();
+			
+			display.getSize(size);
+			toTrainingPackage.setWidth(size.x / 3);
+
+			toTrainingPackage.setHeight(size.y / 3);
+			
+			toTrainingPackage.setTextSize(50);
+			
+			toTrainingPackage.setBackgroundColor(Color.parseColor("#4169e1"));
+			
+			
+			
 			toTrainingPackage.setText(f.getName());
 			toTrainingPackage.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+			
 			Intent intent = new Intent(MainActivity.this, TrainingPackageActivity.class);
 	        intent.putExtra(TrainingPackageActivity.INTENT_KEY_NAME, f.getAbsolutePath());
 			toTrainingPackage.setOnClickListener(new TrainingPackageClickListener((Activity) this, intent));
