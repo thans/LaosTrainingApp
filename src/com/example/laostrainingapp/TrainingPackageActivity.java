@@ -21,9 +21,11 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.MediaController;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
@@ -31,6 +33,7 @@ import android.widget.VideoView;
 public class TrainingPackageActivity extends Activity {
 	private static final String TAG = TrainingPackageActivity.class.getSimpleName();
 	public static final String INTENT_KEY_NAME = "packageName";
+	private static File[] FILES;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -40,7 +43,26 @@ public class TrainingPackageActivity extends Activity {
 		String retrievedName = getIntent().getExtras().getString(INTENT_KEY_NAME);
 		addAppIdentifier(retrievedName);
 		//showFiles(retrievedName);
-            showOrderedFilesFromText(retrievedName);
+		final LinearLayout layout = 
+		        (LinearLayout) this.findViewById(R.id.activity_training_package_linear_layout);
+		FILES = getOrderedFiles(retrievedName);
+
+		final int currentFile = 0;
+		if (FILES.length > 0) {
+			addToActivity(FILES[currentFile], layout);
+		} else {
+			showToast("No files to show");
+		}
+		
+		addNextButton(currentFile, layout);
+		
+        //showOrderedFilesFromText(retrievedName);
+	}
+	
+	public void showNextFile(int currentFile, LinearLayout layout) {
+		currentFile++;
+		addToActivity(FILES[currentFile], layout);
+		addNextButton(currentFile, layout);
 	}
 	
 	public void addAppIdentifier(String data) {
@@ -50,6 +72,31 @@ public class TrainingPackageActivity extends Activity {
 		TextView text = new TextView(this);
 		text.setText(data);
 		layout.addView(text);
+	}
+	
+	public void addNextButton(final int currentFile, final LinearLayout layout) {
+		Button next = new Button(this);
+		if (currentFile + 1 < FILES.length) {
+			
+			next.setText("NEXT >>");
+			next.setOnClickListener(new OnClickListener() {
+	            public void onClick(View arg0) {
+	                showNextFile(currentFile, layout);
+	            }
+	            
+	        });
+			layout.addView(next);
+		} else {
+			final Activity act = this;
+			next.setText("FINISH");
+			next.setOnClickListener(new OnClickListener() {
+	            public void onClick(View arg0) {
+	                act.finish();
+	            }
+	            
+	        });
+			layout.addView(next);
+		}
 	}
 	
 	/**
@@ -98,56 +145,41 @@ public class TrainingPackageActivity extends Activity {
 	    File currentDir = new File(directory);
 	    File[] files = currentDir.listFiles();
         
-		for (File f : files) {
-			String name = f.getName();
-			Filetype type = getType(name);
-			final String path = f.getAbsolutePath();
-			switch (type)  {
-				case IMAGE:
-					ImageView image = new ImageView(this);	
-					Bitmap myBitmap = BitmapFactory.decodeFile(f.getAbsolutePath());
-					image.setImageBitmap(myBitmap);
-					layout.addView(image);
-					break;
-				case VIDEO:
-					// TODO - add the video in a VideoView to the page
-					
-					Button toVideo = new Button(this);
-					toVideo.setText(path);
-					toVideo.setOnClickListener(new OnClickListener() {
-						public void onClick(View arg0) {
-							Intent myIntent = new Intent(TrainingPackageActivity.this, VideoActivity.class);
-							
-							myIntent.putExtra("VIDEO_NAME", path);
-							startActivity(myIntent);
-						}
-						
-					});
-					layout.addView(toVideo);
-				case TEXT:
-					// TODO - parse the text file (though if this is our package_details, then we will actually do this first.
-					break;
-				case CSV:
-					// TODO - parse the quiz
-					break;
-				case UNSUPPORTED:
-					break;
-			}
-	    }
+        for (File f : files) {
+            String name = f.getName();
+            Filetype type = getType(name);
+            final String path = f.getAbsolutePath();
+            addToActivity(f, layout);
+        }
 	}
 	
-	public void showOrderedFilesFromText(String directory) {
-	    showToast("show ordered files from text");
-        LinearLayout layout = 
-                (LinearLayout) this.findViewById(R.id.activity_training_package_linear_layout);
+	public File[] getOrderedFiles(String directory) {
         File currentDir = new File(directory);
         File[] files = currentDir.listFiles();
         
         // finds and parses the text file for order;
         // if text file is found, the files array will be ordered;
         // if not found, the array will remain the same
-        boolean textFileFound = false;
+        return getSortedFiles(files);
+        
+        // if text file is not found, alert user
+	}
+	/*
+	public void showOrderedFilesFromText(String directory) {
+        
+        // shows ordered files
         for (File f : files) {
+            String name = f.getName();
+            Filetype type = getType(name);
+            final String path = f.getAbsolutePath();
+            addToActivity(type, path, layout, f);
+        }
+    }*/
+
+	private File[] getSortedFiles(File[] files) {
+		// TODO Auto-generated method stub
+		boolean textFileFound = false;
+		for (File f : files) {
             String name = f.getName();
             Filetype type = getType(name);
             String path = f.getAbsolutePath();
@@ -164,48 +196,60 @@ public class TrainingPackageActivity extends Activity {
                 continue;
             }
         }
-        
-        // if text file is not found, alert user
-        if (!textFileFound) {
+		if (!textFileFound) {
             showToast("text file not found;  order is random");
         }
-        
-        // shows ordered files
-        for (File f : files) {
-            String name = f.getName();
-            Filetype type = getType(name);
-            final String path = f.getAbsolutePath();
-            switch (type)  {
-                case IMAGE:
-                    ImageView image = new ImageView(this);  
-                    Bitmap myBitmap = BitmapFactory.decodeFile(f.getAbsolutePath());
-                    image.setImageBitmap(myBitmap);
-                    layout.addView(image);
-                    break;
-                case VIDEO:
-                    Button toVideo = new Button(this);
-                    toVideo.setText(path);
-                    toVideo.setOnClickListener(new OnClickListener() {
-                        public void onClick(View arg0) {
-                            Intent myIntent = new Intent(TrainingPackageActivity.this, VideoActivity.class);
-                            
-                            myIntent.putExtra("VIDEO_NAME", path);
-                            startActivity(myIntent);
-                        }
-                        
-                    });
-                    layout.addView(toVideo);
-                case TEXT:
-                    // do nothing
-                    break;
-                case CSV:
-                    // TODO - parse the quiz
-                    break;
-                case UNSUPPORTED:
-                    break;
-            }
-        }
-    }
+		return files;
+	}
+
+	private void addToActivity(File f, LinearLayout layout) {
+		// TODO Auto-generated method stub
+		Filetype type = getType(f.getName());
+		String path = f.getAbsolutePath();
+		layout.removeAllViews();
+		switch (type)  {
+	        case IMAGE:
+	            ImageView image = new ImageView(this);  
+	            Bitmap myBitmap = BitmapFactory.decodeFile(f.getAbsolutePath());
+	            image.setImageBitmap(myBitmap);
+	            layout.addView(image);
+	            break;
+	        case VIDEO:
+	        	Log.e(TAG, "showing video");
+				// TODO - add the video in a VideoView to the page
+				final VideoView video = new VideoView(this); //(VideoView) findViewById(R.id.VideoView);
+				MediaController mediacontroller = new MediaController(this);
+				mediacontroller.setAnchorView(video);
+				video.setMediaController(mediacontroller);
+				video.setLayoutParams(new RelativeLayout.LayoutParams(900, 700));
+				video.setVideoPath(path);
+				
+				final ProgressDialog pDialog = new ProgressDialog(this);
+				pDialog.setTitle("Video " + path);
+				pDialog.setMessage("Buffering...");
+				pDialog.setIndeterminate(false);
+				pDialog.setCancelable(false);
+				pDialog.show();
+				
+				layout.addView(video);
+				video.requestFocus();
+				video.setOnPreparedListener(new OnPreparedListener() {
+					public void onPrepared(MediaPlayer mp){
+						pDialog.dismiss();
+						video.start();
+					}
+				}); 
+				break;
+	        case TEXT:
+	            // do nothing
+	            break;
+	        case CSV:
+	            // TODO - parse the quiz
+	            break;
+	        case UNSUPPORTED:
+	            break;
+	    }
+	}
 
 	@Override
     public boolean onCreateOptionsMenu(Menu menu) {
