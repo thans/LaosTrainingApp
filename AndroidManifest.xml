@@ -8,6 +8,8 @@
         android:minSdkVersion="16"
         android:targetSdkVersion="19" />
 
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
@@ -18,8 +20,8 @@
         android:theme="@style/AppTheme" >
         <activity
             android:name="com.example.laostrainingapp.MainActivity"
-            android:label="@string/app_name" 
-            android:screenOrientation="landscape">
+            android:label="@string/app_name"
+            android:screenOrientation="landscape" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -28,13 +30,23 @@
         </activity>
         <activity
             android:name="com.example.laostrainingapp.TrainingPackageActivity"
-            android:label="@string/title_activity_training_package" 
-            android:screenOrientation="landscape">
+            android:label="@string/title_activity_training_package"
+            android:screenOrientation="landscape" >
         </activity>
         <activity
-             android:name="com.example.laostrainingapp.VideoActivity"
-             android:screenOrientation="landscape">
-            <!--  android:label="@string/title_activity_video" >-->
+            android:name="com.example.laostrainingapp.VideoActivity"
+            android:screenOrientation="landscape" >
+
+            <!-- android:label="@string/title_activity_video" > -->
+        </activity>
+
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="4323000" />
+
+        <activity
+            android:name="com.example.laostrainingapp.DownloadActivity"
+            android:label="@string/title_activity_download" >
         </activity>
     </application>
 

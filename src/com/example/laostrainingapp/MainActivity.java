@@ -4,7 +4,9 @@ import java.io.*;
 import java.util.*;
 import java.util.zip.*;
 
+import android.app.ActionBar;
 import android.app.Activity;
+import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -15,6 +17,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.Display;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -31,12 +34,17 @@ public class MainActivity extends Activity {
     private static final String TAG = MainActivity.class.getSimpleName();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-    	super.onCreate(savedInstanceState);
-    	setContentView(R.layout.activity_main);
-    	String baseDir = Environment.getExternalStorageDirectory().getAbsolutePath();
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        
+        ActionBar actionBar = getActionBar();
+        actionBar.show();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        
+        String baseDir = Environment.getExternalStorageDirectory().getAbsolutePath();
     	
-    	// for first design iteration
-    	String laosFilePath = baseDir + "/" + getString(R.string.local_storage_folder);
+        // for first design iteration
+        String laosFilePath = baseDir + "/" + getString(R.string.local_storage_folder);
         File baseFolder = new File(baseDir);
         File downloadFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
         try {
@@ -62,7 +70,7 @@ public class MainActivity extends Activity {
         Log.e(TAG, "checking in: " + R.string.local_storage_folder);
         File appRoot = new File(baseDir + "/" + getString(R.string.local_storage_folder));
         File[] files = appRoot.listFiles();
-    	for (File f : files) {
+        for (File f : files) {
     		Button toTrainingPackage = new Button(this);
     		Log.e(TAG, f.getName());
     		Log.e(TAG, f.getPath());
@@ -149,19 +157,35 @@ public class MainActivity extends Activity {
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
-		if (id == R.id.action_settings) {
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
+        if (id == R.id.action_download) {
+            new ActionBarFunctions().downloadsActivity(this);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
 	}
-	
-	
+
     public void showToast(String text) { 
         Context context = getApplicationContext();
         int duration = Toast.LENGTH_SHORT;
     
         Toast toast = Toast.makeText(context, text, duration);
         toast.show();
+    }
+    
+    /**
+     * A placeholder fragment containing a simple view.
+     */
+    public static class PlaceholderFragment extends Fragment {
+
+        public PlaceholderFragment() {
+        }
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                Bundle savedInstanceState) {
+            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+            return rootView;
+        }
     }
    
     // for first design iteration

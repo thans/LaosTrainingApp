@@ -13,8 +13,6 @@
 	    android:layout_height="wrap_content"
 	    tools:context="com.example.laostrainingapp.MainActivity"
 	    tools:ignore="MergeRootFrame">
-	    
-	    
-	    </LinearLayout>
+	 </LinearLayout>
 	
 </ScrollView>
