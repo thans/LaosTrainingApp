@@ -20,11 +20,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.app.ListActivity;
 
 public class MainActivity extends Activity {
 
@@ -32,7 +37,9 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
+    	
     	setContentView(R.layout.activity_main);
+    	
     	String baseDir = Environment.getExternalStorageDirectory().getAbsolutePath();
     	
     	// for first design iteration
@@ -51,19 +58,54 @@ public class MainActivity extends Activity {
         }
         
         
-    	addTrainingPackageButtons(baseDir);
+    	//addTrainingPackageButtons(baseDir);
     	//addTextProgrammatically(baseDir);
     	//addImage(baseDir);
+    	
+    	 final File appRoot = new File(baseDir + "/" + getString(R.string.local_storage_folder));
+         File[] files = appRoot.listFiles();
+         
+         // GridView for layout
+         GridView gridview = (GridView) findViewById(R.id.gridview);
+         
+         // Get just the names of the files to populate the grid view
+         String[] fileNames = new String[files.length];
+         for(int i = 0; i < files.length; i++){
+        	 fileNames[i] = files[i].getName();
+         }
+         
+         // Use file names to create the grid view
+         final ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, 
+     	        android.R.layout.simple_list_item_1, fileNames);
+    	 
+         gridview.setAdapter(adapter);
+        
+    	 // Connect each grid to a new activity with a listener
+         gridview.setOnItemClickListener(new OnItemClickListener() {
+    	        public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+    	            //Toast.makeText(MainActivity.this, "" + position, Toast.LENGTH_SHORT).show();
+    	        	
+    	        	Intent intent = new Intent(MainActivity.this, TrainingPackageActivity.class);
+    	            //intent.putExtra(TrainingPackageActivity.INTENT_KEY_NAME, f.getAbsolutePath());
+    	        	
+    	        	// Reconstruct the full path of the file
+    	        	String name = appRoot.getAbsolutePath() + "/" + ((TextView)v).getText();
+    	        	intent.putExtra(TrainingPackageActivity.INTENT_KEY_NAME, name);
+    	    		startActivity(intent);
+    	        }
+    	});
     }
 		
     public void addTrainingPackageButtons(String baseDir) {
-        LinearLayout layout = 
-    	        (LinearLayout) this.findViewById(R.id.activity_main_linear_layout);
+        //LinearLayout layout = 
+    	    //    (LinearLayout) this.findViewById(R.id.activity_main_linear_layout);
         Log.e(TAG, "checking in: " + R.string.local_storage_folder);
         File appRoot = new File(baseDir + "/" + getString(R.string.local_storage_folder));
         File[] files = appRoot.listFiles();
-    	for (File f : files) {
-    		Button toTrainingPackage = new Button(this);
+    	
+        for (File f : files) {
+        
+        	Button toTrainingPackage = new Button(this);
     		Log.e(TAG, f.getName());
     		Log.e(TAG, f.getPath());
     		
@@ -88,11 +130,11 @@ public class MainActivity extends Activity {
     		Intent intent = new Intent(MainActivity.this, TrainingPackageActivity.class);
             intent.putExtra(TrainingPackageActivity.INTENT_KEY_NAME, f.getAbsolutePath());
     		toTrainingPackage.setOnClickListener(new TrainingPackageClickListener((Activity) this, intent));
-    		layout.addView(toTrainingPackage);
+    		//layout.addView(toTrainingPackage);
     	}
     }
 
-    public void addTextProgrammatically(String baseDir) {
+   /* public void addTextProgrammatically(String baseDir) {
         LinearLayout layout = 
             (LinearLayout) this.findViewById(R.id.activity_main_linear_layout);
         
@@ -133,7 +175,7 @@ public class MainActivity extends Activity {
     
             layout.addView(image);
         }
-    }
+    }*/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
