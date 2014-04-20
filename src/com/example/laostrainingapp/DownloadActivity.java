@@ -63,28 +63,28 @@ public class DownloadActivity extends Activity {
     private ArrayAdapter<String>    mAdapter;
     
     
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_download);
-		
-		getActionBar().setDisplayHomeAsUpEnabled(true);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+    	super.onCreate(savedInstanceState);
+    	setContentView(R.layout.activity_download);
 
-        // setup for credentials for connecting to the Google Drive account
+    	getActionBar().setDisplayHomeAsUpEnabled(true);
+
+	    // setup for credentials for connecting to the Google Drive account
         mCredential = GoogleAccountCredential.usingOAuth2(this, Arrays.asList(DriveScopes.DRIVE));
-        
+	    
         // start activity that prompts the user for their google drive account
         startActivityForResult(mCredential.newChooseAccountIntent(), REQUEST_ACCOUNT_PICKER);
-        
+	    
         mContext = getApplicationContext();
-        
+    
         //setContentView(R.layout.activity_main);
         mListView = (ListView) findViewById(R.id.listView1);
-        
+	    
         OnItemClickListener mMessageClickedHandler = new OnItemClickListener() {
             public void onItemClick(AdapterView parent, View v, int position, long id) {
                 downloadItemFromList(position);
-            }
+        	}
         };
     
         mListView.setOnItemClickListener(mMessageClickedHandler); 
@@ -92,12 +92,12 @@ public class DownloadActivity extends Activity {
         
         final Button button2 = (Button) findViewById(R.id.button2);
         button2.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                getDriveContents();
-            }
+        	public void onClick(View v) {
+        		getDriveContents();
+        	}
         });
-        
-	}
+      
+    }
 
     private void getDriveContents() {
         Thread t = new Thread(new Runnable() {
@@ -116,13 +116,8 @@ public class DownloadActivity extends Activity {
                         // get only zip files from drive 
                         request.setQ("trashed=false and mimeType = 'application/zip'");
                         //com.google.api.services.drive.model.FileList fileList = request.execute();
-                        FileList fileList = null;
-                        try {
-                        	fileList = request.execute();
-                        } catch(com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAuthIOException e) {
-                        	System.err.println("////////////// ERROR IS HERE");
-                        	e.printStackTrace();
-                        }
+                        FileList fileList = request.execute();
+                        
                         mResultList.addAll(fileList.getItems());
                         request.setPageToken(fileList.getNextPageToken());
                     } catch (UserRecoverableAuthIOException e) {
@@ -290,7 +285,7 @@ public class DownloadActivity extends Activity {
                 break;
         }
     }
-	
+  
     private Drive getDriveService(GoogleAccountCredential credential) {
         return new Drive.Builder(AndroidHttp.newCompatibleTransport(), new GsonFactory(), credential)
             .build();
@@ -306,24 +301,24 @@ public class DownloadActivity extends Activity {
     }
     
     
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+   
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.download, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
 
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.download, menu);
-		return super.onCreateOptionsMenu(menu);
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
         if (id == R.id.action_download) {
             new ActionBarFunctions().downloadsActivity(this);
             return true;
         }
         return super.onOptionsItemSelected(item);
-	}
+    }
 }
