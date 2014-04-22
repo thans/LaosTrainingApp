@@ -1,31 +1,25 @@
 package com.example.laostrainingapp;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.*;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.GestureDetector;
+import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.View.OnClickListener;
+import android.view.MotionEvent;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
-import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.MediaController;
-import android.widget.RelativeLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
@@ -34,48 +28,72 @@ public class TrainingPackageActivity extends Activity {
 	private static final String TAG = TrainingPackageActivity.class.getSimpleName();
 	public static final String INTENT_KEY_NAME = "packageName";
 	private static File[] FILES;
+	private int currentFile;
+	
+	private GestureDetector gestureDetector;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_training_package);
-
+		gestureDetector = new GestureDetector(this, new MyGestureDetector(this));
 		Log.e(TAG, "in on create");
 		String retrievedName = getIntent().getExtras().getString(INTENT_KEY_NAME);
 		addAppIdentifier(retrievedName);
 		//showFiles(retrievedName);
 		final LinearLayout layout = 
-		        (LinearLayout) this.findViewById(R.id.activity_training_package_linear_layout);
+		        (LinearLayout) this.findViewById(R.id.activity_training_package_layout);
 		FILES = getOrderedFiles(retrievedName);
 
-		final int currentFile = 0;
+		
+		currentFile = 0;
 		if (FILES.length > 0) {
 			addToActivity(FILES[currentFile], layout);
 		} else {
 			showToast("No files to show");
 		}
 		
-		addNextButton(currentFile, layout);
+		//addNextButton(currentFile, layout);
 		
         //showOrderedFilesFromText(retrievedName);
 	}
 	
-	public void showNextFile(int currentFile, LinearLayout layout) {
+	public void showNextFile() {
+		LinearLayout layout = 
+		        (LinearLayout) this.findViewById(R.id.activity_training_package_layout);
 		currentFile++;
-		addToActivity(FILES[currentFile], layout);
-		addNextButton(currentFile, layout);
+		if (currentFile < FILES.length) {
+			addToActivity(FILES[currentFile], layout);
+		} else {
+			this.finish();
+		}
+		//addNextButton(currentFile, layout);
+	}
+	
+	public void showPreviousFile() {
+		LinearLayout layout = 
+		        (LinearLayout) this.findViewById(R.id.activity_training_package_layout);
+		currentFile--;
+		if (currentFile >= 0) {
+			addToActivity(FILES[currentFile], layout);
+		}
 	}
 	
 	public void addAppIdentifier(String data) {
 		Log.e(TAG, "adding app identifier");
-	    LinearLayout layout = 
-		        (LinearLayout) this.findViewById(R.id.activity_training_package_linear_layout);
+		LinearLayout layout = 
+		        (LinearLayout) this.findViewById(R.id.activity_training_package_layout);
 		TextView text = new TextView(this);
 		text.setText(data);
 		layout.addView(text);
 	}
 	
+	/*
 	public void addNextButton(final int currentFile, final LinearLayout layout) {
 		Button next = new Button(this);
+		ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+		next.setWidth(100);
+		
+		next.setLayoutParams(params);
 		if (currentFile + 1 < FILES.length) {
 			
 			next.setText("NEXT >>");
@@ -85,6 +103,7 @@ public class TrainingPackageActivity extends Activity {
 	            }
 	            
 	        });
+			//layout.setLayoutParams(lay);
 			layout.addView(next);
 		} else {
 			final Activity act = this;
@@ -97,7 +116,7 @@ public class TrainingPackageActivity extends Activity {
 	        });
 			layout.addView(next);
 		}
-	}
+	} */
 	
 	/**
 	 * Determines and returns the type of the file based on its extension
@@ -141,7 +160,7 @@ public class TrainingPackageActivity extends Activity {
 	public void showFiles(String directory) {
 	    showToast("showfiles");
 	    LinearLayout layout = 
-		        (LinearLayout) this.findViewById(R.id.activity_training_package_linear_layout);
+		        (LinearLayout) this.findViewById(R.id.activity_training_package_layout);
 	    File currentDir = new File(directory);
 	    File[] files = currentDir.listFiles();
         
@@ -203,7 +222,7 @@ public class TrainingPackageActivity extends Activity {
 	}
 
 	private void addToActivity(File f, LinearLayout layout) {
-		// TODO Auto-generated method stub
+		// params unused
 		Filetype type = getType(f.getName());
 		String path = f.getAbsolutePath();
 		layout.removeAllViews();
@@ -212,6 +231,8 @@ public class TrainingPackageActivity extends Activity {
 	            ImageView image = new ImageView(this);  
 	            Bitmap myBitmap = BitmapFactory.decodeFile(f.getAbsolutePath());
 	            image.setImageBitmap(myBitmap);
+	            image.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));//new LinearLayout.LayoutParams(900, 600));
+	            image.setBackgroundColor(getResources().getColor(android.R.color.background_dark));
 	            layout.addView(image);
 	            break;
 	        case VIDEO:
@@ -221,7 +242,7 @@ public class TrainingPackageActivity extends Activity {
 				MediaController mediacontroller = new MediaController(this);
 				mediacontroller.setAnchorView(video);
 				video.setMediaController(mediacontroller);
-				video.setLayoutParams(new RelativeLayout.LayoutParams(900, 700));
+				video.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));//new LinearLayout.LayoutParams(900, 600));
 				video.setVideoPath(path);
 				
 				final ProgressDialog pDialog = new ProgressDialog(this);
@@ -230,13 +251,20 @@ public class TrainingPackageActivity extends Activity {
 				pDialog.setIndeterminate(false);
 				pDialog.setCancelable(false);
 				pDialog.show();
-				
+				//video.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
 				layout.addView(video);
 				video.requestFocus();
 				video.setOnPreparedListener(new OnPreparedListener() {
 					public void onPrepared(MediaPlayer mp){
-						pDialog.dismiss();
-						video.start();
+						try {
+							Thread.sleep(2000); // pause for a second before resuming
+						} catch (InterruptedException e) {
+							
+						} finally {
+							pDialog.dismiss();
+							video.start();
+						}
+						
 					}
 				}); 
 				break;
@@ -276,5 +304,58 @@ public class TrainingPackageActivity extends Activity {
     
         Toast toast = Toast.makeText(context, text, duration);
         toast.show();
+	}
+	
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent e) {
+        super.dispatchTouchEvent(e);
+        return gestureDetector.onTouchEvent(e);
+    }
+	
+	private static final int SWIPE_MIN_DISTANCE = 10;
+	private static final int SWIPE_MAX_OFF_PATH = 250;
+	private static final int SWIPE_THRESHOLD_VELOCITY = 200;
+	
+	private class MyGestureDetector extends SimpleOnGestureListener {
+		
+		private TrainingPackageActivity activity;
+		
+		public MyGestureDetector(TrainingPackageActivity currentActivity) {
+			super();
+			this.activity = currentActivity;
+		}
+		
+		public boolean onTouchEvent(MotionEvent e) {
+			return true;
+		}
+		
+	    @Override
+	    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+	    	//showToast("fling");
+	        try {
+	            if (Math.abs(e1.getY() - e2.getY()) > SWIPE_MAX_OFF_PATH)
+	                return false;
+	            if(e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
+	                showToast("leftSwipe");
+	                gotoNext();
+	            }  else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
+	            	showToast("rightSwipe");
+	            	gotoPrevious();
+	            }
+	        } catch (Exception e) {
+	            // nothing
+	        }
+	        return false;
+	    }
+
+		private void gotoPrevious() {
+			activity.showPreviousFile();
+			
+		}
+
+		private void gotoNext() {
+			activity.showNextFile();
+		}
+
 	}
 }
