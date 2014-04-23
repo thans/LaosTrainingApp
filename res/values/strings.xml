@@ -10,5 +10,6 @@
     <string name="local_storage_folder">LaosTrainingApp</string>
     <string name="button_download">Download</string>
     <string name="title_activity_download">DownloadActivity</string>
+    <string name="title_activity_quiz">QuizActivity</string>
 
 </resources>
