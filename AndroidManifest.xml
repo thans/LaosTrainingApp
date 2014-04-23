@@ -45,7 +45,8 @@
 
         <activity
             android:name="com.example.laostrainingapp.DownloadActivity"
-            android:label="@string/title_activity_download" >
+            android:label="@string/title_activity_download" 
+            android:parentActivityName="com.example.laostrainingapp.MainActivity" >
         </activity>
     </application>
 

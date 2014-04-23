@@ -25,12 +25,14 @@ import android.accounts.AccountManager;
 import android.app.Activity;
 import android.app.ActionBar;
 import android.app.Fragment;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -83,7 +85,17 @@ public class DownloadActivity extends Activity {
 	    
         OnItemClickListener mMessageClickedHandler = new OnItemClickListener() {
             public void onItemClick(AdapterView parent, View v, int position, long id) {
-                downloadItemFromList(position);
+            	// set up notification of download
+            	NotificationManager nm =
+            		    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            	NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(mContext);
+            	mBuilder.setContentTitle("Package Download")
+                .setContentText("Download in progress")
+                .setSmallIcon(android.R.drawable.stat_sys_download)
+                .setTicker("Starting download");
+            	
+            	// download an item	from the list of packages
+            	downloadItemFromList(position, nm, mBuilder);
         	}
         };
     
@@ -96,7 +108,7 @@ public class DownloadActivity extends Activity {
         		getDriveContents();
         	}
         });
-      
+     
     }
 
     private void getDriveContents() {
@@ -136,7 +148,7 @@ public class DownloadActivity extends Activity {
         t.start();
     }
     
-    private void downloadItemFromList(int position) {
+    private void downloadItemFromList(int position, final NotificationManager nm, final NotificationCompat.Builder mBuilder) {
         mDLVal = (String) mListView.getItemAtPosition(position);
         showToast("You just pressed: " + mDLVal);
 
@@ -167,6 +179,11 @@ public class DownloadActivity extends Activity {
                                     int count = 0;
                                     ZipEntry ze;
                                     while ((ze = zis.getNextEntry()) != null) {
+                                    	// Sets an activity indicator for an operation of indeterminate length
+                                    	mBuilder.setProgress(0, 0, true);
+                                    	// Issues the notification
+                                    	nm.notify(0, mBuilder.build());
+                                    	
                                         count++;
                                         Log.d("DEBUG", "Extracting: " + ze.getName() + "...");
                                         // Extracted file will be saved with same file name that's in the zip drive
@@ -197,6 +214,11 @@ public class DownloadActivity extends Activity {
                                         zis.closeEntry();
                                     }  // end while
                                     System.out.println("zipentry count = " + count);
+                                    // update notification
+                                    mBuilder.setContentText("Download complete")
+                                    	.setSmallIcon(R.drawable.ic_action_download)
+                                    	.setProgress(0, 0, false);
+                                    nm.notify(0, mBuilder.build());
                                     zis.close();
                                 } finally {
                                     inputStream.close();
@@ -249,8 +271,8 @@ public class DownloadActivity extends Activity {
 
                         /*YOUR CHOICE OF COLOR*/
                         textView.setTextColor(Color.GRAY);
-                        textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, 35);
-                        textView.setHeight(100);
+                        textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, 28);
+                        textView.setHeight(85);
                         return view;
                     }
                 };
