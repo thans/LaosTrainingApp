@@ -16,6 +16,10 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+/**
+ * The quiz activity. In progress!
+ * @author James
+ */
 public class QuizActivity extends Activity {
 
 	private static final String BASE_DIRECTORY = "LaosTrainingApp";
