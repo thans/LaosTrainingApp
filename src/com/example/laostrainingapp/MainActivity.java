@@ -77,11 +77,15 @@ public class MainActivity extends Activity {
          }
          
          // Use file names to create the grid view
-         final ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, 
-     	        android.R.layout.simple_list_item_1, fileNames);
+         /*final ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, 
+     	        android.R.layout.simple_list_item_1, fileNames);*/
+         
     	 
-         gridview.setAdapter(adapter);
-        
+         //gridview.setAdapter(adapter);
+         gridview.setAdapter(new MyViewAdapter(this, fileNames));
+         //gridview.setAdapter(new MyViewAdapter(this));
+         gridview.setVerticalSpacing(100);
+         
     	 // Connect each grid to a new activity with a listener
          gridview.setOnItemClickListener(new OnItemClickListener() {
     	        public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
@@ -96,6 +100,7 @@ public class MainActivity extends Activity {
     	    		startActivity(intent);
     	        }
     	});
+        
     }
 		
     public void addTrainingPackageButtons(String baseDir) {
