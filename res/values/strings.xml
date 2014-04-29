@@ -12,4 +12,7 @@
     <string name="title_activity_download">DownloadActivity</string>
     <string name="title_activity_quiz">QuizActivity</string>
 
+    <string name="action_navigate">Navigate</string>
+    <string name="back_arrow">Back</string>
+    <string name="next_arrow">Next</string>
 </resources>

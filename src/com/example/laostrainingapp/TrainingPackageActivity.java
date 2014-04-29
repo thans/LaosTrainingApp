@@ -3,8 +3,11 @@ package com.example.laostrainingapp;
 import java.io.File;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
@@ -13,13 +16,22 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.MediaController;
-import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
@@ -29,20 +41,21 @@ public class TrainingPackageActivity extends Activity {
 	public static final String INTENT_KEY_NAME = "packageName";
 	private static File[] FILES;
 	private int currentFile;
+	private String packageName;
 	
 	private GestureDetector gestureDetector;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_training_package);
-		gestureDetector = new GestureDetector(this, new MyGestureDetector(this));
+		//gestureDetector = new GestureDetector(this, new MyGestureDetector(this)); no swiping for now - make sure to uncomment dispatchTouchEvent
 		Log.e(TAG, "in on create");
-		String retrievedName = getIntent().getExtras().getString(INTENT_KEY_NAME);
-		addAppIdentifier(retrievedName);
+		packageName = getIntent().getExtras().getString(INTENT_KEY_NAME);
 		//showFiles(retrievedName);
-		final LinearLayout layout = 
-		        (LinearLayout) this.findViewById(R.id.activity_training_package_layout);
-		FILES = getOrderedFiles(retrievedName);
+		this.setTitle(getNameFromPath(packageName)); //fileNameParts[fileNameParts.length - 1].split("\\.")[0]); // set the title to the title of the training package
+		final RelativeLayout layout = 
+		        (RelativeLayout) this.findViewById(R.id.activity_training_package_layout);
+		FILES = getOrderedFiles(packageName);
 
 		
 		currentFile = 0;
@@ -52,14 +65,34 @@ public class TrainingPackageActivity extends Activity {
 			showToast("No files to show");
 		}
 		
+		// set up the back and next buttons
+		Button backButton = (Button) this.findViewById(R.id.back_button);
+		final TrainingPackageActivity activity = this;
+		backButton.setOnClickListener(new OnClickListener() {
+			@Override
+            public void onClick(View arg0) {
+                activity.showPreviousFile();
+            }
+        });
+		Button nextButton = (Button) this.findViewById(R.id.next_button);
+		nextButton.setOnClickListener(new OnClickListener() {
+			@Override
+            public void onClick(View arg0) {
+                activity.showNextFile();
+            }
+        });
+		
 		//addNextButton(currentFile, layout);
 		
         //showOrderedFilesFromText(retrievedName);
 	}
 	
+	/**
+	 * Show the next file in the current package, or close if the activity if there are no more
+	 */
 	public void showNextFile() {
-		LinearLayout layout = 
-		        (LinearLayout) this.findViewById(R.id.activity_training_package_layout);
+		RelativeLayout layout = 
+		        (RelativeLayout) this.findViewById(R.id.activity_training_package_layout);
 		currentFile++;
 		if (currentFile < FILES.length) {
 			addToActivity(FILES[currentFile], layout);
@@ -69,54 +102,32 @@ public class TrainingPackageActivity extends Activity {
 		//addNextButton(currentFile, layout);
 	}
 	
+	/**
+	 * Show the previous file in the current package.  Do not go past the beginning!
+	 */
 	public void showPreviousFile() {
-		LinearLayout layout = 
-		        (LinearLayout) this.findViewById(R.id.activity_training_package_layout);
+		RelativeLayout layout = 
+		        (RelativeLayout) this.findViewById(R.id.activity_training_package_layout);
 		currentFile--;
 		if (currentFile >= 0) {
 			addToActivity(FILES[currentFile], layout);
 		}
 	}
 	
-	public void addAppIdentifier(String data) {
-		Log.e(TAG, "adding app identifier");
-		LinearLayout layout = 
-		        (LinearLayout) this.findViewById(R.id.activity_training_package_layout);
-		TextView text = new TextView(this);
-		text.setText(data);
-		layout.addView(text);
-	}
-	
-	/*
-	public void addNextButton(final int currentFile, final LinearLayout layout) {
-		Button next = new Button(this);
-		ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-		next.setWidth(100);
-		
-		next.setLayoutParams(params);
-		if (currentFile + 1 < FILES.length) {
-			
-			next.setText("NEXT >>");
-			next.setOnClickListener(new OnClickListener() {
-	            public void onClick(View arg0) {
-	                showNextFile(currentFile, layout);
-	            }
-	            
-	        });
-			//layout.setLayoutParams(lay);
-			layout.addView(next);
+	/**
+	 * Navigate to the file at the given position
+	 * @param pos the file to navigate to
+	 */
+	private void navigateTo(int pos) {
+		RelativeLayout layout = 
+		        (RelativeLayout) this.findViewById(R.id.activity_training_package_layout);
+		currentFile = pos;
+		if (currentFile < FILES.length) {
+			addToActivity(FILES[currentFile], layout);
 		} else {
-			final Activity act = this;
-			next.setText("FINISH");
-			next.setOnClickListener(new OnClickListener() {
-	            public void onClick(View arg0) {
-	                act.finish();
-	            }
-	            
-	        });
-			layout.addView(next);
+			this.finish();
 		}
-	} */
+	}
 	
 	/**
 	 * Determines and returns the type of the file based on its extension
@@ -151,27 +162,6 @@ public class TrainingPackageActivity extends Activity {
 		return parts[parts.length - 1].toLowerCase();
 	}
 	
-	/**
-	 * Inserts all of the files into the current activity
-	 * TODO currently only inserts images
-	 * TODO images are all thrown in, need to add back/forward functionality and separate out into separate activities
-	 * @param directory the directory to show files for
-	 */
-	public void showFiles(String directory) {
-	    showToast("showfiles");
-	    LinearLayout layout = 
-		        (LinearLayout) this.findViewById(R.id.activity_training_package_layout);
-	    File currentDir = new File(directory);
-	    File[] files = currentDir.listFiles();
-        
-        for (File f : files) {
-            String name = f.getName();
-            Filetype type = getType(name);
-            final String path = f.getAbsolutePath();
-            addToActivity(f, layout);
-        }
-	}
-	
 	public File[] getOrderedFiles(String directory) {
         File currentDir = new File(directory);
         File[] files = currentDir.listFiles();
@@ -180,8 +170,6 @@ public class TrainingPackageActivity extends Activity {
         // if text file is found, the files array will be ordered;
         // if not found, the array will remain the same
         return getSortedFiles(files);
-        
-        // if text file is not found, alert user
 	}
 	/*
 	public void showOrderedFilesFromText(String directory) {
@@ -196,7 +184,6 @@ public class TrainingPackageActivity extends Activity {
     }*/
 
 	private File[] getSortedFiles(File[] files) {
-		// TODO Auto-generated method stub
 		boolean textFileFound = false;
 		for (File f : files) {
             String name = f.getName();
@@ -221,7 +208,7 @@ public class TrainingPackageActivity extends Activity {
 		return files;
 	}
 
-	private void addToActivity(File f, LinearLayout layout) {
+	private void addToActivity(File f, RelativeLayout layout) {
 		// params unused
 		Filetype type = getType(f.getName());
 		String path = f.getAbsolutePath();
@@ -231,9 +218,12 @@ public class TrainingPackageActivity extends Activity {
 	            ImageView image = new ImageView(this);  
 	            Bitmap myBitmap = BitmapFactory.decodeFile(f.getAbsolutePath());
 	            image.setImageBitmap(myBitmap);
-	            image.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));//new LinearLayout.LayoutParams(900, 600));
+	            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+	            params.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
+	            image.setLayoutParams(params);
 	            image.setBackgroundColor(getResources().getColor(android.R.color.background_dark));
 	            layout.addView(image);
+	            image.requestFocus();
 	            break;
 	        case VIDEO:
 	        	Log.e(TAG, "showing video");
@@ -242,7 +232,8 @@ public class TrainingPackageActivity extends Activity {
 				MediaController mediacontroller = new MediaController(this);
 				mediacontroller.setAnchorView(video);
 				video.setMediaController(mediacontroller);
-				video.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));//new LinearLayout.LayoutParams(900, 600));
+				RelativeLayout.LayoutParams parameters = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+				video.setLayoutParams(parameters);
 				video.setVideoPath(path);
 				
 				final ProgressDialog pDialog = new ProgressDialog(this);
@@ -285,6 +276,11 @@ public class TrainingPackageActivity extends Activity {
         getMenuInflater().inflate(R.menu.training_package, menu);
         return true;
     }
+	
+	private String getNameFromPath(String path) {
+		String[] parts = path.split("/");
+		return parts[parts.length - 1].split("\\.")[0];
+	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -294,10 +290,41 @@ public class TrainingPackageActivity extends Activity {
 		int id = item.getItemId();
 		if (id == R.id.action_settings) {
 			return true;
+		} else if (id == R.id.action_navigate) {
+			
+			String names[] = new String[FILES.length]; //{"A","B","C","D"};
+			for (int i = 0; i < FILES.length; i++) {
+				names[i] = getNameFromPath(FILES[i].getPath());
+			}
+	        final AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+	        LayoutInflater inflater = getLayoutInflater();
+	        View convertView = (View) inflater.inflate(R.layout.list, null);
+	        alertDialog.setView(convertView);
+	        alertDialog.setTitle(getNameFromPath(packageName));
+	        ListView lv = (ListView) convertView.findViewById(R.id.navigate_list);
+	        final TrainingPackageActivity activity = this;
+	        lv.setOnItemClickListener(new OnItemClickListener() {
+	        	@Override
+	        	public void onItemClick(AdapterView<?> adapter, View v, int pos, long arg4) {
+	        		Log.e(TAG, "Position clicked = " + pos);
+	        		activity.navigateTo(pos);
+	        		alertDialog.dismiss();
+	        	}
+	        });
+	        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, names);
+	        lv.setAdapter(adapter);
+	        alertDialog.show();
+//        	AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+//            alertDialog.setTitle("Navigate");
+//            alertDialog.setMessage("this is my app");
+//            alertDialog.show();
+//            return true;
 		}
 		return super.onOptionsItemSelected(item);
 	}
 	
+
+
 	public void showToast(String text) { 
     	Context context = getApplicationContext();
         int duration = Toast.LENGTH_SHORT;
@@ -306,11 +333,11 @@ public class TrainingPackageActivity extends Activity {
         toast.show();
 	}
 	
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent e) {
-        super.dispatchTouchEvent(e);
-        return gestureDetector.onTouchEvent(e);
-    }
+//    @Override
+//    public boolean dispatchTouchEvent(MotionEvent e) {
+//        super.dispatchTouchEvent(e);
+//        return gestureDetector.onTouchEvent(e);
+//    }
 	
 	private static final int SWIPE_MIN_DISTANCE = 10;
 	private static final int SWIPE_MAX_OFF_PATH = 250;

@@ -1,19 +1,39 @@
-<HorizontalScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/container"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:fillViewport="true"
-    android:background="#D3D3D3">
-
-
-	<LinearLayout
-	    android:orientation="vertical"
-	    android:id="@+id/activity_training_package_layout"
-	    android:layout_width="match_parent"
-	    android:layout_height="wrap_content"
-	    tools:context="com.example.laostrainingapp.PackageActivity"
-	    tools:ignore="MergeRootFrame"
-	    android:background="#FFFFFF">
-	    </LinearLayout>
-</HorizontalScrollView>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+	    xmlns:tools="http://schemas.android.com/tools"
+	    android:id="@+id/container"
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent"
+	    android:fillViewport="true">
+    <LinearLayout
+            android:id="@+id/container_layout"
+    		android:layout_width="match_parent"
+   			android:layout_height="wrap_content">
+   		
+       <Button
+		    android:id="@+id/back_button"
+		    android:layout_width="96dp"
+		    android:layout_height="match_parent"
+		    android:text="@string/back_arrow"
+		    android:layout_weight="1">
+		</Button>
+		
+	    <RelativeLayout
+		    android:orientation="vertical"
+		    android:id="@+id/activity_training_package_layout"
+		    tools:context="com.example.laostrainingapp.TrainingPackageActivity"
+		    tools:ignore="MergeRootFrame"
+		    android:layout_width="match_parent"
+        	android:layout_height="match_parent"
+		    android:background="#FFFFFF"
+		    android:layout_weight="8">
+       	</RelativeLayout>
+       	
+		<Button
+		    android:id="@+id/next_button"
+		    android:layout_height="match_parent"
+		    android:text="@string/next_arrow"
+		    android:layout_width="96dp"
+		    android:layout_weight="1">
+		</Button>
+    </LinearLayout>
+</ScrollView>

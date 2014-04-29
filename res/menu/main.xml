@@ -13,7 +13,6 @@
           android:title="@string/action_search"
           android:showAsAction="ifRoom" />
     
-    
     <item
         android:id="@+id/action_download"
         android:icon="@drawable/ic_action_download"
