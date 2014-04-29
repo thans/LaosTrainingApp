@@ -82,7 +82,7 @@ public class MainActivity extends Activity {
          
     	 
          //gridview.setAdapter(adapter);
-         gridview.setAdapter(new MyViewAdapter(this, fileNames));
+         gridview.setAdapter(new MyViewAdapter(this, fileNames, appRoot.getAbsolutePath() + "/", R.layout.row_grid ));
          //gridview.setAdapter(new MyViewAdapter(this));
          gridview.setVerticalSpacing(100);
          
@@ -95,7 +95,9 @@ public class MainActivity extends Activity {
     	            //intent.putExtra(TrainingPackageActivity.INTENT_KEY_NAME, f.getAbsolutePath());
     	        	
     	        	// Reconstruct the full path of the file
-    	        	String name = appRoot.getAbsolutePath() + "/" + ((TextView)v).getText();
+    	        	TextView tv = (TextView) v.findViewById(R.id.item_text);
+    	        	//String name = appRoot.getAbsolutePath() + "/" + ((TextView)v).getText();
+    	        	String name = appRoot.getAbsolutePath() + "/" + tv.getText();
     	        	intent.putExtra(TrainingPackageActivity.INTENT_KEY_NAME, name);
     	    		startActivity(intent);
     	        }
