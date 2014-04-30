@@ -12,6 +12,7 @@
         android:id="@+id/action_navigate"
         android:orderInCategory="100"
         android:showAsAction="ifRoom"
+        android:icon="@drawable/ic_action_select_all"
         android:title="@string/action_navigate"/>
 
 </menu>
