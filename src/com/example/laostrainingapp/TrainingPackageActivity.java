@@ -111,6 +111,8 @@ public class TrainingPackageActivity extends Activity {
 		currentFile--;
 		if (currentFile >= 0) {
 			addToActivity(FILES[currentFile], layout);
+		} else {
+			currentFile = 0;
 		}
 	}
 	
