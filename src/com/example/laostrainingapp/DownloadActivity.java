@@ -192,18 +192,19 @@ public class DownloadActivity extends Activity {
                     }
                 }
                 
-                // delete any package in local storage that is not also in the google drive account
-                for (java.io.File localFile : localPackages) {
-                    if (!googleDrivePackages.contains(localFile.getName()))
-                        try {
-                            deleteFile(localFile);
-                            System.out.println("Deleting " + localFile.getName());
-                        } catch (IOException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        }
+                if (!googleDrivePackages.isEmpty()) {
+                	// delete any package in local storage that is not also in the google drive account
+                	for (java.io.File localFile : localPackages) {
+                		if (!googleDrivePackages.contains(localFile.getName()))
+                			try {
+                				deleteFile(localFile);
+                				System.out.println("Deleting " + localFile.getName());
+                			} catch (IOException e) {
+                				// TODO Auto-generated catch block
+                				e.printStackTrace();
+                			}
+                	}
                 }
-                System.out.println("Finished update");
                 
                 // populates the list view with all the zip files in the specified google drive account
                 //populateListView();
