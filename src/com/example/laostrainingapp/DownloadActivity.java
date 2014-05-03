@@ -5,17 +5,18 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.json.gson.GsonFactory;
+import com.google.api.client.util.DateTime;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.Drive.Files;
@@ -30,6 +31,7 @@ import android.app.NotificationManager;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -80,6 +82,9 @@ public class DownloadActivity extends Activity {
     private java.io.File            targetDir;
     private EditText                inputSearch;
     
+    SharedPreferences sp;  // persistent data that stores the last time the device updated files
+    public static final String UPDATE = "update"; 
+    private long                    lastUpdate;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,6 +100,8 @@ public class DownloadActivity extends Activity {
         startActivityForResult(mCredential.newChooseAccountIntent(), REQUEST_ACCOUNT_PICKER);
 	    
         mContext = getApplicationContext();
+        
+        sp = getPreferences(Context.MODE_PRIVATE);
     
         targetDir = new java.io.File(Environment.getExternalStorageDirectory(), 
                 getString(R.string.local_storage_folder));
@@ -135,6 +142,8 @@ public class DownloadActivity extends Activity {
      * Gets the folders in the google drive account
      */
     private void getDriveContents() {
+    	readPref();
+        writePref();
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -167,35 +176,43 @@ public class DownloadActivity extends Activity {
                       && (request.getPageToken().length() > 0));
                 
                 googleDrivePackages = new ArrayList<String>();
+                boolean updateNeeded = false;
                 
                 // process each folder to see if it needs to be updated
                 // and if so, get the folderId of the folder and add to map
                 for (File f : mResultList) {
-                    if (checkTimeStamp()) {
+                    if (checkTimeStamp(f)) {
+                    	updateNeeded = true;
                         String folderName = f.getTitle();
+                        DateTime date = f.getModifiedDate();
+                        System.out.println("Last modified date of package " + folderName + " is " + date.getValue());
                         googleDrivePackages.add(folderName);
                         java.io.File targetFolder = new java.io.File(targetDir, folderName);
                         
                         // delete any files that have been updated: for package overwrite
-                        if (targetFolder.exists())
+                        if (targetFolder.exists()) {
                             try {
                                 deleteFile(targetFolder);
                                 System.out.println("Deleting " + folderName);
+                                System.out.println("Begin download of files from folder " + folderName);
+                                // guaranteed at this point that there is no file in local storage of the same name
+                                targetFolder.mkdirs();
+                                getPackageContents(f, targetFolder);
                             } catch (IOException e) {
                                 System.err.println("Delete of folder " + folderName + " failed");
                                 e.printStackTrace();
                             }
-                        System.out.println("Begin download of files from folder " + folderName);
-                        // guaranteed at this point that there is no file in local storage of the same name
-                        targetFolder.mkdirs();
-                        getPackageContents(f, targetFolder);
+                        } else {
+                            targetFolder.mkdirs();
+                            getPackageContents(f, targetFolder);
+                        }
                     }
                 }
                 
                 if (!googleDrivePackages.isEmpty()) {
                 	// delete any package in local storage that is not also in the google drive account
                 	for (java.io.File localFile : localPackages) {
-                		if (!googleDrivePackages.contains(localFile.getName()))
+                		if (!googleDrivePackages.contains(localFile.getName())) {
                 			try {
                 				deleteFile(localFile);
                 				System.out.println("Deleting " + localFile.getName());
@@ -203,27 +220,29 @@ public class DownloadActivity extends Activity {
                 				// TODO Auto-generated catch block
                 				e.printStackTrace();
                 			}
+                		}
                 	}
                 }
                 
-                // populates the list view with all the zip files in the specified google drive account
-                //populateListView();
-                
-                
+                if (!updateNeeded) {
+                    showToast("Packages are already updated.");
+                }
             }
         });
         t.start();
     }
     
+    
     /**
      *  compares the time stamps on the given folder 
      * @return true if the last modified date of folder in drive account is later than that of the last time of update
      */
-    private boolean checkTimeStamp() {
-        // TODO: use sharedpreferences
+    private boolean checkTimeStamp(File file) {
+        // use sharedpreferences
         // may need to prune mResultList or return a new list of files to download
-        return true;
+        return (lastUpdate < file.getModifiedDate().getValue());
     }
+    
     
     /**
      * Gets the contents of a package
@@ -353,6 +372,38 @@ public class DownloadActivity extends Activity {
             throw new FileNotFoundException("Failed to delete file: " + file.getName());
     }
     
+    /**
+     * Converts milliseconds to the corresponding date in the form dd/MM/yy
+     * @param msec, the time in milliseconds to convert
+     * @return the String date
+     */
+    private String getDateFromLong(Long msec) {
+        Date date = new Date(msec);
+        SimpleDateFormat df2 = new SimpleDateFormat("dd/MM/yy");
+        return df2.format(date);
+    }
+    
+    
+    /**
+     * Reads from SharedPreferences the date/time of last update
+     */
+    private void readPref() {
+        // get the last update; if not set, lastUpdate gets 31/12/69
+        lastUpdate = sp.getLong(UPDATE, 0);    
+        System.out.println("Time of last update: " + getDateFromLong(lastUpdate));
+    }
+    
+    /**
+     * Writes to SharedPreferences the current date/time for the latest update
+     */
+    private void writePref() {
+        SharedPreferences.Editor editor = sp.edit();
+        long currentTime = 0;//System.currentTimeMillis();
+        editor.putLong(UPDATE, currentTime);
+        editor.commit();
+        System.out.println("Time of current update: " + getDateFromLong(currentTime));
+    }
+    
     private void populateListView(final File f, final List<File> mFileList) {
         runOnUiThread(new Runnable() {
             @Override
@@ -385,139 +436,6 @@ public class DownloadActivity extends Activity {
         });
     }
     
-    
-    private void downloadItemFromList(int position, final NotificationManager nm, final NotificationCompat.Builder mBuilder) {
-        mDLVal = (String) mListView.getItemAtPosition(position);
-        showToast("You just pressed: " + mDLVal);
-
-        Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                for(File tmp : mResultList) {
-                    if (tmp.getTitle().equalsIgnoreCase(mDLVal)) {
-                        if (tmp.getDownloadUrl() != null && tmp.getDownloadUrl().length() > 0) {
-                            Log.i("GoogleDriveProject", "running downloadItemFromList");
-                            try { // for httpresponse
-                                com.google.api.client.http.HttpResponse resp = 
-                                        mService.getRequestFactory()
-                                        .buildGetRequest(new GenericUrl(tmp.getDownloadUrl()))
-                                        .execute();
-                                
-                                // gets the zip file's contents
-                                InputStream inputStream = resp.getContent();
-                                try {
-                                    Log.i("GoogleDriveProject", "beginning storage of file");
-    
-                                    ZipInputStream zis = new ZipInputStream(inputStream);
-                                    // the laos directory
-                                    java.io.File targetDir = new java.io.File(Environment.getExternalStorageDirectory(), 
-                                            getString(R.string.local_storage_folder));
-                                    System.out.println("the target directory is " + targetDir.getAbsolutePath());
-                                    
-                                    int count = 0;
-                                    ZipEntry ze;
-                                    while ((ze = zis.getNextEntry()) != null) {
-                                    	// Sets an activity indicator for an operation of indeterminate length
-                                    	mBuilder.setProgress(0, 0, true);
-                                    	// Issues the notification
-                                    	nm.notify(0, mBuilder.build());
-                                    	
-                                        count++;
-                                        Log.d("DEBUG", "Extracting: " + ze.getName() + "...");
-                                        // Extracted file will be saved with same file name that's in the zip drive
-                                        String fileName = ze.getName();
-                                        System.out.println("file " + count + "'s name is " + fileName);
-                                        java.io.File targetFile = new java.io.File(targetDir, fileName);
-                                        System.out.println("file " + count + "'s path is " + targetFile.getAbsolutePath());
-                                        
-                                        showToast("Downloading: " + targetFile.getName() + " to " + targetFile.getPath());
-                                        System.out.println("Downloading: " + targetFile.getName() + " to " + targetFile.getPath());
-                                        new java.io.File(targetFile.getParent()).mkdirs();
-                                        if (ze.isDirectory()) {
-                                            System.out.println("entry is directory");
-                                            targetFile.mkdirs();
-                                        } else {
-                                            System.out.println("entry is file");
-                                            // reads/writes each file 
-                                            FileOutputStream fos = new FileOutputStream(targetFile);
-                                            try {
-                                                copyContents(zis, fos);
-                                                System.out.println("Just wrote file: " + targetFile.getName());
-                                            } finally {
-                                                fos.close();
-                                            }
-                                        }  // end if
-                                        
-                                        // finish the current zip entry
-                                        zis.closeEntry();
-                                    }  // end while
-                                    System.out.println("zipentry count = " + count);
-                                    // update notification
-                                    mBuilder.setContentText("Download complete")
-                                    	.setSmallIcon(R.drawable.ic_action_download)
-                                    	.setProgress(0, 0, false);
-                                    nm.notify(0, mBuilder.build());
-                                    zis.close();
-                                } finally {
-                                    inputStream.close();
-                                }
-                            } catch (IOException e) {
-                                System.err.println("the HttpResponse failed");
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                }
-            }
-        });
-        t.start();
-    }
-    
-    // copy the contents of a file to the given output
-    private static void copyContents(ZipInputStream zis, OutputStream fos) {
-        byte[] buffer = new byte[4096];
-        // reads/writes each file 
-        int len;
-        try {
-            while((len = zis.read(buffer)) != -1) {
-                fos.write(buffer, 0, len);
-            }
-        } catch (IOException e) {
-            System.err.println("write failed");
-            e.printStackTrace();
-        }
-    }
-    
-    private void populateListView() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mFileArray = new String[mResultList.size()];
-                int i = 0;
-                for(File tmp : mResultList) {
-                    mFileArray[i] = tmp.getTitle();
-                    i++;
-                }
-                mAdapter = new ArrayAdapter<String>(mContext, android.R.layout.simple_list_item_1, mFileArray){
-
-                    @Override
-                    public View getView(int position, View convertView,
-                            ViewGroup parent) {
-                        View view =super.getView(position, convertView, parent);
-
-                        TextView textView=(TextView) view.findViewById(android.R.id.text1);
-
-                        /*YOUR CHOICE OF COLOR*/
-                        textView.setTextColor(Color.GRAY);
-                        textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, 28);
-                        textView.setHeight(85);
-                        return view;
-                    }
-                };
-                mListView.setAdapter(mAdapter);
-            }
-        });
-    }
     
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
