@@ -15,4 +15,6 @@
     <string name="action_navigate">Navigate</string>
     <string name="back_arrow">Back</string>
     <string name="next_arrow">Next</string>
+    
+    <string name="splash">morePractice</string>
 </resources>
