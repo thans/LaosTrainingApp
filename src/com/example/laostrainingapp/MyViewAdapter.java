@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -105,24 +106,31 @@ public class MyViewAdapter extends BaseAdapter {
 		File file = this.getFileImg(new File(directory + files[position]));
 		
 		if(file != null){
-			Log.e(TAG, "FILEEEEEEEEEEEEEEE:"  + file.getName());
+			Log.e(TAG, "FILE:"  + file.getName());
 	        Bitmap myBitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
 			holder.img.setImageBitmap(myBitmap);
 			file = null;
+		}else {
+			holder.img.setImageBitmap(null);
 		}
 		//view.setText(files[position]);
 		
 		
-		/*LayoutParams lp = view.getLayoutParams();
-		view.setBackgroundColor(Color.parseColor("#4169e1"));
+		LayoutParams lpText = holder.text.getLayoutParams();
+		LayoutParams lpImg = holder.img.getLayoutParams();
+		
+		/*view.setBackgroundColor(Color.parseColor("#4169e1"));
 		lp.height = 200;
 		lp.width = 500;
 		view.setTextSize(70);*/
 		
+		//holder.text.setTextSize(50);
+		
+		holder.text.setBackgroundColor(Color.parseColor("#4169e1"));
 		//return view;
 		LayoutParams lp = row.getLayoutParams();
-		lp.height = 400;
-		lp.width = 500;
+		lp.height = 300;
+		lp.width = 600;
 		
 		return row;
 		 
