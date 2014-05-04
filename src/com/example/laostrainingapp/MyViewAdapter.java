@@ -127,28 +127,30 @@ public class MyViewAdapter extends BaseAdapter {
 		//holder.text.setTextSize(50);
 		
 		holder.text.setBackgroundColor(Color.parseColor("#4169e1"));
+		holder.img.setBackgroundColor(Color.parseColor("#4169e1"));
+		
 		//return view;
-		LayoutParams lp = row.getLayoutParams();
+		/*LayoutParams lp = row.getLayoutParams();
 		lp.height = 300;
 		lp.width = 600;
-		
+		*/
 		return row;
 		 
 	}
 	
+	// Special view that populates the gridView
+	// Has a text view and an image view
 	public static class ViewHolder {
-		
 		TextView text;
-		
 		ImageView img;
 	}
 	
-	public File getFileImg(File dir){
+	public File getFileImg(File dir) {
 		File file = null;		
-		if(dir.isDirectory()){
+		if (dir.isDirectory()) {
 			File[] fs = dir.listFiles();
-			for(File f : fs) {
-				if(f.getName().equals("img.jpg")){
+			for (File f : fs) {
+				if (f.getName().equals("img.jpg")) {
 					file = f;
 				}
 			}

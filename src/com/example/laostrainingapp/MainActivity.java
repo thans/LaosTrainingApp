@@ -59,10 +59,6 @@ public class MainActivity extends Activity {
             e.printStackTrace();
         }
         
-        
-    	//addTrainingPackageButtons(baseDir);
-    	//addTextProgrammatically(baseDir);
-    	//addImage(baseDir);
     	
     	 final File appRoot = new File(baseDir + "/" + getString(R.string.local_storage_folder));
          File[] files = appRoot.listFiles();
@@ -70,33 +66,25 @@ public class MainActivity extends Activity {
          // GridView for layout
          GridView gridview = (GridView) findViewById(R.id.gridview);
          
-         // Get just the names of the files to populate the grid view
+         // Get the short names of the files to populate the grid view
          String[] fileNames = new String[files.length];
+         
          for(int i = 0; i < files.length; i++){
         	 fileNames[i] = files[i].getName();
          }
          
-         // Use file names to create the grid view
-         /*final ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, 
-     	        android.R.layout.simple_list_item_1, fileNames);*/
-         
-    	 
-         //gridview.setAdapter(adapter);
+         // Construct the gridView, sending in the files and the absolute path where the files reside
          gridview.setAdapter(new MyViewAdapter(this, fileNames, appRoot.getAbsolutePath() + "/", R.layout.row_grid ));
-         //gridview.setAdapter(new MyViewAdapter(this));
-         gridview.setVerticalSpacing(100);
+         
+         //gridview.setVerticalSpacing(100);
          
     	 // Connect each grid to a new activity with a listener
          gridview.setOnItemClickListener(new OnItemClickListener() {
     	        public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-    	            //Toast.makeText(MainActivity.this, "" + position, Toast.LENGTH_SHORT).show();
-    	        	
     	        	Intent intent = new Intent(MainActivity.this, TrainingPackageActivity.class);
-    	            //intent.putExtra(TrainingPackageActivity.INTENT_KEY_NAME, f.getAbsolutePath());
     	        	
-    	        	// Reconstruct the full path of the file
+    	        	// Reconstruct the full path of the file to send to the new activity
     	        	TextView tv = (TextView) v.findViewById(R.id.item_text);
-    	        	//String name = appRoot.getAbsolutePath() + "/" + ((TextView)v).getText();
     	        	String name = appRoot.getAbsolutePath() + "/" + tv.getText();
     	        	intent.putExtra(TrainingPackageActivity.INTENT_KEY_NAME, name);
     	    		startActivity(intent);
