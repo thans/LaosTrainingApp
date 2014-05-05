@@ -61,7 +61,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.os.Build;
 
 public class DownloadActivity extends Activity {
-	static final int                REQUEST_ACCOUNT_PICKER = 1;
+    static final int                REQUEST_ACCOUNT_PICKER = 1;
     static final int                REQUEST_AUTHORIZATION = 2;
     static final int                REQUEST_DOWNLOAD_FILE = 3;
     static final int                RESULT_STORE_FILE = 4;
@@ -69,8 +69,7 @@ public class DownloadActivity extends Activity {
     private static Drive            mService;
     private GoogleAccountCredential mCredential;
     private Context                 mContext;
-    private List<File>              mResultList;
-    private List<String>            googleDrivePackages;
+    private List<File>              packageList;
     private ListView                mListView;
     private java.io.File[]          localPackages;
     private String[]                mFileArray;
@@ -93,7 +92,7 @@ public class DownloadActivity extends Activity {
 
     	getActionBar().setDisplayHomeAsUpEnabled(true);
 
-	    // setup for credentials for connecting to the Google Drive account
+        // setup for credentials for connecting to the Google Drive account
         mCredential = GoogleAccountCredential.usingOAuth2(this, Arrays.asList(DriveScopes.DRIVE));
 	    
         // start activity that prompts the user for their google drive account
@@ -109,33 +108,13 @@ public class DownloadActivity extends Activity {
         
         //setContentView(R.layout.activity_main);
         mListView = (ListView) findViewById(R.id.listView1);
-	    
-//        OnItemClickListener mMessageClickedHandler = new OnItemClickListener() {
-//            public void onItemClick(AdapterView parent, View v, int position, long id) {
-//            	// set up notification of download
-//            	NotificationManager nm =
-//            		    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-//            	NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(mContext);
-//            	mBuilder.setContentTitle("Package Download")
-//                .setContentText("Download in progress")
-//                .setSmallIcon(android.R.drawable.stat_sys_download)
-//                .setTicker("Starting download");
-//            	
-//            	// download an item	from the list of packages
-//            	downloadItemFromList(position, nm, mBuilder);
-//        	}
-//        };
-//    
-//        mListView.setOnItemClickListener(mMessageClickedHandler); 
-        
-        
-        final Button button2 = (Button) findViewById(R.id.button2);
-        button2.setOnClickListener(new View.OnClickListener() {
+
+        final Button button = (Button) findViewById(R.id.button2);
+        button.setOnClickListener(new View.OnClickListener() {
         	public void onClick(View v) {
         		getDriveContents();
         	}
         });
-     
     }
 
     /**
@@ -147,7 +126,7 @@ public class DownloadActivity extends Activity {
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
-                mResultList = new ArrayList<File>();
+            	packageList = new ArrayList<File>();
                 Files f1 = mService.files();
                 Files.List request = null;
         
@@ -163,7 +142,7 @@ public class DownloadActivity extends Activity {
                         //request.setQ("'root' in parents and trashed=false"); // for getting all the files in root
                         FileList fileList = request.execute();
                         
-                        mResultList.addAll(fileList.getItems());
+                        packageList.addAll(fileList.getItems());
                         request.setPageToken(fileList.getNextPageToken());
                     } catch (UserRecoverableAuthIOException e) {
                         startActivityForResult(e.getIntent(), REQUEST_AUTHORIZATION);
@@ -175,71 +154,77 @@ public class DownloadActivity extends Activity {
                 } while ((request.getPageToken() != null) 
                       && (request.getPageToken().length() > 0));
                 
-                googleDrivePackages = new ArrayList<String>();
-                boolean updateNeeded = false;
+                // list of package names in drive
+                List<String> googleDrivePackages = new ArrayList<String>();
                 
                 // process each folder to see if it needs to be updated
                 // and if so, get the folderId of the folder and add to map
-                for (File f : mResultList) {
+                for (File f : packageList) {
                     if (checkTimeStamp(f)) {
-                    	updateNeeded = true;
                         String folderName = f.getTitle();
-                        DateTime date = f.getModifiedDate();
-                        System.out.println("Last modified date of package " + folderName + " is " + date.getValue());
                         googleDrivePackages.add(folderName);
                         java.io.File targetFolder = new java.io.File(targetDir, folderName);
                         
-                        // delete any files that have been updated: for package overwrite
-                        if (targetFolder.exists()) {
+                        if (!targetFolder.exists()) {
+                            showToast("Package " + folderName + " does not exist locally; must download");
+                            System.out.println("Package " + folderName + " does not exist locally; must download");
+                            targetFolder.mkdirs();
+                            getPackageContents(f, targetFolder, true);
+                        } else if (targetFolder.exists() && checkTimeStamp(f)) {
+                        	// folder has been modified in drive since last update
+                            DateTime date = f.getModifiedDate();
+                            System.out.println("Last modified date of package " + folderName + " is " + date.getValue());
+
+                            // delete any local files that have the same name: for package overwrite
                             try {
                                 deleteFile(targetFolder);
-                                System.out.println("Deleting " + folderName);
-                                System.out.println("Begin download of files from folder " + folderName);
+                                showToast("Deleting package folder " + folderName);
+                                System.out.println("Deleting package folder" + folderName);
                                 // guaranteed at this point that there is no file in local storage of the same name
                                 targetFolder.mkdirs();
-                                getPackageContents(f, targetFolder);
+                                getPackageContents(f, targetFolder, true);
                             } catch (IOException e) {
                                 System.err.println("Delete of folder " + folderName + " failed");
                                 e.printStackTrace();
                             }
                         } else {
-                            targetFolder.mkdirs();
-                            getPackageContents(f, targetFolder);
+                        	// f is existing folder since last update: check last modified date of its contents
+                            getPackageContents(f, targetFolder, false);
                         }
                     }
                 }
                 
-                if (!googleDrivePackages.isEmpty()) {
-                	// delete any package in local storage that is not also in the google drive account
-                	for (java.io.File localFile : localPackages) {
-                		if (!googleDrivePackages.contains(localFile.getName())) {
-                			try {
-                				deleteFile(localFile);
-                				System.out.println("Deleting " + localFile.getName());
-                			} catch (IOException e) {
-                				// TODO Auto-generated catch block
-                				e.printStackTrace();
-                			}
-                		}
-                	}
-                }
-                
-                if (!updateNeeded) {
-                    showToast("Packages are already updated.");
-                }
+                pruneLocalPackages(googleDrivePackages);
             }
         });
         t.start();
     }
+
+    private void pruneLocalPackages(List<String> googleDrivePackages) {
+        if (!googleDrivePackages.isEmpty()) {
+            // delete any package in local storage that is not also in the google drive account
+            for (java.io.File localFile : localPackages) {
+                if (!googleDrivePackages.contains(localFile.getName())) {
+                    try {
+                        deleteFile(localFile);
+                        System.out.println("Deleting " + localFile.getName());
+                    } catch (IOException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
     
     
     /**
-     *  compares the time stamps on the given folder 
-     * @return true if the last modified date of folder in drive account is later than that of the last time of update
+     * Compares the time stamps on the given folder 
+     * @return true if the last modified date of folder in drive account 
+     *         is later than that of the time of last update
      */
     private boolean checkTimeStamp(File file) {
         // use sharedpreferences
-        // may need to prune mResultList or return a new list of files to download
         return (lastUpdate < file.getModifiedDate().getValue());
     }
     
@@ -249,10 +234,11 @@ public class DownloadActivity extends Activity {
      * @param f, the package folder 
      * @param targetFolder, the package folder in local storage, currently empty
      */
-    private void getPackageContents(final File f, final java.io.File targetFolder) {
-        Thread t = new Thread(new Runnable() {
+    private void getPackageContents(final File f, final java.io.File targetFolder, final boolean download) {
+    	Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
+                // list of contents in f
                 List<File> mFileList = new ArrayList<File>();
                 Files f1 = mService.files();
                 Files.List request = null;
@@ -282,11 +268,15 @@ public class DownloadActivity extends Activity {
                 //System.out.println("Package " + f.getTitle() + " has this many items: " + count);
                 
                 // populates the list view with all the zip files in the specified google drive account
-                populateListView(f, mFileList);
+                //populateListView(f, mFileList);
                 
-                // downloads the contents of the package within a folder of the same name
-                downloadPackage(mFileList, targetFolder);
-                
+                if (download) {
+                    // downloads the contents of the package within a folder of the same name
+                    downloadPackage(mFileList, targetFolder);
+                } else {
+                    // compares with the contents of the local package of the same name
+                    checkContents(mFileList, targetFolder);
+                }
             }
         });
         t.start();
@@ -330,6 +320,60 @@ public class DownloadActivity extends Activity {
         t.start();
     }
     
+    
+    /**
+     * Checks that the contents in drive package and the contents of local package are in sync;
+     * If not in sync, prune or update
+     * @param mFileList, the contents of the google drive package folder
+     * @param localFolder, the package folder of the same name in local storage
+     */
+    private void checkContents(List<File> mFileList, java.io.File localFolder) {
+        java.io.File[] localContents = localFolder.listFiles();
+        List<String> driveContentNames = new ArrayList<String>();
+        for (File driveContent : mFileList ) {
+            driveContentNames.add(driveContent.getTitle());
+            java.io.File temp = new java.io.File(localFolder, driveContent.getTitle());
+            List<File> item = new ArrayList<File>();
+            if (!temp.exists()) {
+                // download 
+                item.add(driveContent);
+                showToast(driveContent.getTitle() + "does not exist; must download");
+                System.out.println(driveContent.getTitle() + "does not exist; must download");
+                downloadPackage(item, localFolder);
+            } else if (temp.exists() && checkTimeStamp(driveContent)) {
+                // needs to be updated
+                showToast(driveContent.getTitle() + "does exist; but must be updated");
+                System.out.println(driveContent.getTitle() + "does exist; but must be updated");
+                try {
+                    showToast("Deleting file " + temp.getName());
+                    System.out.println("Deleting file " + temp.getName());
+                    deleteFile(temp);
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                // download
+                item.add(driveContent);
+                downloadPackage(item, localFolder);
+            }
+        }
+        
+        // for the case where the local package has something that the drive package doesn't
+        for (java.io.File f : localContents) {
+            if (!driveContentNames.contains(f.getName())) {
+                try {
+                    showToast("Deleting file " + f.getName());
+                    System.out.println("Deleting file " + f.getName());
+                    deleteFile(f);
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+    
+    
     /**
      * Stores the file into local storage
      * @param file, the package content to be stored
@@ -358,7 +402,7 @@ public class DownloadActivity extends Activity {
     }
     
     /**
-     *  deletes the given file by recursively deleting its contents
+     * Deletes the given file by recursively deleting its contents
      * @param file, the file that gets deleted
      * @throws IOException
      */
