@@ -34,6 +34,11 @@
             
         </activity>
         <activity
+            android:name="com.example.laostrainingapp.ChooseLanguage"
+            android:label="@string/language"
+            android:screenOrientation="landscape" >
+        </activity>
+        <activity
             android:name="com.example.laostrainingapp.TrainingPackageActivity"
             android:label="@string/title_activity_training_package"
             android:screenOrientation="landscape" >

@@ -30,7 +30,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends Activity {
-
+	public static final String LANGUAGE_KEY = "language";
     private static final String TAG = MainActivity.class.getSimpleName();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,9 +45,10 @@ public class MainActivity extends Activity {
 
     	
         // for first design iteration
-        String laosFilePath = baseDir + "/" + getString(R.string.local_storage_folder);
+        String laosFilePath = getIntent().getExtras().getString(LANGUAGE_KEY); //baseDir + "/" + getString(R.string.local_storage_folder);
         File baseFolder = new File(baseDir);
         File downloadFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+        /*
         try {
             File zipFile = new File(downloadFolder, "LaosTrainingApp.zip");
             downloadZip(zipFile, baseFolder, laosFilePath);
@@ -57,10 +58,10 @@ public class MainActivity extends Activity {
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        }
+        }*/
         
     	
-    	 final File appRoot = new File(baseDir + "/" + getString(R.string.local_storage_folder));
+    	 final File appRoot = new File(laosFilePath);
          File[] files = appRoot.listFiles();
          
          // GridView for layout

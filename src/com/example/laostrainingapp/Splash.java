@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Window;
-import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
@@ -51,7 +50,7 @@ public class Splash extends Activity {
             public void run() {
                 // stop the animation
                 splash.setAnimation(null);
-                Intent openMainActivity =  new Intent(Splash.this, MainActivity.class);
+                Intent openMainActivity =  new Intent(Splash.this, ChooseLanguage.class);
                 startActivity(openMainActivity);
                 overridePendingTransition(R.animator.slide_no_move, R.animator.fade);
                 finish();
