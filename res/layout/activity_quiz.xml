@@ -1,3 +1,4 @@
+<!--
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
@@ -5,3 +6,69 @@
     android:layout_height="match_parent"
     tools:context="com.example.laostrainingapp.QuizActivity"
     tools:ignore="MergeRootFrame" />
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    tools:context="com.example.laostrainingapp.QuizActivity" >
+    
+    <!-- Left column -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical" >
+        
+	    <TextView
+	        android:id="@+id/quiz_question"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:text="@string/question" />
+	    <TextView
+	        android:id="@+id/quiz_explanation"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content" />
+    </LinearLayout>
+    
+    <!-- Right column -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical" >
+	    
+   	    <Button
+	        android:id="@+id/quiz_answer_1"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:text="@string/answer_1"
+	        android:textSize="12sp"
+	        android:onClick="buttonOnClick" />
+	    <Button
+	        android:id="@+id/quiz_answer_2"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:text="@string/answer_2"
+	    	android:textSize="12sp"
+ 		    android:onClick="buttonOnClick" />
+	    <Button
+	        android:id="@+id/quiz_answer_3"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:text="@string/answer_3"
+	    	android:textSize="12sp"
+	    	android:onClick="buttonOnClick" />
+	    <Button
+	        android:id="@+id/quiz_answer_4"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:text="@string/answer_4"
+	        android:textSize="12sp"
+	        android:onClick="buttonOnClick" />
+
+    </LinearLayout>
+    
+</LinearLayout>

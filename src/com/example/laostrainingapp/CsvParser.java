@@ -25,7 +25,7 @@ public class CsvParser {
 	/**
 	 * Reads a quiz stored in a CSV file, and returns a Quiz object
 	 * @param path A File reference to the CSV file storing the quiz.
-	 * @return The Quiz object.
+	 * @return The Quiz object, or <code>null</code> if there was some error reading the quiz file.
 	 */
 	public static Quiz parseQuizFromCsv(File file) {
 		Scanner scanner;

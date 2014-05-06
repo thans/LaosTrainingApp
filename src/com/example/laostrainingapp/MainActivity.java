@@ -193,6 +193,10 @@ public class MainActivity extends Activity {
             new ActionBarFunctions().downloadsActivity(this);
             return true;
         }
+        if (id == R.id.action_quiz) {
+        	new ActionBarFunctions().quizActivity(this);
+        	return true;
+        }
         return super.onOptionsItemSelected(item);
 	}
 

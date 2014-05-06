@@ -8,6 +8,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.laostrainingapp.QuizActivity$PlaceholderFragment" >
 
+    <!--
     <TextView
         android:id="@+id/quiz_question"
         android:layout_width="fill_parent"
@@ -46,5 +47,6 @@
         android:layout_below="@id/quiz_answer_3"
         android:text="@string/answer_4"
         android:textSize="12sp" />
+    -->
 
 </RelativeLayout>

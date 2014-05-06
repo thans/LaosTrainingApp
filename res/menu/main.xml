@@ -19,5 +19,11 @@
         android:orderInCategory="100"
         android:showAsAction="ifRoom"
         android:title="@string/action_download"/>
+    
+    <item
+        android:id="@+id/action_quiz"
+        android:icon="@drawable/ic_action_cloud"
+        android:showAsAction="ifRoom"
+        android:title="@string/action_quiz" />
 
 </menu>
