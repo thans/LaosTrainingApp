@@ -126,7 +126,7 @@ public class DownloadActivity extends Activity {
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
-            	packageList = new ArrayList<File>();
+                packageList = new ArrayList<File>();
                 Files f1 = mService.files();
                 Files.List request = null;
         
@@ -154,52 +154,64 @@ public class DownloadActivity extends Activity {
                 } while ((request.getPageToken() != null) 
                       && (request.getPageToken().length() > 0));
                 
-                // list of package names in drive
-                List<String> googleDrivePackages = new ArrayList<String>();
-                
-                // process each folder to see if it needs to be updated
-                // and if so, get the folderId of the folder and add to map
-                for (File f : packageList) {
-                    if (checkTimeStamp(f)) {
-                        String folderName = f.getTitle();
-                        googleDrivePackages.add(folderName);
-                        java.io.File targetFolder = new java.io.File(targetDir, folderName);
-                        
-                        if (!targetFolder.exists()) {
-                            showToast("Package " + folderName + " does not exist locally; must download");
-                            System.out.println("Package " + folderName + " does not exist locally; must download");
-                            targetFolder.mkdirs();
-                            getPackageContents(f, targetFolder, true);
-                        } else if (targetFolder.exists() && checkTimeStamp(f)) {
-                        	// folder has been modified in drive since last update
-                            DateTime date = f.getModifiedDate();
-                            System.out.println("Last modified date of package " + folderName + " is " + date.getValue());
-
-                            // delete any local files that have the same name: for package overwrite
-                            try {
-                                deleteFile(targetFolder);
-                                showToast("Deleting package folder " + folderName);
-                                System.out.println("Deleting package folder" + folderName);
-                                // guaranteed at this point that there is no file in local storage of the same name
-                                targetFolder.mkdirs();
-                                getPackageContents(f, targetFolder, true);
-                            } catch (IOException e) {
-                                System.err.println("Delete of folder " + folderName + " failed");
-                                e.printStackTrace();
-                            }
-                        } else {
-                        	// f is existing folder since last update: check last modified date of its contents
-                            getPackageContents(f, targetFolder, false);
-                        }
-                    }
-                }
-                
-                pruneLocalPackages(googleDrivePackages);
+                processPackages();
             }
         });
         t.start();
     }
+    
+    
+    /**
+     * Looks through each drive package to see if it needs to be updated or pruned
+     */
+    private void processPackages() {
+    	// list of package names in drive
+        List<String> googleDrivePackages = new ArrayList<String>();
+        
+        // process each drive folder to see if it needs to be updated;
+        // if so, get the folderId of the folder and add to map
+        for (File f : packageList) {
+            String folderName = f.getTitle();
+            googleDrivePackages.add(folderName);
+            java.io.File targetFolder = new java.io.File(targetDir, folderName);
+            
+            if (!targetFolder.exists()) {
+                showToast("Package " + folderName + " does not exist locally; must download");
+                System.out.println("Package " + folderName + " does not exist locally; must download");
+                targetFolder.mkdirs();
+                getPackageContents(f, targetFolder, true);
+            } else if (targetFolder.exists() && checkTimeStamp(f)) {
+                // folder has been modified in drive since last update
+                DateTime date = f.getModifiedDate();
+                System.out.println("Last modified date of package " + folderName + " is " + date.getValue());
 
+                // delete any local files that have the same name: for package overwrite
+                try {
+                    deleteFile(targetFolder);
+                    showToast("Deleting package folder " + folderName);
+                    System.out.println("Deleting package folder" + folderName);
+                    // guaranteed at this point that there is no file in local storage of the same name
+                    targetFolder.mkdirs();
+                    getPackageContents(f, targetFolder, true);
+                } catch (IOException e) {
+                    System.err.println("Delete of folder " + folderName + " failed");
+                    e.printStackTrace();
+                }
+            } else {
+                // f is an existing folder since last update: check last modified date of its contents
+                getPackageContents(f, targetFolder, false);
+            }
+        }
+        
+        // prune unwanted packages from local storage
+        pruneLocalPackages(googleDrivePackages);
+    }
+
+    
+    /**
+     * Deletes any package in local storage that is not in drive
+     * @param googleDrivePackages, the list of package names in drive
+     */
     private void pruneLocalPackages(List<String> googleDrivePackages) {
         if (!googleDrivePackages.isEmpty()) {
             // delete any package in local storage that is not also in the google drive account
@@ -224,7 +236,7 @@ public class DownloadActivity extends Activity {
      *         is later than that of the time of last update
      */
     private boolean checkTimeStamp(File file) {
-        // use sharedpreferences
+        // uses sharedpreferences
         return (lastUpdate < file.getModifiedDate().getValue());
     }
     
@@ -358,6 +370,17 @@ public class DownloadActivity extends Activity {
             }
         }
         
+        // prune unwanted files in the local package
+        prunePackageContent(localContents, driveContentNames);
+    }
+    
+    
+    /**
+     * Deletes any files in a local package folder
+     * @param localContents, the contents of the local package folder to prune
+     * @param driveContentNames, the contents of the drive package folder to compare against
+     */
+    private void prunePackageContent(java.io.File[] localContents, List<String> driveContentNames) {
         // for the case where the local package has something that the drive package doesn't
         for (java.io.File f : localContents) {
             if (!driveContentNames.contains(f.getName())) {
@@ -536,11 +559,7 @@ public class DownloadActivity extends Activity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_download) {
-        	getDriveContents();
-            return true;
-        }
+        
         return super.onOptionsItemSelected(item);
     }
 }
