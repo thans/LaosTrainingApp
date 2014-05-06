@@ -1,6 +1,7 @@
 package com.example.laostrainingapp;
 
 import java.io.File;
+import java.util.Random;
 
 import android.app.Activity;
 import android.content.Context;
@@ -26,6 +27,8 @@ public class MyViewAdapter extends BaseAdapter {
 	private Context mContext;
 	private String[] files;
 	private String directory;
+	private String[] colors = {"#A4C400", "#60A917", "#008A00", "#00ABA9","#1BA1E2", "#0050EF","#6A00FF", "#AA00FF", 
+							   "#F472D0", "#D80073", "#A20025", "#E51400", "#FA6800", "#F0A30A", "#E3C800"};
 	
 	public LayoutInflater inflater;
 	public int LayoutResourceId;
@@ -34,9 +37,7 @@ public class MyViewAdapter extends BaseAdapter {
 		mContext = c;
 		files = s;
 		directory = d;
-		
 		LayoutResourceId = id;
-		
 	}
 	
 	public MyViewAdapter(Context c){
@@ -70,36 +71,18 @@ public class MyViewAdapter extends BaseAdapter {
 		
 		ViewHolder holder = null;
 		
-		
 		View row = convertView;
-		//File file = null;
 		
 		if (row == null) {  // if it's not recycled, initialize some attributes
-			
            	LayoutInflater inflater = ((Activity) mContext).getLayoutInflater();
            	row = inflater.inflate(LayoutResourceId, parent, false); 
-
            	holder = new ViewHolder();	
-           	
             holder.text = (TextView) row.findViewById(R.id.item_text);
-            //TextView tv = (TextView) row.findViewById(R.id.item_text);
-            //tv.setTextSize(50);
-           // ImageView iv = (ImageView) row.findViewById(R.id.item_image);
-           // iv.getLayoutParams().width = 120;
-            //iv.getLayoutParams().height = 120;
             holder.img = (ImageView) row.findViewById(R.id.item_image);
             row.setTag(holder);
-			
-            //view = new TextView(mContext);
-            //view.setLayoutParams(new GridView.LayoutParams(85, 85));
-            //view.setScaleType(view.ScaleType.CENTER_CROP);
-            //view.setPadding(8, 8, 8, 8);
         } else {
-            //view = (TextView) convertView;
         	holder = (ViewHolder) row.getTag();
         }
-		
-		//view.setText(files[position]);
 		
 		holder.text.setText(files[position]);
 		
@@ -113,29 +96,15 @@ public class MyViewAdapter extends BaseAdapter {
 		}else {
 			holder.img.setImageBitmap(null);
 		}
-		//view.setText(files[position]);
 		
+		Random ran = new Random();
 		
-		LayoutParams lpText = holder.text.getLayoutParams();
-		LayoutParams lpImg = holder.img.getLayoutParams();
+		int i = ran.nextInt(14);
 		
-		/*view.setBackgroundColor(Color.parseColor("#4169e1"));
-		lp.height = 200;
-		lp.width = 500;
-		view.setTextSize(70);*/
+		holder.text.setBackgroundColor(Color.parseColor(colors[i]));
+		holder.img.setBackgroundColor(Color.parseColor(colors[i]));
 		
-		//holder.text.setTextSize(50);
-		
-		holder.text.setBackgroundColor(Color.parseColor("#4169e1"));
-		holder.img.setBackgroundColor(Color.parseColor("#4169e1"));
-		
-		//return view;
-		/*LayoutParams lp = row.getLayoutParams();
-		lp.height = 300;
-		lp.width = 600;
-		*/
-		return row;
-		 
+		return row; 
 	}
 	
 	// Special view that populates the gridView
@@ -152,7 +121,7 @@ public class MyViewAdapter extends BaseAdapter {
 			for (File f : fs) {
 				if (f.getName().equals("img.jpg")) {
 					file = f;
-				}
+				}	
 			}
 		}
 		return file;
