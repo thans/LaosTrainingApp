@@ -17,21 +17,4 @@
         android:layout_marginTop="30dp"
         android:text="Update Packages" />
 
-<!--     <ProgressBar
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:layout_below="@+id/button2"
-		style="?android:attr/progressBarStyleHorizontal"
-		android:id="@+id/progressbar_Horizontal"
-		android:max="100" /> -->
-		
-    <ListView
-        android:id="@+id/listView1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/progressbar_Horizontal"
-        android:layout_marginTop="0dp" >
-    </ListView> 
-
 </RelativeLayout>

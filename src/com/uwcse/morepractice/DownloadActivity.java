@@ -26,63 +26,37 @@ import com.google.api.services.drive.model.FileList;
 
 import android.accounts.AccountManager;
 import android.app.Activity;
-import android.app.ActionBar;
-import android.app.Fragment;
-import android.app.NotificationManager;
-import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.v4.app.NotificationCompat;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Log;
-import android.util.TypedValue;
-import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.SearchView;
-import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.AdapterView.OnItemClickListener;
-import android.os.Build;
 
 public class DownloadActivity extends Activity {
     static final int                REQUEST_ACCOUNT_PICKER = 1;
     static final int                REQUEST_AUTHORIZATION = 2;
-    static final int                REQUEST_DOWNLOAD_FILE = 3;
-    static final int                RESULT_STORE_FILE = 4;
-    private static Uri              mFileUri;
     private static Drive            mService;
     private GoogleAccountCredential mCredential;
     private Context                 mContext;
     private List<File>              languageList;
-    private ListView                mListView;
     private java.io.File[]          localLanguages;
-    private String[]                mFileArray;
-    private String                  mDLVal;
     private ArrayAdapter<String>    mAdapter;
     private SearchView              search;
     
     private java.io.File            targetDir;
     private EditText                inputSearch;
     
-    SharedPreferences sp;  // persistent data that stores the last time the device updated files
-    public static final String UPDATE = "update"; 
+    // persistent data that stores the last time the device updated files
+    private SharedPreferences 		sp;  
+    public static final String 		UPDATE = "update"; 
     private long                    lastUpdate;
     
     @Override
@@ -105,9 +79,6 @@ public class DownloadActivity extends Activity {
         targetDir = new java.io.File(Environment.getExternalStorageDirectory(), 
                 getString(R.string.local_storage_folder));
         localLanguages = targetDir.listFiles();
-        
-        //setContentView(R.layout.activity_main);
-        mListView = (ListView) findViewById(R.id.listView1);
 
         final Button button = (Button) findViewById(R.id.button2);
         button.setOnClickListener(new View.OnClickListener() {
@@ -168,8 +139,6 @@ public class DownloadActivity extends Activity {
             java.io.File targetFolder = new java.io.File(targetDir, folderName);
             
             if (!targetFolder.exists()) {
-                showToast("Language " + folderName + " does not exist locally; must download");
-                System.out.println("Language " + folderName + " does not exist locally; must download");
                 targetFolder.mkdirs();
             } else if (targetFolder.exists() && checkTimeStamp(f)) {
                 // folder has been modified in drive since last update
@@ -178,8 +147,6 @@ public class DownloadActivity extends Activity {
 
                 // delete any local files that have the same name: for package overwrite
                 deleteFile(targetFolder);
-                showToast("Deleting Language folder " + folderName);
-                System.out.println("Deleting Language folder " + folderName);
                 // guaranteed at this point that there is no file in local storage of the same name
                 targetFolder.mkdirs();
             } 
@@ -243,8 +210,6 @@ public class DownloadActivity extends Activity {
             java.io.File packageFolder = new java.io.File(parentFolder, folderName);
             
             if (!packageFolder.exists()) {
-                showToast("Package " + folderName + "in folder " + parentFolder.getAbsolutePath() + " does not exist locally; must download");
-                System.out.println("Package " + folderName + "in folder " + parentFolder.getAbsolutePath() + " does not exist locally; must download");
                 packageFolder.mkdirs();
                 getPackageContents(f, packageFolder, true);
             } else if (packageFolder.exists() && checkTimeStamp(f)) {
@@ -254,8 +219,6 @@ public class DownloadActivity extends Activity {
 
                 // delete any local files that have the same name: for package overwrite
                 deleteFile(packageFolder);
-                showToast("Deleting package folder " + folderName);
-                System.out.println("Deleting package folder " + folderName);
                 // guaranteed at this point that there is no file in local storage of the same name
                 packageFolder.mkdirs();
                 getPackageContents(f, packageFolder, true);
@@ -368,15 +331,9 @@ public class DownloadActivity extends Activity {
             if (!temp.exists()) {
                 // download 
                 item.add(driveContent);
-                showToast(driveContent.getTitle() + " does not exist; must download");
-                System.out.println(driveContent.getTitle() + " does not exist; must download");
                 downloadPackage(item, localFolder);
             } else if (temp.exists() && checkTimeStamp(driveContent)) {
                 // needs to be updated
-                showToast(driveContent.getTitle() + " does exist; but must be updated");
-                System.out.println(driveContent.getTitle() + " does exist; but must be updated");
-                showToast("Deleting file " + temp.getName());
-                System.out.println("Deleting file " + temp.getName());
                 deleteFile(temp);
                 // download
                 item.add(driveContent);
@@ -457,7 +414,7 @@ public class DownloadActivity extends Activity {
             try {
                 throw new FileNotFoundException("Failed to delete file: " + file.getName());
             } catch (FileNotFoundException e) {
-                // TODO Auto-generated catch block
+                System.err.println("Delete of file " + file.getAbsolutePath() + " failed");
                 e.printStackTrace();
             }
     }
@@ -495,39 +452,7 @@ public class DownloadActivity extends Activity {
         System.out.println("Time of current update: " + getDateFromLong(currentTime));
     }
     
-    private void populateListView(final File f, final List<File> mFileList) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                String[] FileArray = new String[mFileList.size()];
-                //System.out.println("Number of files in folder " + f.getTitle() + " is " + mFileList.size());
-                int i = 0;
-                for(File tmp : mFileList) {
-                    FileArray[i] = f.getTitle() + " : " + tmp.getTitle();
-                    //System.out.println(FileArray[i]);
-                    i++;
-                }
-                mAdapter = new ArrayAdapter<String>(mContext, android.R.layout.simple_list_item_1, FileArray) {
 
-                    @Override
-                    public View getView(int position, View convertView,
-                            ViewGroup parent) {
-                        View view = super.getView(position, convertView, parent);
-
-                        TextView textView = (TextView) view.findViewById(android.R.id.text1);
-
-                        textView.setTextColor(Color.GRAY);
-                        textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, 28);
-                        textView.setHeight(85);
-                        return view;
-                    }
-                };
-                mListView.setAdapter(mAdapter);
-            }
-        });
-    }
-    
-    
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         switch (requestCode) {
@@ -546,11 +471,6 @@ public class DownloadActivity extends Activity {
                 } else {
                     startActivityForResult(mCredential.newChooseAccountIntent(), REQUEST_ACCOUNT_PICKER);
                 }
-                break;
-            case RESULT_STORE_FILE:
-                mFileUri = data.getData();
-                // Save the file to Google Drive
-                //saveFileToDrive();
                 break;
         }
     }
@@ -583,7 +503,11 @@ public class DownloadActivity extends Activity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        
+        int id = item.getItemId();
+        if (id == R.id.action_refresh) {
+        	new ActionBarFunctions().refresh(this);
+        	return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 }
