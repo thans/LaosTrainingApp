@@ -70,10 +70,8 @@ public class TrainingPackageActivity extends Activity {
 			showToast("No files to show");
 		}
 		*/
-		showPackageContents();
 		
 		// set up the back and next buttons
-		/*
 		Button backButton = (Button) this.findViewById(R.id.back_button);
 		final TrainingPackageActivity activity = this;
 		backButton.setOnClickListener(new OnClickListener() {
@@ -89,39 +87,35 @@ public class TrainingPackageActivity extends Activity {
                 activity.showNextFile();
             }
         });
-        */
 		
-		//addNextButton(currentFile, layout);
+		// let them choose where in the package to start
+		showPackageContents();
 		
-        //showOrderedFilesFromText(retrievedName);
 	}
 	
 	private void showPackageContents() {
-		RelativeLayout layout = 
-		        (RelativeLayout) this.findViewById(R.id.activity_training_package_layout);
-		
 		String names[] = new String[FILES.length]; //{"A","B","C","D"};
 		for (int i = 0; i < FILES.length; i++) {
 			names[i] = getNameFromPath(FILES[i].getPath());
 		}
-		
-		for (int i = 0; i < names.length; i++) {
-			Button btn = new Button(this);
-        	btn.setText(names[i]);
-        	LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        	btn.setLayoutParams(params);
-        	
-        	final TrainingPackageActivity thisActivity = this;
-        	final int num = i;
-            btn.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
-                    // Perform action on click
-            		thisActivity.navigateTo(num);
-                }
-            });
-            
-        	layout.addView(btn);
-		}
+        final AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+        LayoutInflater inflater = getLayoutInflater();
+        View convertView = (View) inflater.inflate(R.layout.list, null);
+        alertDialog.setView(convertView);
+        alertDialog.setTitle(getNameFromPath(packageName));
+        ListView lv = (ListView) convertView.findViewById(R.id.navigate_list);
+        final TrainingPackageActivity activity = this;
+        lv.setOnItemClickListener(new OnItemClickListener() {
+        	@Override
+        	public void onItemClick(AdapterView<?> adapter, View v, int pos, long arg4) {
+        		Log.e(TAG, "Position clicked = " + pos);
+        		activity.navigateTo(pos);
+        		alertDialog.dismiss();
+        	}
+        });
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, names);
+        lv.setAdapter(adapter);
+        alertDialog.show();
 	}
 	
 	/**
@@ -136,7 +130,6 @@ public class TrainingPackageActivity extends Activity {
 		} else {
 			this.finish();
 		}
-		//addNextButton(currentFile, layout);
 	}
 	
 	/**
@@ -210,17 +203,6 @@ public class TrainingPackageActivity extends Activity {
         // if not found, the array will remain the same
         return getSortedFiles(files);
 	}
-	/*
-	public void showOrderedFilesFromText(String directory) {
-        
-        // shows ordered files
-        for (File f : files) {
-            String name = f.getName();
-            Filetype type = getType(name);
-            final String path = f.getAbsolutePath();
-            addToActivity(type, path, layout, f);
-        }
-    }*/
 
 	private File[] getSortedFiles(File[] files) {
 		boolean textFileFound = false;
@@ -330,34 +312,7 @@ public class TrainingPackageActivity extends Activity {
 		if (id == R.id.action_settings) {
 			return true;
 		} else if (id == R.id.action_navigate) {
-			
-			String names[] = new String[FILES.length]; //{"A","B","C","D"};
-			for (int i = 0; i < FILES.length; i++) {
-				names[i] = getNameFromPath(FILES[i].getPath());
-			}
-	        final AlertDialog alertDialog = new AlertDialog.Builder(this).create();
-	        LayoutInflater inflater = getLayoutInflater();
-	        View convertView = (View) inflater.inflate(R.layout.list, null);
-	        alertDialog.setView(convertView);
-	        alertDialog.setTitle(getNameFromPath(packageName));
-	        ListView lv = (ListView) convertView.findViewById(R.id.navigate_list);
-	        final TrainingPackageActivity activity = this;
-	        lv.setOnItemClickListener(new OnItemClickListener() {
-	        	@Override
-	        	public void onItemClick(AdapterView<?> adapter, View v, int pos, long arg4) {
-	        		Log.e(TAG, "Position clicked = " + pos);
-	        		activity.navigateTo(pos);
-	        		alertDialog.dismiss();
-	        	}
-	        });
-	        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, names);
-	        lv.setAdapter(adapter);
-	        alertDialog.show();
-//        	AlertDialog alertDialog = new AlertDialog.Builder(this).create();
-//            alertDialog.setTitle("Navigate");
-//            alertDialog.setMessage("this is my app");
-//            alertDialog.show();
-//            return true;
+			showPackageContents();
 		}
 		return super.onOptionsItemSelected(item);
 	}

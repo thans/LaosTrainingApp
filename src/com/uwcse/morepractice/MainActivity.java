@@ -134,49 +134,6 @@ public class MainActivity extends Activity {
     	}
     }
 
-   /* public void addTextProgrammatically(String baseDir) {
-        LinearLayout layout = 
-            (LinearLayout) this.findViewById(R.id.activity_main_linear_layout);
-        
-    	File appRoot = new File(baseDir + "/LaosTrainingApp/");
-    	File[] files = appRoot.listFiles();
-    	Log.e(TAG, appRoot.getAbsolutePath());
-    //		String data = "Files currently in " + appRoot.getAbsolutePath();
-    	TextView text = new TextView(this);
-    	text.setText("Files in the LaosTrainingApp directory:");
-    	layout.addView(text);
-    	for (File f : files) {
-    		TextView tv = new TextView(this);
-    		tv.setText(f.getPath());
-    		layout.addView(tv);
-    		Log.e(TAG, f.getPath());
-    	}
-    }
-	
-    public void addImage(String baseDir) {
-        LinearLayout layout = 
-                (LinearLayout) this.findViewById(R.id.activity_main_linear_layout);
-    
-        File appRoot = new File(baseDir + "/LaosTrainingApp/");
-        File[] files = appRoot.listFiles();
-        for (File f : files) {
-            Log.e(TAG, f.getPath());
-    
-            ImageView image = new ImageView(this);
-            String fileName = f.getAbsolutePath();
-            File imgFile = new File(fileName);
-    
-            if(imgFile.exists()){
-                Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-                image.setImageBitmap(myBitmap);
-            } else {
-                Log.e(TAG, imgFile.getAbsolutePath() + " permission to read " + imgFile.canRead());
-            }
-    
-            layout.addView(image);
-        }
-    }*/
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
     
