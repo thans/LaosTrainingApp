@@ -3,7 +3,7 @@ package com.uwcse.morepractice;
 import java.io.File;
 import java.util.List;
 
-import com.example.laostrainingapp.R;
+import com.uwcse.morepractice.R;
 
 import android.app.Activity;
 import android.app.Fragment;
