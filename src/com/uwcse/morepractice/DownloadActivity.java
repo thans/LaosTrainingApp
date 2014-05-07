@@ -11,10 +11,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-<<<<<<< HEAD
-=======
 import com.uwcse.morepractice.R;
->>>>>>> c9049aed9895af1b229da2b05dcf290e58d2144f
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;

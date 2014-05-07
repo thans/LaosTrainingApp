@@ -1,10 +1,7 @@
 package com.uwcse.morepractice;
 
-<<<<<<< HEAD
-=======
 import com.uwcse.morepractice.R;
 
->>>>>>> c9049aed9895af1b229da2b05dcf290e58d2144f
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
