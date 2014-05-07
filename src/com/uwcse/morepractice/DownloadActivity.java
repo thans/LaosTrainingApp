@@ -446,7 +446,7 @@ public class DownloadActivity extends Activity {
      */
     private void writePref() {
         SharedPreferences.Editor editor = sp.edit();
-        long currentTime = 0;//System.currentTimeMillis();
+        long currentTime = System.currentTimeMillis();
         editor.putLong(UPDATE, currentTime);
         editor.commit();
         System.out.println("Time of current update: " + getDateFromLong(currentTime));
