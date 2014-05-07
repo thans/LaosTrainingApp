@@ -12,7 +12,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
-import com.example.laostrainingapp.R;
+import com.uwcse.morepractice.R;
 
 import android.app.Activity;
 import android.content.Context;
