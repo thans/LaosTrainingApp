@@ -1,4 +1,4 @@
-package com.example.laostrainingapp;
+package com.uwcse.morepractice;
 
 import android.app.Activity;
 import android.content.Intent;

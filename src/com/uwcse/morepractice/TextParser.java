@@ -1,4 +1,4 @@
-package com.example.laostrainingapp;
+package com.uwcse.morepractice;
 
 import java.io.*;
 import java.util.*;

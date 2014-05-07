@@ -1,4 +1,6 @@
-package com.example.laostrainingapp;
+package com.uwcse.morepractice;
+
+import com.example.laostrainingapp.R;
 
 import android.app.Activity;
 import android.app.ProgressDialog;

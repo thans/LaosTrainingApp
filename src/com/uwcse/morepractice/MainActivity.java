@@ -1,8 +1,10 @@
-package com.example.laostrainingapp;
+package com.uwcse.morepractice;
 
 import java.io.*;
 import java.util.*;
 import java.util.zip.*;
+
+import com.example.laostrainingapp.R;
 
 import android.app.ActionBar;
 import android.app.Activity;

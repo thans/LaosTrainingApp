@@ -19,12 +19,12 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="com.example.laostrainingapp.MainActivity"
+            android:name="com.uwcse.morepractice.MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="landscape" >
         </activity>
         <activity
-            android:name="com.example.laostrainingapp.Splash"
+            android:name="com.uwcse.morepractice.Splash"
             android:label="@string/splash"
             android:screenOrientation="landscape">
             <intent-filter>
@@ -34,17 +34,17 @@
             
         </activity>
         <activity
-            android:name="com.example.laostrainingapp.ChooseLanguage"
+            android:name="com.uwcse.morepractice.ChooseLanguage"
             android:label="@string/language"
             android:screenOrientation="landscape" >
         </activity>
         <activity
-            android:name="com.example.laostrainingapp.TrainingPackageActivity"
+            android:name="com.uwcse.morepractice.TrainingPackageActivity"
             android:label="@string/title_activity_training_package"
             android:screenOrientation="landscape" >
         </activity>
         <activity
-            android:name="com.example.laostrainingapp.VideoActivity"
+            android:name="com.uwcse.morepractice.VideoActivity"
             android:screenOrientation="landscape" >
 
             <!-- android:label="@string/title_activity_video" > -->
@@ -55,13 +55,13 @@
             android:value="4323000" />
 
         <activity
-            android:name="com.example.laostrainingapp.DownloadActivity"
+            android:name="com.uwcse.morepractice.DownloadActivity"
             android:label="@string/title_activity_download" 
-            android:parentActivityName="com.example.laostrainingapp.MainActivity" >
+            android:parentActivityName="com.uwcse.morepractice.MainActivity" >
         </activity>
         
         <activity
-            android:name="com.example.laostrainingapp.QuizActivity"
+            android:name="com.uwcse.morepractice.QuizActivity"
             android:label="@string/title_activity_quiz" >
         </activity>
     </application>

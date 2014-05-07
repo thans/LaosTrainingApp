@@ -1,7 +1,9 @@
-package com.example.laostrainingapp;
+package com.uwcse.morepractice;
 
 import java.io.File;
 import java.util.Random;
+
+import com.example.laostrainingapp.R;
 
 import android.app.Activity;
 import android.content.Context;
@@ -99,7 +101,7 @@ public class MyViewAdapter extends BaseAdapter {
 		
 		Random ran = new Random();
 		
-		int i = ran.nextInt(14);
+		int i = ran.nextInt(colors.length - 1);
 		
 		holder.text.setBackgroundColor(Color.parseColor(colors[i]));
 		holder.img.setBackgroundColor(Color.parseColor(colors[i]));

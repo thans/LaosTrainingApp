@@ -1,6 +1,8 @@
-package com.example.laostrainingapp;
+package com.uwcse.morepractice;
 
 import java.io.File;
+
+import com.example.laostrainingapp.R;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -8,6 +10,7 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
@@ -28,6 +31,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.MediaController;
 import android.widget.RelativeLayout;
@@ -59,13 +63,17 @@ public class TrainingPackageActivity extends Activity {
 
 		
 		currentFile = 0;
+		/*
 		if (FILES.length > 0) {
 			addToActivity(FILES[currentFile], layout);
 		} else {
 			showToast("No files to show");
 		}
+		*/
+		showPackageContents();
 		
 		// set up the back and next buttons
+		/*
 		Button backButton = (Button) this.findViewById(R.id.back_button);
 		final TrainingPackageActivity activity = this;
 		backButton.setOnClickListener(new OnClickListener() {
@@ -81,10 +89,39 @@ public class TrainingPackageActivity extends Activity {
                 activity.showNextFile();
             }
         });
+        */
 		
 		//addNextButton(currentFile, layout);
 		
         //showOrderedFilesFromText(retrievedName);
+	}
+	
+	private void showPackageContents() {
+		RelativeLayout layout = 
+		        (RelativeLayout) this.findViewById(R.id.activity_training_package_layout);
+		
+		String names[] = new String[FILES.length]; //{"A","B","C","D"};
+		for (int i = 0; i < FILES.length; i++) {
+			names[i] = getNameFromPath(FILES[i].getPath());
+		}
+		
+		for (int i = 0; i < names.length; i++) {
+			Button btn = new Button(this);
+        	btn.setText(names[i]);
+        	LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        	btn.setLayoutParams(params);
+        	
+        	final TrainingPackageActivity thisActivity = this;
+        	final int num = i;
+            btn.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    // Perform action on click
+            		thisActivity.navigateTo(num);
+                }
+            });
+            
+        	layout.addView(btn);
+		}
 	}
 	
 	/**

@@ -1,7 +1,9 @@
-package com.example.laostrainingapp;
+package com.uwcse.morepractice;
 
 import java.io.File;
 import java.util.List;
+
+import com.example.laostrainingapp.R;
 
 import android.app.Activity;
 import android.app.Fragment;

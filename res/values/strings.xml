@@ -18,4 +18,6 @@
     
     <string name="splash">morePractice</string>
     <string name="language">Choose a Language</string>
+    
+    <color name="dark_grey">#ff444444</color>
 </resources>
