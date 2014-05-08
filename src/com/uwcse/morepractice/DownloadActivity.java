@@ -37,10 +37,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.SearchView;
 import android.widget.Toast;
 
 public class DownloadActivity extends Activity {
@@ -51,21 +48,18 @@ public class DownloadActivity extends Activity {
     private Context                 	mContext;
     private List<File>              	languageList;
     private java.io.File[]          	localLanguages;
-    private ArrayAdapter<String>    	mAdapter;
-    private SearchView              	search;
     
     private java.io.File            	targetDir;
-    private EditText                	inputSearch;
     
     // notification of update progress
-    private int 						numDownloading = 0;
+    private int                         numDownloading = 0;
     private NotificationManager     	nm;
     private NotificationCompat.Builder  mBuilder;
     
     // persistent data that stores the last time the device updated files
-    private SharedPreferences 			sp;  
-    public static final String 			UPDATE = "update"; 
-    private long                    	lastUpdate;
+    private SharedPreferences           sp;  
+    public static final String          UPDATE = "update"; 
+    private long                        lastUpdate;
     
     private static final String FOLDER = "mimeType='application/vnd.google-apps.folder'";
     private static final String TOP_LEVEL = "'root' in parents";
@@ -94,8 +88,8 @@ public class DownloadActivity extends Activity {
 
         final Button button = (Button) findViewById(R.id.button2);
         button.setOnClickListener(new View.OnClickListener() {
-        	public void onClick(View v) {
-        		nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            public void onClick(View v) {
+                nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
                 mBuilder = new NotificationCompat.Builder(mContext);
                 mBuilder.setContentTitle("Package Update")
                         .setContentText("Update in progress")
