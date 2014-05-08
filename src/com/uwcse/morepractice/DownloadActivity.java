@@ -31,6 +31,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -61,10 +62,10 @@ public class DownloadActivity extends Activity {
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-    	super.onCreate(savedInstanceState);
-    	setContentView(R.layout.activity_download);
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_download);
 
-    	getActionBar().setDisplayHomeAsUpEnabled(true);
+        getActionBar().setDisplayHomeAsUpEnabled(true);
 
         // setup for credentials for connecting to the Google Drive account
         mCredential = GoogleAccountCredential.usingOAuth2(this, Arrays.asList(DriveScopes.DRIVE));
@@ -88,6 +89,7 @@ public class DownloadActivity extends Activity {
         });
     }
 
+
     /**
      * Gets the list of language folders in drive (in the top level directory)
      */
@@ -97,28 +99,8 @@ public class DownloadActivity extends Activity {
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
-                languageList = new ArrayList<File>();
-                Files f1 = mService.files();
-                Files.List request = null;
-        
-                do {
-                    try { 
-                        request = f1.list();
-                        // get the language folders from drive
-                        request.setQ("'root' in parents and trashed=false and mimeType = 'application/vnd.google-apps.folder'");
-                        FileList fileList = request.execute();
-                        
-                        languageList.addAll(fileList.getItems());
-                        request.setPageToken(fileList.getNextPageToken());
-                    } catch (UserRecoverableAuthIOException e) {
-                        startActivityForResult(e.getIntent(), REQUEST_AUTHORIZATION);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        if (request != null) 
-                            request.setPageToken(null);
-                    }
-                } while ((request.getPageToken() != null) 
-                      && (request.getPageToken().length() > 0));
+            	// get only the folders in the root directory of drive account
+                languageList = getContents("'root' in parents and trashed=false and mimeType='application/vnd.google-apps.folder'");
                 
                 processLanguages();
             }
@@ -128,7 +110,41 @@ public class DownloadActivity extends Activity {
     
     
     /**
-     * Figures out if a language folder needs to downloaded, pruned, or checked
+     * Gets the contents of a google drive folder
+     * @param whichFiles, the string text that specifies what type of file to get
+     * @return a list of files that it gets from the google drive folder
+     */
+    private List<File> getContents(String whichFiles) {
+        List<File> result = new ArrayList<File>();
+        Files f1 = mService.files();
+        Files.List request = null;
+
+        do {
+            try { 
+                request = f1.list();
+                // get the language folders from drive
+                request.setQ(whichFiles);
+                FileList fileList = request.execute();
+                
+                result.addAll(fileList.getItems());
+                request.setPageToken(fileList.getNextPageToken());
+            } catch (UserRecoverableAuthIOException e) {
+                startActivityForResult(e.getIntent(), REQUEST_AUTHORIZATION);
+            } catch (IOException e) {
+                e.printStackTrace();
+                if (request != null) 
+                    request.setPageToken(null);
+            }
+        } while ((request.getPageToken() != null) 
+              && (request.getPageToken().length() > 0));
+        
+        return result;
+    }
+    
+    
+    /**
+     * Figures out if a language folder needs to downloaded, pruned, or checked;
+     * 
      */
     private void processLanguages() {
         List<String> googleDriveLanguages = new ArrayList<String>(); // list of language names in drive
@@ -139,6 +155,8 @@ public class DownloadActivity extends Activity {
             java.io.File targetFolder = new java.io.File(targetDir, folderName);
             
             if (!targetFolder.exists()) {
+                showToast("Language " + folderName + " does not exist locally; must download");
+                System.out.println("Language " + folderName + " does not exist locally; must download");
                 targetFolder.mkdirs();
             } else if (targetFolder.exists() && checkTimeStamp(f)) {
                 // folder has been modified in drive since last update
@@ -147,6 +165,8 @@ public class DownloadActivity extends Activity {
 
                 // delete any local files that have the same name: for package overwrite
                 deleteFile(targetFolder);
+                showToast("Deleting Language folder " + folderName);
+                System.out.println("Deleting Language folder " + folderName);
                 // guaranteed at this point that there is no file in local storage of the same name
                 targetFolder.mkdirs();
             } 
@@ -166,110 +186,89 @@ public class DownloadActivity extends Activity {
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
-                List<File> packageList = new ArrayList<File>();
-                Files f1 = mService.files();
-                Files.List request = null;
-        
-                do {
-                    try { 
-                        request = f1.list();
-                        // get the packages in the given language folder in drive
-                        request.setQ("'" + languageFolder.getId() + "' in parents and trashed=false and mimeType = 'application/vnd.google-apps.folder'");
-                        FileList fileList = request.execute();
-                        
-                        packageList.addAll(fileList.getItems());
-                        request.setPageToken(fileList.getNextPageToken());
-                    } catch (UserRecoverableAuthIOException e) {
-                        startActivityForResult(e.getIntent(), REQUEST_AUTHORIZATION);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        if (request != null) 
-                            request.setPageToken(null);
-                    }
-                } while ((request.getPageToken() != null) 
-                      && (request.getPageToken().length() > 0));
+            	// gets only the folders in the language folder
+                List<File> packageList = getContents("'" + languageFolder.getId() + "' in parents and trashed=false and mimeType='application/vnd.google-apps.folder'");
                 
-                processPackages(packageList, localLanguageFolder);
+                processFolders(packageList, localLanguageFolder);
             }
         });
         t.start();
     }
     
+    
     /**
-     * Figures out if a package from the given language folder needs to be downloaded, pruned, or checked
-     * @param packageList; the list of packages to check
-     * @param parentFolder; the language folder of the package list (in local storage)
+     * Figures out if a folder from the given parent folder needs to be downloaded, pruned, or checked
+     * @param folderList; the list of folders to check
+     * @param parentFolder; the parent folder of the list of folders (in local storage)
      */
-    private void processPackages(List<File> packageList, java.io.File parentFolder) {
-        List<String> googleDrivePackages = new ArrayList<String>(); // list of package names in drive
+    private void processFolders(List<File> folderList, java.io.File parentFolder) {
+        List<String> googleDriveFolders = new ArrayList<String>(); // list of folder names in drive with same parent
         
         // process each package folder to see if it needs to be updated;
-        for (File f : packageList) {
+        for (File f : folderList) {
             String folderName = f.getTitle();
-            googleDrivePackages.add(folderName);
-            java.io.File packageFolder = new java.io.File(parentFolder, folderName);
+            googleDriveFolders.add(folderName);
+            java.io.File localFolder = new java.io.File(parentFolder, folderName);
             
-            if (!packageFolder.exists()) {
-                packageFolder.mkdirs();
-                getPackageContents(f, packageFolder, true);
-            } else if (packageFolder.exists() && checkTimeStamp(f)) {
+            if (!localFolder.exists()) {
+                showToast("Folder " + folderName + "in folder " + parentFolder.getAbsolutePath() + " does not exist locally; must download");
+                System.out.println("Folder " + folderName + "in folder " + parentFolder.getAbsolutePath() + " does not exist locally; must download");
+                localFolder.mkdirs();
+                getFolderContents(f, localFolder, true);
+            } else if (localFolder.exists() && checkTimeStamp(f)) {
                 // folder has been modified in drive since last update
                 DateTime date = f.getModifiedDate();
-                System.out.println("Last modified date of package " + folderName + " is " + date.getValue());
+                System.out.println("Last modified date of folder " + folderName + " is " + date.getValue());
 
                 // delete any local files that have the same name: for package overwrite
-                deleteFile(packageFolder);
+                deleteFile(localFolder);
+                showToast("Deleting folder " + folderName);
+                System.out.println("Deleting folder " + folderName);
                 // guaranteed at this point that there is no file in local storage of the same name
-                packageFolder.mkdirs();
-                getPackageContents(f, packageFolder, true);
+                localFolder.mkdirs();
+                getFolderContents(f, localFolder, true);
             } else {
                 // f is existing folder since last update: check last modified date of its contents
-                getPackageContents(f, packageFolder, false);
+            	getFolderContents(f, localFolder, false);
             }
         }
-        prune(googleDrivePackages, parentFolder.listFiles());
+        prune(googleDriveFolders, parentFolder.listFiles());
     }
     
     
     /**
-     * Gets the contents of a package
-     * @param f, the package folder from google drive
-     * @param targetFolder, the package folder in local storage
+     * Gets the contents of a folder
+     * @param f, the folder from google drive
+     * @param targetFolder, the corresponding folder in local storage
+     * @param download, true if contents of File f needs download
      */
-    private void getPackageContents(final File f, final java.io.File targetFolder, final boolean download) {
+    private void getFolderContents(final File f, final java.io.File targetFolder, final boolean download) {
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
-                // list of contents in f
-                List<File> mFileList = new ArrayList<File>();
-                Files f1 = mService.files();
-                Files.List request = null;
-                do {
-                    try { 
-                        request = f1.list();
+                // list of contents in f 
+                List<File> mFileList = getContents("'" + f.getId() + "' in parents and trashed=false");
                 
-                        // get only the files from the given folder 
-                        request.setQ("'" + f.getId() + "' in parents and trashed=false and mimeType != 'application/vnd.google-apps.folder'");
-                        FileList fileList = request.execute();
-                        mFileList.addAll(fileList.getItems());
-                        request.setPageToken(fileList.getNextPageToken());
-                    } catch (UserRecoverableAuthIOException e) {
-                        startActivityForResult(e.getIntent(), REQUEST_AUTHORIZATION);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        if (request != null) 
-                            request.setPageToken(null);
+                // process each file
+                for (File file : mFileList) {
+                    Log.e("FOLDER", file.getMimeType());
+                    if (!file.getMimeType().equals("application/vnd.google-apps.folder")) {
+                        // is a file
+                        if (download) {
+                            // downloads the contents of the package within a folder of the same name
+                            downloadPackage(file, targetFolder);
+                        } else {
+                            // compares with the contents of the local package of the same name
+                            checkContents(mFileList, targetFolder);
+                        }
+                    } else {
+                        // is a directory
+                        List<File> directory = new ArrayList<File>();
+                        directory.add(file);
+                        processFolders(directory, targetFolder);
                     }
-                } while ((request.getPageToken() != null) 
-                      && (request.getPageToken().length() > 0));
-                
-                if (download) {
-                    // downloads the contents of the package within a folder of the same name
-                    downloadPackage(mFileList, targetFolder);
-                } else {
-                    // compares with the contents of the local package of the same name
-                    checkContents(mFileList, targetFolder);
                 }
+            
             }
         });
         t.start();
@@ -280,16 +279,15 @@ public class DownloadActivity extends Activity {
      * Begins the downloading process of the given files from a google drive account package
      * @param mFileList, the package contents
      */
-    private void downloadPackage(final List<File> mFileList, final java.io.File targetFolder) {
+    private void downloadPackage(final File mFile, final java.io.File targetFolder) {
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
-                for(File tmp : mFileList) {
-                    if (tmp.getDownloadUrl() != null && tmp.getDownloadUrl().length() > 0) {
+                    if (mFile.getDownloadUrl() != null && mFile.getDownloadUrl().length() > 0) {
                         try {
                             com.google.api.client.http.HttpResponse resp =
                                     mService.getRequestFactory()
-                                    .buildGetRequest(new GenericUrl(tmp.getDownloadUrl()))
+                                    .buildGetRequest(new GenericUrl(mFile.getDownloadUrl()))
                                     .execute();
                             
                             // gets the file's contents
@@ -297,8 +295,8 @@ public class DownloadActivity extends Activity {
 
                             // stores the contents to the device's external storage
                             try {
-                                final java.io.File file = new java.io.File(targetFolder, tmp.getTitle());
-                                System.out.println("Downloading: " + tmp.getTitle() + " to " + file.getPath());
+                                final java.io.File file = new java.io.File(targetFolder, mFile.getTitle());
+                                System.out.println("Downloading: " + mFile.getTitle() + " to " + file.getPath());
                                 storeFile(file, inputStream);
                             } finally {
                                 inputStream.close();
@@ -308,7 +306,6 @@ public class DownloadActivity extends Activity {
                             e.printStackTrace();
                         }
                     }
-                }
             }
         });
         t.start();
@@ -316,8 +313,8 @@ public class DownloadActivity extends Activity {
     
     
     /**
-     * Checks that the contents in drive package and the contents of local package are in sync;
-     * If not in sync, prune or update
+     * Checks that the contents in a folder and the contents of the corresponding 
+     * folder in local storage are in sync: download, prune or update
      * @param mFileList, the contents of the google drive package folder
      * @param localFolder, the package folder of the same name in local storage
      */
@@ -331,13 +328,19 @@ public class DownloadActivity extends Activity {
             if (!temp.exists()) {
                 // download 
                 item.add(driveContent);
-                downloadPackage(item, localFolder);
+                showToast(driveContent.getTitle() + " does not exist; must download");
+                System.out.println(driveContent.getTitle() + " does not exist; must download");
+                downloadPackage(driveContent, localFolder);
             } else if (temp.exists() && checkTimeStamp(driveContent)) {
                 // needs to be updated
+                showToast(driveContent.getTitle() + " does exist; but must be updated");
+                System.out.println(driveContent.getTitle() + " does exist; but must be updated");
+                showToast("Deleting file " + temp.getName());
+                System.out.println("Deleting file " + temp.getName());
                 deleteFile(temp);
                 // download
                 item.add(driveContent);
-                downloadPackage(item, localFolder);
+                downloadPackage(driveContent, localFolder);
             }
         }
         
