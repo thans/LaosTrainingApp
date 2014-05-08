@@ -26,11 +26,13 @@ import com.google.api.services.drive.model.FileList;
 
 import android.accounts.AccountManager;
 import android.app.Activity;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -42,23 +44,32 @@ import android.widget.SearchView;
 import android.widget.Toast;
 
 public class DownloadActivity extends Activity {
-    static final int                REQUEST_ACCOUNT_PICKER = 1;
-    static final int                REQUEST_AUTHORIZATION = 2;
-    private static Drive            mService;
-    private GoogleAccountCredential mCredential;
-    private Context                 mContext;
-    private List<File>              languageList;
-    private java.io.File[]          localLanguages;
-    private ArrayAdapter<String>    mAdapter;
-    private SearchView              search;
+    static final int                	REQUEST_ACCOUNT_PICKER = 1;
+    static final int                	REQUEST_AUTHORIZATION = 2;
+    private static Drive            	mService;
+    private GoogleAccountCredential 	mCredential;
+    private Context                 	mContext;
+    private List<File>              	languageList;
+    private java.io.File[]          	localLanguages;
+    private ArrayAdapter<String>    	mAdapter;
+    private SearchView              	search;
     
-    private java.io.File            targetDir;
-    private EditText                inputSearch;
+    private java.io.File            	targetDir;
+    private EditText                	inputSearch;
+    
+    // notification of update progress
+    private int 						numDownloading = 0;
+    private NotificationManager     	nm;
+    private NotificationCompat.Builder  mBuilder;
     
     // persistent data that stores the last time the device updated files
-    private SharedPreferences 		sp;  
-    public static final String 		UPDATE = "update"; 
-    private long                    lastUpdate;
+    private SharedPreferences 			sp;  
+    public static final String 			UPDATE = "update"; 
+    private long                    	lastUpdate;
+    
+    private static final String FOLDER = "mimeType='application/vnd.google-apps.folder'";
+    private static final String TOP_LEVEL = "'root' in parents";
+    private static final String NOT_TRASHED = "trashed=false";
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +95,12 @@ public class DownloadActivity extends Activity {
         final Button button = (Button) findViewById(R.id.button2);
         button.setOnClickListener(new View.OnClickListener() {
         	public void onClick(View v) {
+        		nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                mBuilder = new NotificationCompat.Builder(mContext);
+                mBuilder.setContentTitle("Package Update")
+                        .setContentText("Update in progress")
+                        .setSmallIcon(android.R.drawable.stat_sys_download)
+                        .setTicker("Starting update");
         		getDriveContents();
         	}
         });
@@ -100,7 +117,7 @@ public class DownloadActivity extends Activity {
             @Override
             public void run() {
             	// get only the folders in the root directory of drive account
-                languageList = getContents("'root' in parents and trashed=false and mimeType='application/vnd.google-apps.folder'");
+                languageList = getContents(TOP_LEVEL + " and " + NOT_TRASHED + " and " + FOLDER);
                 
                 processLanguages();
             }
@@ -187,8 +204,8 @@ public class DownloadActivity extends Activity {
             @Override
             public void run() {
             	// gets only the folders in the language folder
-                List<File> packageList = getContents("'" + languageFolder.getId() + "' in parents and trashed=false and mimeType='application/vnd.google-apps.folder'");
-                
+            	String whichFiles = "'" + languageFolder.getId() + "' in parents and " + NOT_TRASHED + " and " + FOLDER;
+                List<File> packageList = getContents(whichFiles);
                 processFolders(packageList, localLanguageFolder);
             }
         });
@@ -247,7 +264,7 @@ public class DownloadActivity extends Activity {
             @Override
             public void run() {
                 // list of contents in f 
-                List<File> mFileList = getContents("'" + f.getId() + "' in parents and trashed=false");
+                List<File> mFileList = getContents("'" + f.getId() + "' in parents and " + NOT_TRASHED);
                 
                 // process each file
                 for (File file : mFileList) {
@@ -255,10 +272,10 @@ public class DownloadActivity extends Activity {
                     if (!file.getMimeType().equals("application/vnd.google-apps.folder")) {
                         // is a file
                         if (download) {
-                            // downloads the contents of the package within a folder of the same name
-                            downloadPackage(file, targetFolder);
+                            // downloads the contents of the drive folder within a local folder of the same name
+                        	downloadFile(file, targetFolder);
                         } else {
-                            // compares with the contents of the local package of the same name
+                            // compares with the contents of the local folder of the same name
                             checkContents(mFileList, targetFolder);
                         }
                     } else {
@@ -276,10 +293,11 @@ public class DownloadActivity extends Activity {
     
     
     /**
-     * Begins the downloading process of the given files from a google drive account package
-     * @param mFileList, the package contents
+     * Begins the downloading process of the given file from a google drive account folder
+     * @param mFile, the file to download
+     * @param targetFolder, the parent folder in local storage to download into 
      */
-    private void downloadPackage(final File mFile, final java.io.File targetFolder) {
+    private void downloadFile(final File mFile, final java.io.File targetFolder) {
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -297,6 +315,11 @@ public class DownloadActivity extends Activity {
                             try {
                                 final java.io.File file = new java.io.File(targetFolder, mFile.getTitle());
                                 System.out.println("Downloading: " + mFile.getTitle() + " to " + file.getPath());
+                                numDownloading++;
+                                // Sets an activity indicator for an operation of indeterminate length
+                                mBuilder.setProgress(0, 0, true);
+                                // Issues the notification
+                                nm.notify(0, mBuilder.build());
                                 storeFile(file, inputStream);
                             } finally {
                                 inputStream.close();
@@ -330,7 +353,7 @@ public class DownloadActivity extends Activity {
                 item.add(driveContent);
                 showToast(driveContent.getTitle() + " does not exist; must download");
                 System.out.println(driveContent.getTitle() + " does not exist; must download");
-                downloadPackage(driveContent, localFolder);
+                downloadFile(driveContent, localFolder);
             } else if (temp.exists() && checkTimeStamp(driveContent)) {
                 // needs to be updated
                 showToast(driveContent.getTitle() + " does exist; but must be updated");
@@ -340,7 +363,7 @@ public class DownloadActivity extends Activity {
                 deleteFile(temp);
                 // download
                 item.add(driveContent);
-                downloadPackage(driveContent, localFolder);
+                downloadFile(driveContent, localFolder);
             }
         }
         
@@ -372,6 +395,18 @@ public class DownloadActivity extends Activity {
             }
         } catch (IOException e) {
             e.printStackTrace();
+        }
+        
+        System.out.println("Downloaded file " + file.getAbsolutePath());
+        if (--numDownloading <= 0) {
+            //finished downloading all files
+            Log.e("FINISHED", "all downloading should be finished by now");
+            // update notification
+            mBuilder.setContentTitle("Update complete")
+            		.setContentText("")
+                    .setSmallIcon(R.drawable.ic_action_download)
+                    .setProgress(0, 0, false);
+            nm.notify(0, mBuilder.build());
         }
     }
     
