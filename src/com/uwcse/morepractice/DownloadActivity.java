@@ -46,6 +46,7 @@ public class DownloadActivity extends Activity {
     private static Drive            	mService;
     private GoogleAccountCredential 	mCredential;
     private Context                 	mContext;
+    
     private List<File>              	languageList;
     private java.io.File[]          	localLanguages;
     
@@ -53,6 +54,8 @@ public class DownloadActivity extends Activity {
     
     // notification of update progress
     private int                         numDownloading = 0;
+    private int                         updateMax = 0;
+    private                             int updateProgress = 0;
     private NotificationManager     	nm;
     private NotificationCompat.Builder  mBuilder;
     
@@ -62,6 +65,7 @@ public class DownloadActivity extends Activity {
     private long                        lastUpdate;
     
     private static final String FOLDER = "mimeType='application/vnd.google-apps.folder'";
+    private static final String NOT_FOLDER = "mimeType!='application/vnd.google-apps.folder'";
     private static final String TOP_LEVEL = "'root' in parents";
     private static final String NOT_TRASHED = "trashed=false";
     
@@ -95,26 +99,33 @@ public class DownloadActivity extends Activity {
                         .setContentText("Update in progress")
                         .setSmallIcon(android.R.drawable.stat_sys_download)
                         .setTicker("Starting update");
+                
+                readPref();
+                getNumFilesToDownload();
         		getDriveContents();
         	}
         });
     }
-
-
+    
     /**
-     * Gets the list of language folders in drive (in the top level directory)
+     * Gets the max number of files that need to be downloaded; used for determinate progress bar
      */
-    private void getDriveContents() {
-        readPref();
-        writePref();
+    private void getNumFilesToDownload() {
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
-            	// get only the folders in the root directory of drive account
-                languageList = getContents(TOP_LEVEL + " and " + NOT_TRASHED + " and " + FOLDER);
-                
-                processLanguages();
-            }
+                List<File> list = getContents("modifiedDate > '" + lastUpdate + "'");
+                for (File f : list) {
+                    if (!f.getShared()) {
+                        // not shared with me
+                        updateMax++;
+                        Log.e("File " + updateMax, f.getTitle());
+                    }
+                }
+                Log.e("GOOGLE","files need downloading: " + updateMax);
+                if (updateMax == 0)
+                    showToast("Packages are already updated");
+           }
         });
         t.start();
     }
@@ -150,6 +161,23 @@ public class DownloadActivity extends Activity {
               && (request.getPageToken().length() > 0));
         
         return result;
+    }
+
+
+    /**
+     * Gets the list of language folders in drive (in the top level directory)
+     */
+    private void getDriveContents() {
+        writePref();
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+            	// get only the folders in the root directory of drive account
+                languageList = getContents(TOP_LEVEL + " and " + NOT_TRASHED + " and " + FOLDER);
+                processLanguages();
+            }
+        });
+        t.start();
     }
     
     
@@ -262,7 +290,7 @@ public class DownloadActivity extends Activity {
                 
                 // process each file
                 for (File file : mFileList) {
-                    Log.e("FOLDER", file.getMimeType());
+                    //Log.e("FOLDER", file.getMimeType());
                     if (!file.getMimeType().equals("application/vnd.google-apps.folder")) {
                         // is a file
                         if (download) {
@@ -310,15 +338,10 @@ public class DownloadActivity extends Activity {
                                 final java.io.File file = new java.io.File(targetFolder, mFile.getTitle());
                                 System.out.println("Downloading: " + mFile.getTitle() + " to " + file.getPath());
                                 numDownloading++;
-                                // Sets an activity indicator for an operation of indeterminate length
-                                mBuilder.setProgress(0, 0, true);
-                                // Issues the notification
-                                nm.notify(0, mBuilder.build());
                                 storeFile(file, inputStream);
                             } finally {
                                 inputStream.close();
                             }
-
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -397,9 +420,15 @@ public class DownloadActivity extends Activity {
             Log.e("FINISHED", "all downloading should be finished by now");
             // update notification
             mBuilder.setContentTitle("Update complete")
-            		.setContentText("")
+                    .setContentText("")
                     .setSmallIcon(R.drawable.ic_action_download)
                     .setProgress(0, 0, false);
+            nm.notify(0, mBuilder.build());
+        } else {
+            // Sets an activity indicator for an operation of indeterminate length
+            mBuilder.setProgress(updateMax, ++updateProgress, false)
+            .setContentTitle("Updating....");
+            // Issues the notification
             nm.notify(0, mBuilder.build());
         }
     }
@@ -411,10 +440,12 @@ public class DownloadActivity extends Activity {
      * @param localFiles, the list of local files to prune
      */
     private void prune(List<String> names, java.io.File[] localFiles) {
-        for (java.io.File localFile : localFiles) {
-            if (!names.contains(localFile.getName())) {
-                deleteFile(localFile);
-                System.out.println("Deleting Language from pruning " + localFile.getName());
+        if (updateMax > 0) {
+            for (java.io.File localFile : localFiles) {
+                if (!names.contains(localFile.getName())) {
+                    deleteFile(localFile);
+                    System.out.println("Deleting Language from pruning " + localFile.getName());
+                }
             }
         }
     }
