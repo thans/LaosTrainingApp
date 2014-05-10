@@ -99,14 +99,9 @@ public class MainActivity extends Activity {
     		
     		display.getSize(size);
     		toTrainingPackage.setWidth(size.x / 3);
-    
     		toTrainingPackage.setHeight(size.y / 3);
-    		
     		toTrainingPackage.setTextSize(50);
-    		
     		toTrainingPackage.setBackgroundColor(Color.parseColor("#4169e1"));
-    		
-    		
     		
     		toTrainingPackage.setText(f.getName());
     		toTrainingPackage.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));

@@ -424,6 +424,7 @@ public class DownloadActivity extends Activity {
                     .setSmallIcon(R.drawable.ic_action_download)
                     .setProgress(0, 0, false);
             nm.notify(0, mBuilder.build());
+            finish();
         } else {
             // Sets an activity indicator for an operation of indeterminate length
             mBuilder.setProgress(updateMax, ++updateProgress, false)
