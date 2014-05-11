@@ -9,6 +9,7 @@ import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 import com.uwcse.morepractice.R;
@@ -49,6 +50,7 @@ public class DownloadActivity extends Activity {
     private List<File>              	languageList;
     
     private java.io.File            	targetDir;
+    List<java.io.File> localFiles;
     
     // notification of update progress
     private int                         numDownloading;
@@ -88,10 +90,14 @@ public class DownloadActivity extends Activity {
     
         targetDir = new java.io.File(Environment.getExternalStorageDirectory(), 
                 getString(R.string.local_storage_folder));
+        
+        
 
         final Button button = (Button) findViewById(R.id.button2);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                setUPForRecovery();
+                
                 nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
                 mBuilder = new NotificationCompat.Builder(mContext);
                 mBuilder.setContentTitle("Package Update")
@@ -102,10 +108,62 @@ public class DownloadActivity extends Activity {
                 updateMax = 0;
                 updateProgress = 0;
                 readPref();
+                writePref();
                 update();
                 
         	}
         });
+    }
+    
+    
+    private void setUPForRecovery() {
+        localFiles = addFiles(null, targetDir);
+    }
+    
+    public List<java.io.File> addFiles(List<java.io.File> files, java.io.File dir) {
+        if (files == null)
+            files = new LinkedList<java.io.File>();
+
+        if (!dir.isDirectory()) {
+            files.add(dir);
+            return files;
+        }
+
+        for (java.io.File file : dir.listFiles())
+            addFiles(files, file);
+        return files;
+    }
+    
+    private boolean isConsistent(List<File> list) {
+        
+        for (java.io.File local : localFiles) {
+            boolean flag = false;
+            for (File drive : list) {
+                if (local.getName().equals(drive.getTitle()))
+                    flag = true;
+            }
+            if (!flag) {
+                // not found, so not consistent
+                Log.e("HERE","inconsistency local outer");
+                return false;
+            }
+                
+        }
+        
+        for (File drive : list) {
+            boolean flag = false;
+            for (java.io.File local : localFiles) {
+                
+                if (local.getName().equals(drive.getTitle()))
+                    flag = true;
+            }
+            if (!flag) {
+                // not found, so not consistent
+                Log.e("HERE","inconsistency drive outer");
+                return false;
+            }
+        }
+        return true;
     }
     
     
@@ -118,22 +176,39 @@ public class DownloadActivity extends Activity {
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
-                List<File> list = getContents(NOT_TRASHED);
+                List<File> list = getContents(NOT_TRASHED + " and " + NOT_FOLDER);
+                List<File> filteredList = new ArrayList<File>();
+                updateMax = list.size();
+                
                 boolean needsUpdate = false;
                 for (File f : list) {
-                    if (!f.getShared() && checkTimeStamp(f)) {
-                        needsUpdate = true;
-                        showToast("Update is necessary");
-                        break;
+                    if(!f.getShared()) {
+                        filteredList.add(f);
+                        if (checkTimeStamp(f)) {
+                            needsUpdate = true;
+                            showToast("Update is necessary");
+                            break;
+                        }
                     }
+                   
                 }
-                if (!needsUpdate) {
+              
+                numDownloading = filteredList.size();
+                if (!needsUpdate && isConsistent(filteredList)) {
                     showToast("Update not needed");
+                 // update notification
+                    mBuilder.setContentTitle("Update not needed")
+                            .setContentText("")
+                            .setSmallIcon(R.drawable.ic_action_download)
+                            .setProgress(0, 0, false);
+                    nm.notify(0, mBuilder.build());
                 } else {
-                    if (!targetDir.exists())
-                        deleteFile(targetDir);
+                    mBuilder.setProgress(updateMax, 0, false)
+                    .setContentTitle("Checking system for updates....");
+                    // Issues the notification
+                    nm.notify(0, mBuilder.build());
+                    deleteFile(targetDir);
                     targetDir.mkdirs();
-                    
                     getDriveContents();
                 }
            }
@@ -178,7 +253,6 @@ public class DownloadActivity extends Activity {
      * Gets the list of language folders in drive (in the top level directory)
      */
     private void getDriveContents() {
-        writePref();
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -294,7 +368,7 @@ public class DownloadActivity extends Activity {
                             try {
                                 final java.io.File file = new java.io.File(targetFolder, mFile.getTitle());
                                 System.out.println("Downloading: " + mFile.getTitle() + " to " + file.getPath());
-                                numDownloading++;
+                                //numDownloading++;
                                 storeFile(file, inputStream);
                             } finally {
                                 inputStream.close();
@@ -347,7 +421,7 @@ public class DownloadActivity extends Activity {
             nm.notify(0, mBuilder.build());
             finish();
         } else {
-            // Sets an activity indicator for an operation of indeterminate length
+            // Sets an activity indicator for an operation of determinate length
             mBuilder.setProgress(updateMax, ++updateProgress, false)
             .setContentTitle("Updating....");
             // Issues the notification
