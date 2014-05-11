@@ -39,6 +39,7 @@ public class QuizActivity extends Activity {
 	public static final String QUIZ_FILE_FULL_PATH_KEY = "QuizFileFullPath";
 	
 	// UI references
+	private TextView mQuestionNumber;
 	private TextView mQuestion;
 	private TextView mHint;
 	private Button mAnswer1;
@@ -114,6 +115,7 @@ public class QuizActivity extends Activity {
 		}
 		
 		// Create the UI references
+		mQuestionNumber = (TextView) findViewById(R.id.quiz_question_number);
 		mQuestion = (TextView) findViewById(R.id.quiz_question);
 		mHint = (TextView) findViewById(R.id.quiz_hint);
 		mAnswer1 = (Button) findViewById(R.id.quiz_answer_1);
