@@ -1,6 +1,6 @@
 package com.uwcse.morepractice;
 
-import com.example.laostrainingapp.R;
+import com.uwcse.morepractice.R;
 
 import android.app.Activity;
 import android.content.Intent;

@@ -1,5 +1,6 @@
 package com.uwcse.morepractice;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,5 +17,11 @@ public class ActionBarFunctions {
 		bundle.putString("QuizFileName", "fridge_tag_quiz.csv");
 		intent.putExtras(bundle);
 		context.startActivity(intent);
+    }
+    
+    public void refresh(Context c) {
+    	Intent intent = new Intent(c, DownloadActivity.class);
+    	((Activity) c).finish();
+    	c.startActivity(intent);
     }
 }
