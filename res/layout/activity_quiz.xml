@@ -21,18 +21,24 @@
         android:layout_height="match_parent"
         android:orientation="vertical" >
         
+     	<TextView
+	        android:id="@+id/quiz_question_number"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:text="@string/question_number"
+	        android:textSize="28sp" />
 	    <TextView
 	        android:id="@+id/quiz_question"
 	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
 	        android:text="@string/question"
-	        android:textSize="34sp" />
+	        android:textSize="28sp" />
 	    <TextView
-	        android:id="@+id/quiz_explanation"
+	        android:id="@+id/quiz_hint"
 	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
 	        android:layout_marginTop="20sp"
-	        android:textSize="34sp"
+	        android:textSize="28sp"
 	        android:textColor="@color/Red" />
     </LinearLayout>
     
@@ -47,28 +53,28 @@
 	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
 	        android:text="@string/answer_1"
-	        android:textSize="34sp"
+	        android:textSize="28sp"
 	        android:onClick="buttonOnClick" />
 	    <Button
 	        android:id="@+id/quiz_answer_2"
 	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
 	        android:text="@string/answer_2"
-	    	android:textSize="34sp"
+	    	android:textSize="28sp"
  		    android:onClick="buttonOnClick" />
 	    <Button
 	        android:id="@+id/quiz_answer_3"
 	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
 	        android:text="@string/answer_3"
-	    	android:textSize="34sp"
+	    	android:textSize="28sp"
 	    	android:onClick="buttonOnClick" />
 	    <Button
 	        android:id="@+id/quiz_answer_4"
 	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
 	        android:text="@string/answer_4"
-	        android:textSize="34sp"
+	        android:textSize="28sp"
 	        android:onClick="buttonOnClick" />
 
     </LinearLayout>

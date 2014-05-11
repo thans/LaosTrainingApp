@@ -11,14 +11,6 @@ public class ActionBarFunctions {
         c.startActivity(intent);
     }
     
-    public void quizActivity(Context context) {
-		Intent intent = new Intent(context, QuizActivity.class);
-		Bundle bundle = new Bundle();
-		bundle.putString("QuizFileName", "fridge_tag_quiz.csv");
-		intent.putExtras(bundle);
-		context.startActivity(intent);
-    }
-    
     public void refresh(Context c) {
     	Intent intent = new Intent(c, DownloadActivity.class);
     	((Activity) c).finish();

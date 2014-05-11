@@ -40,7 +40,7 @@ public class QuizActivity extends Activity {
 	
 	// UI references
 	private TextView mQuestion;
-	private TextView mExplanation;
+	private TextView mHint;
 	private Button mAnswer1;
 	private Button mAnswer2;
 	private Button mAnswer3;
@@ -107,15 +107,15 @@ public class QuizActivity extends Activity {
 		this.quiz = CsvParser.parseQuizFromCsv(quizFilePath);
 		if (quiz == null) {
 			// Parsing error, close the activity
-			System.err.println("Unable to read quiz from " + quizFilePath);
-			String text = "Unable to read quiz from " + quizFilePath;
+			System.err.println("The quiz file is not properly formatted! " + quizFilePath);
+			String text = "The quiz file is not properly formatted! " + quizFilePath;
 			makeToast(getApplicationContext(), text);
 			this.finish();
 		}
 		
 		// Create the UI references
 		mQuestion = (TextView) findViewById(R.id.quiz_question);
-		mExplanation = (TextView) findViewById(R.id.quiz_explanation);
+		mHint = (TextView) findViewById(R.id.quiz_hint);
 		mAnswer1 = (Button) findViewById(R.id.quiz_answer_1);
 		mAnswer2 = (Button) findViewById(R.id.quiz_answer_2);
 		mAnswer3 = (Button) findViewById(R.id.quiz_answer_3);
@@ -171,7 +171,7 @@ public class QuizActivity extends Activity {
 			makeToast(getApplicationContext(), "Correct!");
 			setNextQuestion();
 		} else {
-			mExplanation.setText(currentQuestion.getHint());
+			mHint.setText(currentQuestion.getHint());
 		}
 		
 	}
@@ -192,6 +192,9 @@ public class QuizActivity extends Activity {
 			mAnswer2.setText(answers.get(1));
 			mAnswer3.setText(answers.get(2));
 			mAnswer4.setText(answers.get(3));
+			
+			// Clear the question hint
+			mHint.setText("");
 		} else { // All questions have been answered
 			makeToast(getApplicationContext(), "You've completed this quiz successfully.");
 			this.finish();
