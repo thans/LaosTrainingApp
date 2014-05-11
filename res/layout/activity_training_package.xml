@@ -13,7 +13,7 @@
 		    android:id="@+id/back_button"
 		    android:layout_width="96dp"
 		    android:layout_height="match_parent"
-		    android:text="@string/back_arrow"
+		    android:background="@drawable/ic_action_previous_item"
 		    android:layout_weight="1">
 		</Button>
 		
@@ -31,8 +31,8 @@
 		<Button
 		    android:id="@+id/next_button"
 		    android:layout_height="match_parent"
-		    android:text="@string/next_arrow"
 		    android:layout_width="96dp"
+		    android:background="@drawable/ic_action_next_item"
 		    android:layout_weight="1">
 		    
 		</Button>
