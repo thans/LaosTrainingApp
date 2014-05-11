@@ -26,7 +26,17 @@ import android.widget.Toast;
 public class QuizActivity extends Activity {
 
 	private static final String BASE_DIRECTORY = "LaosTrainingApp";
-	private static final String QUIZ_FILE_NAME_KEY = "QuizFileName";
+	
+	/**
+	 * Used to pass in the file name of the quiz file. Currently, this activity
+	 * attempts to locate this file at "sdcard/LaosTrainingApp/<QuizFileName>"
+	 */
+	public static final String QUIZ_FILE_NAME_KEY = "QuizFileName";
+	
+	/**
+	 * Used to pass in the full file path of the quiz file.
+	 */
+	public static final String QUIZ_FILE_FULL_PATH_KEY = "QuizFileFullPath";
 	
 	// UI references
 	private TextView mQuestion;
@@ -55,14 +65,32 @@ public class QuizActivity extends Activity {
 			this.finish();
 		}
 		
-		File root = Environment.getExternalStorageDirectory();
-		String rootPath = root.getPath(); // The SD card directory
-		String appDirectoryPath = rootPath + "/" + BASE_DIRECTORY; // The "LaosTrainingApp" directory
-		
 		// Get the file path of the quiz file from the bundle
 		Bundle extras = getIntent().getExtras();
 		String quizFileName = extras.getString(QUIZ_FILE_NAME_KEY);
-		String quizFilePath = appDirectoryPath + "/" + quizFileName; // The quiz file path
+		String quizFileFullPath = extras.getString(QUIZ_FILE_FULL_PATH_KEY);
+		
+		String quizFilePath = null;
+		// If the quiz's file name has been passed in, locate it at
+		// "sdcard/LaosTrainingApp/<QuizFileName>
+		if (!(quizFileName == null)) {
+			File root = Environment.getExternalStorageDirectory();
+			String rootPath = root.getPath(); // The SD card directory
+			String appDirectoryPath = rootPath + "/" + BASE_DIRECTORY; // The "LaosTrainingApp" directory
+			quizFilePath = appDirectoryPath + "/" + quizFileName; // The quiz file path
+		}
+		// If the quiz's full file path has been passed in, find the
+		// quiz file using this full file path
+		else if (!(quizFileFullPath == null)) {
+			quizFilePath = quizFileFullPath;
+		}
+		// The file path has not been passed in, so close this activity
+		else {
+			System.err.println("The quiz's file path was not passed into this activity.");
+			String text = "The quiz's file path was not passed into this activity.";
+			makeToast(getApplicationContext(), text);
+			this.finish();
+		}
 		
 		// Check that the quiz file is readable
 		File quizFile = new File(quizFilePath);
@@ -140,7 +168,7 @@ public class QuizActivity extends Activity {
 	 */
 	public void respondToAnswerSelection(int answerNum) {
 		if (currentQuestion.isCorrectAnswer(answerNum)) {
-			makeToast(getApplicationContext(), "CORRECT!");
+			makeToast(getApplicationContext(), "Correct!");
 			setNextQuestion();
 		} else {
 			mExplanation.setText(currentQuestion.getExplanations().get(answerNum));

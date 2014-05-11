@@ -179,6 +179,8 @@ public class TrainingPackageActivity extends Activity {
 			return Filetype.VIDEO;
 		} else if (extension.equals("txt")) {
 		    return Filetype.TEXT;
+		} else if (extension.equals("csv")) {
+			return Filetype.CSV;
 		} else {
 			return Filetype.UNSUPPORTED;
 		}
@@ -233,6 +235,7 @@ public class TrainingPackageActivity extends Activity {
 		// params unused
 		Filetype type = getType(f.getName());
 		String path = f.getAbsolutePath();
+		Log.v(TAG, "Adding a " + type.name() + " file to the activity. File: " + path);
 		layout.removeAllViews();
 		switch (type)  {
 	        case IMAGE:
@@ -285,6 +288,12 @@ public class TrainingPackageActivity extends Activity {
 	            break;
 	        case CSV:
 	            // TODO - parse the quiz
+	        	Log.v(TAG, "CSV file encountered.");
+	    		Intent intent = new Intent(this, QuizActivity.class);
+	    		Bundle bundle = new Bundle();
+	    		bundle.putString(QuizActivity.QUIZ_FILE_FULL_PATH_KEY, path);
+	    		intent.putExtras(bundle);
+	    		this.startActivity(intent);
 	            break;
 	        case UNSUPPORTED:
 	            break;
