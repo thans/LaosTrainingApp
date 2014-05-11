@@ -60,16 +60,8 @@ public class TrainingPackageActivity extends Activity {
 		final RelativeLayout layout = 
 		        (RelativeLayout) this.findViewById(R.id.activity_training_package_layout);
 		FILES = getOrderedFiles(packageName);
-
 		
 		currentFile = 0;
-		/*
-		if (FILES.length > 0) {
-			addToActivity(FILES[currentFile], layout);
-		} else {
-			showToast("No files to show");
-		}
-		*/
 		
 		// set up the back and next buttons
 		Button backButton = (Button) this.findViewById(R.id.back_button);
@@ -92,7 +84,8 @@ public class TrainingPackageActivity extends Activity {
 		showPackageContents();
 		
 	}
-	
+
+
 	private void showPackageContents() {
 		String names[] = new String[FILES.length]; //{"A","B","C","D"};
 		for (int i = 0; i < FILES.length; i++) {
@@ -309,6 +302,7 @@ public class TrainingPackageActivity extends Activity {
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
+		Log.d("ID Clicked ", id + "");
 		if (id == R.id.action_settings) {
 			return true;
 		} else if (id == R.id.action_navigate) {

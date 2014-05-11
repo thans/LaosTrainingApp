@@ -105,11 +105,11 @@ public class MyViewAdapter extends BaseAdapter {
 		
 		holder.text.setBackgroundColor(Color.parseColor(colors[i]));
 		holder.img.setBackgroundColor(Color.parseColor(colors[i]));
-		
+		//holder.text.setShadowLayer(5, 0, 0, Color.parseColor(colors[i]));
 		return row; 
 	}
 	
-	// Special view that populates the gridView
+	// Speci5al view that populates the gridView
 	// Has a text view and an image view
 	public static class ViewHolder {
 		TextView text;
