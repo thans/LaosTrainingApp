@@ -171,7 +171,7 @@ public class QuizActivity extends Activity {
 			makeToast(getApplicationContext(), "Correct!");
 			setNextQuestion();
 		} else {
-			mExplanation.setText(currentQuestion.getExplanations().get(answerNum));
+			mExplanation.setText(currentQuestion.getHint());
 		}
 		
 	}

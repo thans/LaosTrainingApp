@@ -4,8 +4,7 @@ import java.util.List;
 
 /**
  * Represents a single quiz question. A quiz question has a question number,
- * the question text, answer choices, explanations for incorrect answers,
- * and a single correct answer.
+ * the question text, answer choices, a question hint, and a single correct answer.
  * @author James
  */
 public class QuizQuestion {
@@ -19,7 +18,7 @@ public class QuizQuestion {
 	private String question;
 	private List<String> answers;
 	private int correctAnswer;
-	private List<String> explanations;
+	private String hint;
 	
 	/**
 	 * Constructs a new QuizQuestion object, which represents a single quiz question.
@@ -27,18 +26,18 @@ public class QuizQuestion {
 	 * @param quizQuestion The question text.
 	 * @param answers A list of answer choices.
 	 * @param correctAnswer The zero-based index of the correct answer choice.
-	 * @param explanations A list of explanations for incorrect answer choices.
+	 * @param hint A hint for the question.
 	 */
 	public QuizQuestion(int questionNumber,
 			String quizQuestion,
 			List<String> answers,
 			int correctAnswer,
-			List<String> explanations) {
+			String hint) {
 		this.questionNumber = questionNumber;
 		this.question = quizQuestion;
 		this.answers = answers;
 		this.correctAnswer = correctAnswer;
-		this.explanations = explanations;
+		this.hint = hint;
 	}
 	
 	/**
@@ -84,10 +83,10 @@ public class QuizQuestion {
 	}
 	
 	/**
-	 * @return A list of explanations for why each incorrect answer is incorrect.
+	 * @return A hint for the question.
 	 */
-	public List<String> getExplanations() {
-		return this.explanations;
+	public String getHint() {
+		return this.hint;
 	}
 	
 	/**
@@ -99,9 +98,9 @@ public class QuizQuestion {
 		sb.append(question + "\n");
 		for (int i = 0; i < answers.size(); i++) {
 			sb.append("\t#" + (i + 1) + ": " + answers.get(i) + "\n");
-			sb.append("\t(" + explanations.get(i) + ")\n");
 		}
-		sb.append("Correct answer choice: " + (correctAnswer + 1));
+		sb.append("Hint: " + hint + "\n");
+		sb.append("Correct answer: " + (correctAnswer + 1));
 		return sb.toString();
 	}
 }
