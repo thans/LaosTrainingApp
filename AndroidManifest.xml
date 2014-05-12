@@ -57,6 +57,7 @@
         <activity
             android:name="com.uwcse.morepractice.DownloadActivity"
             android:label="@string/title_activity_download" 
+            android:screenOrientation="landscape"
             android:parentActivityName="com.uwcse.morepractice.MainActivity" >
         </activity>
         
