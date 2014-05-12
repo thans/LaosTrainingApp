@@ -121,7 +121,9 @@ public class MainActivity extends Activity {
         getMenuInflater().inflate(R.menu.main, menu);
 
         SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
-        searchView.setOnQueryTextListener(new OnQueryTextListener() {
+        searchView.setQueryHint("Search for packages");
+        
+        searchView.setOnQueryTextListener(new OnQueryTextListener() {    
             @Override
             public boolean onQueryTextChange(String newText) {
                 performSearch(newText);

@@ -50,7 +50,7 @@ public class DownloadActivity extends Activity {
     private List<File>              	languageList;
     
     private java.io.File            	targetDir;
-    List<java.io.File> localFiles;
+    private List<java.io.File>          localFiles;
     
     // notification of update progress
     private int                         numDownloading;
@@ -91,8 +91,6 @@ public class DownloadActivity extends Activity {
         targetDir = new java.io.File(Environment.getExternalStorageDirectory(), 
                 getString(R.string.local_storage_folder));
         
-        
-
         final Button button = (Button) findViewById(R.id.button2);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -104,6 +102,7 @@ public class DownloadActivity extends Activity {
                         .setContentText("Update in progress")
                         .setSmallIcon(android.R.drawable.stat_sys_download)
                         .setTicker("Starting update");
+                
                 numDownloading = 0;
                 updateMax = 0;
                 updateProgress = 0;
@@ -115,12 +114,20 @@ public class DownloadActivity extends Activity {
         });
     }
     
-    
+    /**
+     * Gets all the files in app directory, for recoverty
+     */
     private void setUPForRecovery() {
         localFiles = addFiles(null, targetDir);
     }
     
-    public List<java.io.File> addFiles(List<java.io.File> files, java.io.File dir) {
+    /**
+     * Helper method for recovery
+     * @param files, the list of files to process
+     * @param dir, if directory, recurse; if file add to files and return
+     * @return the files in the directory
+     */
+    private List<java.io.File> addFiles(List<java.io.File> files, java.io.File dir) {
         if (files == null)
             files = new LinkedList<java.io.File>();
 
@@ -134,7 +141,18 @@ public class DownloadActivity extends Activity {
         return files;
     }
     
+    
+    /**
+     * Checks that the local app directory and the google drive account are consistent
+     * For seeing whether update is needed
+     * @param list, the list of files from drive
+     * @return true if consistent, false otherwise
+     */
     private boolean isConsistent(List<File> list) {
+        if (!targetDir.exists()) {
+            Log.e("EMPTY","App folder does not exist");
+            return false;
+        }
         
         for (java.io.File local : localFiles) {
             boolean flag = false;
@@ -180,6 +198,7 @@ public class DownloadActivity extends Activity {
                 List<File> filteredList = new ArrayList<File>();
                 updateMax = list.size();
                 
+                // filters out shared drive files and by timestamp
                 boolean needsUpdate = false;
                 for (File f : list) {
                     if(!f.getShared()) {
@@ -193,7 +212,10 @@ public class DownloadActivity extends Activity {
                    
                 }
               
+                // for notification
+                
                 numDownloading = filteredList.size();
+                Log.e("MAX SET","numDownloading set to max");
                 if (!needsUpdate && isConsistent(filteredList)) {
                     showToast("Update not needed");
                  // update notification
@@ -207,7 +229,9 @@ public class DownloadActivity extends Activity {
                     .setContentTitle("Checking system for updates....");
                     // Issues the notification
                     nm.notify(0, mBuilder.build());
-                    deleteFile(targetDir);
+                    if (targetDir.exists()) {
+                        deleteFile(targetDir);
+                    }
                     targetDir.mkdirs();
                     getDriveContents();
                 }
@@ -381,7 +405,7 @@ public class DownloadActivity extends Activity {
         });
         t.start();
         try {
-            Thread.sleep(500);
+            Thread.sleep(750);
         } catch (InterruptedException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -416,9 +440,10 @@ public class DownloadActivity extends Activity {
         }
         
         System.out.println("Downloaded file " + file.getAbsolutePath());
+        Log.e("STATUS","numDownloading is at " + numDownloading);
         if (--numDownloading <= 0) {
             //finished downloading all files
-            Log.e("FINISHED", "all downloading should be finished by now");
+            Log.e("STATUS","numDownloading is at " + numDownloading);
             // update notification
             mBuilder.setContentTitle("Update complete")
                     .setContentText("")
@@ -448,7 +473,7 @@ public class DownloadActivity extends Activity {
     
     
     /**
-     *  deletes the given file by recursively deleting its contents
+     * Deletes the given file by recursively deleting its contents
      * @param file, the file that gets deleted
      * @throws IOException
      */
