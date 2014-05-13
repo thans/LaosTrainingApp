@@ -75,13 +75,12 @@ public class TrainingPackageNavigation extends Activity {
                 String name = packageName + "/" + tv.getText();
                 Log.e(TAG, "packageName " + packageName);
                 Log.e(TAG, "text " + tv.getText());
-               // intent.putExtra(TrainingPackageActivity.INTENT_KEY_NAME, name);
+                // intent.putExtra(TrainingPackageActivity.INTENT_KEY_NAME, name);
                 intent.putExtra(TrainingPackageActivity.INTENT_KEY_NAME, packageName);
                 intent.putExtra(TrainingPackageActivity.POSITION, pos);
                 startActivity(intent);
                 
-            	
-        		
+            		
             }
         });
 	}
