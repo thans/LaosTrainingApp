@@ -43,25 +43,31 @@ import android.widget.VideoView;
 public class TrainingPackageActivity extends Activity {
 	private static final String TAG = TrainingPackageActivity.class.getSimpleName();
 	public static final String INTENT_KEY_NAME = "packageName";
+	public static final String POSITION = "0";
 	private static File[] FILES;
 	private int currentFile;
 	private String packageName;
 	
 	private GestureDetector gestureDetector;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_training_package);
 		//gestureDetector = new GestureDetector(this, new MyGestureDetector(this)); no swiping for now - make sure to uncomment dispatchTouchEvent
-		Log.e(TAG, "in on create");
+		
 		packageName = getIntent().getExtras().getString(INTENT_KEY_NAME);
+		
 		//showFiles(retrievedName);
 		this.setTitle(getNameFromPath(packageName)); //fileNameParts[fileNameParts.length - 1].split("\\.")[0]); // set the title to the title of the training package
 		final RelativeLayout layout = 
 		        (RelativeLayout) this.findViewById(R.id.activity_training_package_layout);
-		FILES = getOrderedFiles(packageName);
 		
-		currentFile = 0;
+		FILES = getOrderedFiles(packageName);
+		Log.e(TAG, "in on create");
+		//currentFile = 0;
+		
+		currentFile = getIntent().getExtras().getInt(POSITION);
 		
 		// set up the back and next buttons
 		Button backButton = (Button) this.findViewById(R.id.back_button);
@@ -81,7 +87,9 @@ public class TrainingPackageActivity extends Activity {
         });
 		
 		// let them choose where in the package to start
-		showPackageContents();
+		//showPackageContents();
+		
+		activity.navigateTo(currentFile);
 		
 	}
 

@@ -22,4 +22,6 @@
     <string name="language">Choose a Language</string>
     
     <color name="dark_grey">#ff444444</color>
+    
+    <string name="activity_training_navigation">PackageNavigation</string>
 </resources>

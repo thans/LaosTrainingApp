@@ -49,6 +49,11 @@
 
             <!-- android:label="@string/title_activity_video" > -->
         </activity>
+        <activity
+            android:name="com.uwcse.morepractice.TrainingPackageNavigation"
+            android:label="@string/activity_training_navigation"
+            android:screenOrientation="landscape" >
+        </activity>
 
         <meta-data
             android:name="com.google.android.gms.version"

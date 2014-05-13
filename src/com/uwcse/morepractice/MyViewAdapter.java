@@ -101,13 +101,11 @@ public class MyViewAdapter extends BaseAdapter {
 		
 		Random ran = new Random();
 		
-		int i = ran.nextInt(colors.length - 1);
+		//int i = ran.nextInt(colors.length - 1);
 		
-		//holder.text.setBackgroundColor(Color.parseColor(colors[i]));
-		//holder.img.setBackgroundColor(Color.parseColor(colors[i]));
-		holder.text.setBackgroundColor(Color.parseColor("#FFFFFF"));
-		holder.img.setBackgroundColor(Color.parseColor("#FFFFFF"));
-		holder.text.setShadowLayer(10, 0, 0, Color.parseColor(colors[i]));
+		holder.text.setBackgroundColor(Color.parseColor(colors[position % colors.length]));
+		holder.img.setBackgroundColor(Color.parseColor(colors[position % colors.length]));
+		holder.text.setShadowLayer(10, 0, 0, Color.parseColor("#FFFFFF"));
 		return row; 
 	}
 	
