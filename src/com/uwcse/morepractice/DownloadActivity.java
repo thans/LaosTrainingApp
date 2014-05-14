@@ -244,9 +244,9 @@ public class DownloadActivity extends Activity {
                     check++;
                     nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
                     mBuilder = new NotificationCompat.Builder(mContext);
-                    mBuilder.setContentTitle("Checking system for updates....")
+                    mBuilder.setContentTitle("Updating More Practice ....")
                             .setSmallIcon(android.R.drawable.stat_sys_download)
-                            .setTicker("Checking system for updates....");
+                            .setTicker("Updating More Practice....");
                     
                     mProgress = (ProgressBar) findViewById(R.id.progressBar1);
                     new Thread(new Runnable() {
@@ -471,7 +471,7 @@ public class DownloadActivity extends Activity {
                     }
                     oStream.flush();
                 } finally {
-                    oStream.close();
+                    oStream.close(); 
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -498,7 +498,7 @@ public class DownloadActivity extends Activity {
         } else {
             // Sets an activity indicator for an operation of determinate length
             mBuilder.setProgress(updateMax, ++updateProgress, false)
-            .setContentTitle("Updating....");
+            .setContentTitle("Updating More Practice ...");
             // Issues the notification
             nm.notify(0, mBuilder.build());
         }
