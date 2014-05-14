@@ -280,16 +280,27 @@ public class TrainingPackageActivity extends Activity {
 	            // do nothing
 	            break;
 	        case CSV:
-	            // TODO - parse the quiz
 	        	Log.v(TAG, "CSV file encountered.");
 	    		Intent intent = new Intent(this, QuizActivity.class);
 	    		Bundle bundle = new Bundle();
 	    		bundle.putString(QuizActivity.QUIZ_FILE_FULL_PATH_KEY, path);
 	    		intent.putExtras(bundle);
-	    		this.startActivity(intent);
+	    		this.startActivityForResult(intent, QuizActivity.GET_QUIZ_SCORE_REQUEST);
 	            break;
 	        case UNSUPPORTED:
 	            break;
+	    }
+	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+	    // Check which request we're responding to
+	    if (requestCode == QuizActivity.GET_QUIZ_SCORE_REQUEST) {
+	        // Make sure the request was successful
+	        if (resultCode == RESULT_OK) {
+	        	String quizScore = data.getExtras().getString(QuizActivity.QUIZ_SCORE_KEY);
+	        	showToast(quizScore);
+	        }
 	    }
 	}
 

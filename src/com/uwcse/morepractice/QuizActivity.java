@@ -3,13 +3,13 @@ package com.uwcse.morepractice;
 import java.io.File;
 import java.util.List;
 
-import com.uwcse.morepractice.R;
-
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -38,22 +38,52 @@ public class QuizActivity extends Activity {
 	 */
 	public static final String QUIZ_FILE_FULL_PATH_KEY = "QuizFileFullPath";
 	
+	public static final int QUESTION_FEEDBACK_DELAY = 1500;
+	
+	public static final int GET_QUIZ_SCORE_REQUEST = 1;
+	public static final String QUIZ_SCORE_KEY = "MaxScore";
+	public static final String TOTAL_SCORE_KEY = "TotalScore";
+	
 	// UI references
 	private TextView mQuestionNumber;
 	private TextView mQuestion;
 	private TextView mHint;
+	private TextView mQuestionFeedback;
 	private Button mAnswer1;
 	private Button mAnswer2;
 	private Button mAnswer3;
 	private Button mAnswer4;
 	
-	private Quiz quiz;
-	private QuizQuestion currentQuestion;
+	private Quiz mQuiz;
+	private QuizQuestion mCurrentQuestion;
+	
+	/**
+	 * The maximum possible quiz score the user can receive.
+	 */
+	private int mMaxScore;
+	
+	/**
+	 * The user's running quiz score. Two points are added for a first-attempt
+	 * correct answer, and one point is added for a second-attempt correct answer.
+	 * This is later presented to the user as one point for a first-attempt
+	 * correct answer, and a half point for a second-attempt correct answer.
+	 */
+	private int mTotalScore;
+	
+	/**
+	 * Set to true if the user has answered a quiz question incorrectly. The user has two
+	 * chances to answer a quiz question. 
+	 */
+	private boolean mAnsweredIncorrectly;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_quiz);
+		
+		mAnsweredIncorrectly = false;
+		mMaxScore = 0;
+		mTotalScore = 0;
 		
 		// Check that the external storage directory is readable
 		String sdcardDirState = Environment.getExternalStorageState();
@@ -105,8 +135,8 @@ public class QuizActivity extends Activity {
 		}
 		
 		// Parse a Quiz object from the CSV file
-		this.quiz = CsvParser.parseQuizFromCsv(quizFilePath);
-		if (quiz == null) {
+		this.mQuiz = CsvParser.parseQuizFromCsv(quizFilePath);
+		if (mQuiz == null) {
 			// Parsing error, close the activity
 			System.err.println("The quiz file is not properly formatted! " + quizFilePath);
 			String text = "The quiz file is not properly formatted! " + quizFilePath;
@@ -118,22 +148,29 @@ public class QuizActivity extends Activity {
 		mQuestionNumber = (TextView) findViewById(R.id.quiz_question_number);
 		mQuestion = (TextView) findViewById(R.id.quiz_question);
 		mHint = (TextView) findViewById(R.id.quiz_hint);
+		mQuestionFeedback = (TextView) findViewById(R.id.quiz_feedback);
 		mAnswer1 = (Button) findViewById(R.id.quiz_answer_1);
 		mAnswer2 = (Button) findViewById(R.id.quiz_answer_2);
 		mAnswer3 = (Button) findViewById(R.id.quiz_answer_3);
 		mAnswer4 = (Button) findViewById(R.id.quiz_answer_4);
-
-		if (quiz.hasNext()) {
+		
+		if (mQuiz.hasNext()) {
 			// Set the question text
-			this.currentQuestion = quiz.next();
-			mQuestion.setText(currentQuestion.getQuestionText());
+			this.mCurrentQuestion = mQuiz.next();
+			
+			int questionNumber = mCurrentQuestion.getQuestionNumber();
+			mQuestionNumber.setText(R.string.question_number + questionNumber);
+			
+			mQuestion.setText(mCurrentQuestion.getQuestionText());
 			
 			// Set the answer buttons' text
-			List<String> answers = currentQuestion.getAnswers();
+			List<String> answers = mCurrentQuestion.getAnswers();
 			mAnswer1.setText(answers.get(0));
 			mAnswer2.setText(answers.get(1));
 			mAnswer3.setText(answers.get(2));
 			mAnswer4.setText(answers.get(3));
+			
+			mMaxScore = 2 * mQuiz.getNumQuestions();
 		}
 		
 		if (savedInstanceState == null) {
@@ -168,41 +205,95 @@ public class QuizActivity extends Activity {
 	 * be displayed. If the selected answer is correct, the following question will be displayed.
 	 * @param answerNum
 	 */
-	public void respondToAnswerSelection(int answerNum) {
-		if (currentQuestion.isCorrectAnswer(answerNum)) {
-			makeToast(getApplicationContext(), "Correct!");
-			setNextQuestion();
+	private void respondToAnswerSelection(int answerNum) {
+		if (mCurrentQuestion.isCorrectAnswer(answerNum)) {
+			if (mAnsweredIncorrectly == false) {
+				// This is the user's first attempt on the question,
+				// so the user gets a full point
+				mQuestionFeedback.setText(R.string.plus_one);
+				mTotalScore += 2;
+			} else {
+				// This is the user's second attempt on the question,
+				// so the user gets a half point
+				mQuestionFeedback.setText(R.string.plus_one_half);
+				mTotalScore += 1;
+			}
+			mAnsweredIncorrectly = false;
+			
+			// Pause before setting the next question
+			Handler handler = new Handler(); 
+		    handler.postDelayed(new Runnable() { 
+		         public void run() { 
+		              setNextQuestion(); 
+		         }
+		    }, QUESTION_FEEDBACK_DELAY); 
 		} else {
-			mHint.setText(currentQuestion.getHint());
+			if (mAnsweredIncorrectly == false) {
+				// This is the user's first attempt on this question,
+				// so set the hint
+				mAnsweredIncorrectly = true;
+				mHint.setText(mCurrentQuestion.getHint());
+				mQuestionFeedback.setText(R.string.please_try_again);
+			} else {
+				// This is the user's second and final attempt on this question,
+				// so show "Incorrect" and set the next question
+				mAnsweredIncorrectly = false;
+				mQuestionFeedback.setText(R.string.plus_zero);
+				
+				// Pause before setting the next question
+				Handler handler = new Handler(); 
+			    handler.postDelayed(new Runnable() { 
+			         public void run() { 
+			              setNextQuestion(); 
+			         }
+			    }, QUESTION_FEEDBACK_DELAY); 
+			}
 		}
-		
 	}
 	
 	/**
 	 * Displays the next question in the UI. If there are no more questions, the activity is closed.
 	 */
-	public void setNextQuestion() {
-		if (quiz.hasNext()) {
-			currentQuestion = quiz.next();
+	private void setNextQuestion() {
+		if (mQuiz.hasNext()) {
+			mCurrentQuestion = mQuiz.next();
 			
-			// Set the question text
-			mQuestion.setText(currentQuestion.getQuestionText());
+			// Clear the previous question's feedback and hint
+			mHint.setText("");
+			mQuestionFeedback.setText("");
+			
+			// Set the question number and question text
+			int questionNumber = mCurrentQuestion.getQuestionNumber();
+			mQuestionNumber.setText(R.string.question_number + questionNumber);
+			mQuestion.setText(mCurrentQuestion.getQuestionText());
 			
 			// Set the answer buttons' text
-			List<String> answers = currentQuestion.getAnswers();
+			List<String> answers = mCurrentQuestion.getAnswers();
 			mAnswer1.setText(answers.get(0));
 			mAnswer2.setText(answers.get(1));
 			mAnswer3.setText(answers.get(2));
 			mAnswer4.setText(answers.get(3));
-			
-			// Clear the question hint
-			mHint.setText("");
 		} else { // All questions have been answered
 			makeToast(getApplicationContext(), "You've completed this quiz successfully.");
 			this.finish();
 		}
 	}
 
+	@Override
+	public void finish() {
+	  if (mMaxScore == 0) {
+		  // There was some error loading the quiz
+		  setResult(RESULT_CANCELED);
+		  super.finish();
+	  } else {
+		  // Pass the user's quiz score back to the calling activity
+		  Intent data = new Intent();
+		  data.putExtra(QUIZ_SCORE_KEY, getQuizScoreString());
+		  setResult(RESULT_OK, data);
+		  super.finish();
+	  }
+	} 
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -220,6 +311,19 @@ public class QuizActivity extends Activity {
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	private String getQuizScoreString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(mTotalScore / 2);
+		if (mTotalScore % 2 == 1) {
+			sb.append("\u00BD");
+		}
+		sb.append("\n");
+		sb.append("\u2014");
+		sb.append("\n");
+		sb.append(mMaxScore / 2);
+		return sb.toString();
 	}
 
 	/**

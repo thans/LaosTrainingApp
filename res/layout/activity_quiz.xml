@@ -40,6 +40,14 @@
 	        android:layout_marginTop="20sp"
 	        android:textSize="28sp"
 	        android:textColor="@color/Red" />
+	    <TextView
+	        android:id="@+id/quiz_feedback"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_marginTop="20sp"
+	        android:textSize="28sp"
+	        android:textColor="@color/Green" />
+	        
     </LinearLayout>
     
     <!-- Right column -->
