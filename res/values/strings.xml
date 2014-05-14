@@ -7,7 +7,7 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_search">Search</string>
     <string name="action_refresh">Refresh</string>
-    <string name="action_accounts">Choose Account</string>
+    
     <string name="action_download">Download</string>
     <string name="local_storage_folder">LaosTrainingApp</string>
     <string name="button_download">Download</string>
@@ -17,7 +17,9 @@
     <string name="back_button">Back</string>
     <string name="next_button">Next</string>
     <string name="splash">morePractice</string>
+    <string name="action_accounts">Accounts</string>
     <string name="language">Choose a Language</string>
+    <string name="update_button">Update Packages</string>
 
     <color name="dark_grey">#ff444444</color>
 
