@@ -2,14 +2,10 @@ package com.uwcse.morepractice;
 
 import java.io.File;
 
-import com.uwcse.morepractice.R;
-
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -32,11 +28,10 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.MediaController;
 import android.widget.RelativeLayout;
-import android.widget.ScrollView;
+import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
@@ -146,6 +141,12 @@ public class TrainingPackageActivity extends Activity {
 		} else {
 			currentFile = 0;
 		}
+	}
+	
+	public void refreshFile() {
+		RelativeLayout layout = 
+		        (RelativeLayout) this.findViewById(R.id.activity_training_package_layout);
+		addToActivity(FILES[currentFile], layout);
 	}
 	
 	/**
@@ -308,7 +309,31 @@ public class TrainingPackageActivity extends Activity {
 	        // Make sure the request was successful
 	        if (resultCode == RESULT_OK) {
 	        	String quizScore = data.getExtras().getString(QuizActivity.QUIZ_SCORE_KEY);
-	        	showToast(quizScore);
+	        	
+	        	RelativeLayout layout = (RelativeLayout) findViewById(R.id.activity_training_package_layout);
+	        	TextView textView = new TextView(this);
+	        	textView.setText(quizScore);
+	        	textView.setTextSize(40);
+	        	RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+	        	        LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+	        	params.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
+	        	params.addRule(RelativeLayout.CENTER_VERTICAL, RelativeLayout.TRUE);
+	        	layout.addView(textView, params);
+	        	
+	        	Button button = new Button(this);
+	        	button.setText(R.string.try_again);
+	        	button.setTextSize(40);
+	        	button.setOnClickListener(new OnClickListener() {
+					@Override
+					public void onClick(View view) {
+						TrainingPackageActivity.this.refreshFile();
+					}
+	        	});
+	        	RelativeLayout.LayoutParams buttonParams = new RelativeLayout.LayoutParams(
+	        			LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+	        	buttonParams.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
+	        	buttonParams.addRule(RelativeLayout.BELOW, textView.getId());
+	        	layout.addView(button, buttonParams);
 	        }
 	    }
 	}

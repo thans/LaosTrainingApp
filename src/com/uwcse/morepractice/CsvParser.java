@@ -70,6 +70,7 @@ public class CsvParser {
 			List<String> answers = new ArrayList<String>();
 			int correctAnswer = -1;
 			String hint = "";
+			String imageFile = "";
 			
 			// Read the first line of a quiz question, which stores the question number and the question
 			String[] firstLine = questionLines.get(0).split(",");
@@ -86,6 +87,9 @@ public class CsvParser {
 			}
 			if (firstLine.length > 4) {
 				hint = firstLine[4];
+			}
+			if (firstLine.length > 5) {
+				imageFile = firstLine[5];
 			}
 			
 			// Read the following lines of a quiz question
@@ -111,7 +115,7 @@ public class CsvParser {
 			
 			// Add a QuizQuestion to list of QuizQuestions
 			QuizQuestion quizQuestion = new QuizQuestion(questionNumber,
-					question, answers, correctAnswer, hint);
+					question, answers, correctAnswer, hint, imageFile);
 			quizQuestions.add(quizQuestion);
 		}
 		// After the list of QuizQuestions has been created, create and return the Quiz object

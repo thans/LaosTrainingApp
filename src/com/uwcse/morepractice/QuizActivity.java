@@ -7,15 +7,21 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,6 +31,7 @@ import android.widget.Toast;
  */
 public class QuizActivity extends Activity {
 
+	private static final String TAG = "QuizActivity";
 	private static final String BASE_DIRECTORY = "LaosTrainingApp";
 	
 	/**
@@ -41,8 +48,7 @@ public class QuizActivity extends Activity {
 	public static final int QUESTION_FEEDBACK_DELAY = 1500;
 	
 	public static final int GET_QUIZ_SCORE_REQUEST = 1;
-	public static final String QUIZ_SCORE_KEY = "MaxScore";
-	public static final String TOTAL_SCORE_KEY = "TotalScore";
+	public static final String QUIZ_SCORE_KEY = "QuizScore";
 	
 	// UI references
 	private TextView mQuestionNumber;
@@ -53,7 +59,9 @@ public class QuizActivity extends Activity {
 	private Button mAnswer2;
 	private Button mAnswer3;
 	private Button mAnswer4;
+	private ImageView mImageView;
 	
+	private String quizFilePath;
 	private Quiz mQuiz;
 	private QuizQuestion mCurrentQuestion;
 	
@@ -101,7 +109,7 @@ public class QuizActivity extends Activity {
 		String quizFileName = extras.getString(QUIZ_FILE_NAME_KEY);
 		String quizFileFullPath = extras.getString(QUIZ_FILE_FULL_PATH_KEY);
 		
-		String quizFilePath = null;
+		quizFilePath = null;
 		// If the quiz's file name has been passed in, locate it at
 		// "sdcard/LaosTrainingApp/<QuizFileName>
 		if (!(quizFileName == null)) {
@@ -153,25 +161,10 @@ public class QuizActivity extends Activity {
 		mAnswer2 = (Button) findViewById(R.id.quiz_answer_2);
 		mAnswer3 = (Button) findViewById(R.id.quiz_answer_3);
 		mAnswer4 = (Button) findViewById(R.id.quiz_answer_4);
-		
-		if (mQuiz.hasNext()) {
-			// Set the question text
-			this.mCurrentQuestion = mQuiz.next();
-			
-			int questionNumber = mCurrentQuestion.getQuestionNumber();
-			mQuestionNumber.setText(R.string.question_number + questionNumber);
-			
-			mQuestion.setText(mCurrentQuestion.getQuestionText());
-			
-			// Set the answer buttons' text
-			List<String> answers = mCurrentQuestion.getAnswers();
-			mAnswer1.setText(answers.get(0));
-			mAnswer2.setText(answers.get(1));
-			mAnswer3.setText(answers.get(2));
-			mAnswer4.setText(answers.get(3));
-			
-			mMaxScore = 2 * mQuiz.getNumQuestions();
-		}
+		mImageView = new ImageView(this);
+
+		mMaxScore = 2 * mQuiz.getNumQuestions();
+		setNextQuestion();
 		
 		if (savedInstanceState == null) {
 			getFragmentManager().beginTransaction()
@@ -258,13 +251,14 @@ public class QuizActivity extends Activity {
 		if (mQuiz.hasNext()) {
 			mCurrentQuestion = mQuiz.next();
 			
-			// Clear the previous question's feedback and hint
+			// Clear the previous question's feedback, hint, and image
 			mHint.setText("");
 			mQuestionFeedback.setText("");
+			mImageView.setImageBitmap(null);
 			
 			// Set the question number and question text
 			int questionNumber = mCurrentQuestion.getQuestionNumber();
-			mQuestionNumber.setText(R.string.question_number + questionNumber);
+			mQuestionNumber.setText("#" + questionNumber);
 			mQuestion.setText(mCurrentQuestion.getQuestionText());
 			
 			// Set the answer buttons' text
@@ -273,10 +267,57 @@ public class QuizActivity extends Activity {
 			mAnswer2.setText(answers.get(1));
 			mAnswer3.setText(answers.get(2));
 			mAnswer4.setText(answers.get(3));
+			
+			setImage();
 		} else { // All questions have been answered
-			makeToast(getApplicationContext(), "You've completed this quiz successfully.");
 			this.finish();
 		}
+	}
+	
+	/**
+	 * @param imageFileName The image's file name, i.e. "fridge_tag.jpg"
+	 * @return The image file's full path, i.e.
+	 * "/sdcard/LaosTrainingApp/Fridge Tag Package/Fridge Tag Quiz/fridge_tag.jpg" 
+	 */
+	private String getImageFullPath(String imageFileName) {
+		// A quiz's images are expected to be placed in a directory
+		// with the exact same name as the quiz, minus ".csv"
+		
+		// Remove the last period, add a slash, and add the image file name
+		int indexOfPeriod = quizFilePath.lastIndexOf(".");
+		String imageDirPath = quizFilePath.substring(0, indexOfPeriod);
+		return imageDirPath + "/" + imageFileName;
+	}
+	
+	private void setImage() {
+		if (mCurrentQuestion.getImageFileName() == null ||
+				mCurrentQuestion.getImageFileName() == "") {
+			return;
+		}
+        String imageFileName = mCurrentQuestion.getImageFileName();
+        String imageFullPath = getImageFullPath(imageFileName);
+
+        File file = new File(imageFullPath);
+        if (!file.exists()) {
+        	Log.e(TAG, "The image file for question #" + mCurrentQuestion.getQuestionNumber()
+        			+ " does not exist: " + imageFullPath);
+        } else if (!file.canRead()) {
+        	Log.e(TAG, "The image file for question #" + mCurrentQuestion.getQuestionNumber()
+        			+ " is not readable: " + imageFullPath);
+        } else {
+        	Log.v(TAG, "Loading image for question #" + mCurrentQuestion.getQuestionNumber()
+        			+ ":" + imageFullPath);
+        }
+        
+		LinearLayout layout = (LinearLayout) findViewById(R.id.quiz_left_column);
+        mImageView = new ImageView(this);
+        Bitmap myBitmap = BitmapFactory.decodeFile(imageFullPath);
+        mImageView.setImageBitmap(myBitmap);
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
+        mImageView.setLayoutParams(params);
+        layout.addView(mImageView);
+        mImageView.requestFocus();
 	}
 
 	@Override
@@ -317,11 +358,9 @@ public class QuizActivity extends Activity {
 		StringBuilder sb = new StringBuilder();
 		sb.append(mTotalScore / 2);
 		if (mTotalScore % 2 == 1) {
-			sb.append("\u00BD");
+			sb.append("\u00BD"); // "1/2" symbol
 		}
-		sb.append("\n");
-		sb.append("\u2014");
-		sb.append("\n");
+		sb.append(" out of ");
 		sb.append(mMaxScore / 2);
 		return sb.toString();
 	}

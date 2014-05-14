@@ -19,6 +19,7 @@ public class QuizQuestion {
 	private List<String> answers;
 	private int correctAnswer;
 	private String hint;
+	private String imageFileName;
 	
 	/**
 	 * Constructs a new QuizQuestion object, which represents a single quiz question.
@@ -38,6 +39,30 @@ public class QuizQuestion {
 		this.answers = answers;
 		this.correctAnswer = correctAnswer;
 		this.hint = hint;
+	}
+	
+	/**
+	 * Constructs a new QuizQuestion object, which represents a single quiz question.
+	 * @param questionNumber The question number.
+	 * @param quizQuestion The question text.
+	 * @param answers A list of answer choices.
+	 * @param correctAnswer The zero-based index of the correct answer choice.
+	 * @param hint A hint for the question.
+	 * @param imageFilePath The file path to the image that should be displayed with
+	 * this question.
+	 */
+	public QuizQuestion(int questionNumber,
+			String quizQuestion,
+			List<String> answers,
+			int correctAnswer,
+			String hint,
+			String imageFilePath) {
+		this.questionNumber = questionNumber;
+		this.question = quizQuestion;
+		this.answers = answers;
+		this.correctAnswer = correctAnswer;
+		this.hint = hint;
+		this.imageFileName = imageFilePath;
 	}
 	
 	/**
@@ -87,6 +112,14 @@ public class QuizQuestion {
 	 */
 	public String getHint() {
 		return this.hint;
+	}
+	
+	/**
+	 * @return The file name of the image that goes with this question if one exists,
+	 * otherwise the empty string.
+	 */
+	public String getImageFileName() {
+		return this.imageFileName;
 	}
 	
 	/**
