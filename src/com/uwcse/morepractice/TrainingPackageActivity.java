@@ -30,6 +30,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -70,7 +71,7 @@ public class TrainingPackageActivity extends Activity {
 		currentFile = getIntent().getExtras().getInt(POSITION);
 		
 		// set up the back and next buttons
-		Button backButton = (Button) this.findViewById(R.id.back_button);
+		ImageButton backButton = (ImageButton) this.findViewById(R.id.back_button);
 		final TrainingPackageActivity activity = this;
 		backButton.setOnClickListener(new OnClickListener() {
 			@Override
@@ -78,7 +79,7 @@ public class TrainingPackageActivity extends Activity {
                 activity.showPreviousFile();
             }
         });
-		Button nextButton = (Button) this.findViewById(R.id.next_button);
+		ImageButton nextButton = (ImageButton) this.findViewById(R.id.next_button);
 		nextButton.setOnClickListener(new OnClickListener() {
 			@Override
             public void onClick(View arg0) {
