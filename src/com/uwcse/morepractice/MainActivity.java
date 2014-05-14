@@ -78,7 +78,6 @@ public class MainActivity extends Activity {
                 // Reconstruct the full path of the file to send to the new activity
                 TextView tv = (TextView) v.findViewById(R.id.item_text);
                 String name = appRoot.getAbsolutePath() + "/" + tv.getText();
-                //intent.putExtra(TrainingPackageActivity.INTENT_KEY_NAME, name);
                 intent.putExtra(TrainingPackageNavigation.INTENT_KEY_NAME, name);
                 startActivity(intent);
             }

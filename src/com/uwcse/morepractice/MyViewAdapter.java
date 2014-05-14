@@ -66,8 +66,6 @@ public class MyViewAdapter extends BaseAdapter {
 
 	@Override
 	 public View getView(int position, View convertView, ViewGroup parent) {
-		// TODO Auto-generated method stub
-		
 		
 		TextView view;
 		
@@ -100,16 +98,13 @@ public class MyViewAdapter extends BaseAdapter {
 		}
 		
 		Random ran = new Random();
-		
-		//int i = ran.nextInt(colors.length - 1);
-		
+			
 		holder.text.setBackgroundColor(Color.parseColor(colors[position % colors.length]));
 		holder.img.setBackgroundColor(Color.parseColor(colors[position % colors.length]));
-		holder.text.setShadowLayer(10, 0, 0, Color.parseColor("#FFFFFF"));
 		return row; 
 	}
 	
-	// Speci5al view that populates the gridView
+	// Special view that populates the gridView
 	// Has a text view and an image view
 	public static class ViewHolder {
 		TextView text;

@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.MediaController;
@@ -37,16 +38,24 @@ public class TrainingPackageNavigation extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_training_navigation);
-		//gestureDetector = new GestureDetector(this, new MyGestureDetector(this)); no swiping for now - make sure to uncomment dispatchTouchEvent
-		Log.e(TAG, "IN ON CREATE");
+		
 		packageName = getIntent().getExtras().getString(INTENT_KEY_NAME);
 		
-		final TrainingPackageNavigation activity = this;
+		// Start activity button
+		final Button button = (Button) findViewById(R.id.button_start);
+	    button.setOnClickListener(new View.OnClickListener() {
+	    	public void onClick(View v) {
+	    		 Intent intent = new Intent(TrainingPackageNavigation.this, TrainingPackageActivity.class);
+	             intent.putExtra(TrainingPackageActivity.INTENT_KEY_NAME, packageName);
+	             intent.putExtra(TrainingPackageActivity.POSITION, 0);
+	             startActivity(intent);
+	        }
+	    });
 		
 		this.setTitle(getNameFromPath(packageName)); //fileNameParts[fileNameParts.length - 1].split("\\.")[0]); // set the title to the title of the training package
-		final RelativeLayout layout = 
-		        (RelativeLayout) this.findViewById(R.id.activity_training_package_layout);
+		
 		FILES = getOrderedFiles(packageName);
+		
 		currentFile = 0;
         // GridView for layout
         gridview = (GridView) findViewById(R.id.gridview);
@@ -83,79 +92,8 @@ public class TrainingPackageNavigation extends Activity {
             		
             }
         });
-	}
-
-	private void navigateTo(int pos) {
-		RelativeLayout layout = 
-		        (RelativeLayout) this.findViewById(R.id.activity_training_package_layout);
-		currentFile = pos;
-		if (currentFile < FILES.length) {
-			addToActivity(FILES[currentFile], layout);
-		} else {
-			this.finish();
-		}
-	}
-	
-	private void addToActivity(File f, RelativeLayout layout) {
-		// params unused
-		Filetype type = getType(f.getName());
-		String path = f.getAbsolutePath();
-		layout.removeAllViews();
-		switch (type)  {
-	        case IMAGE:
-	            ImageView image = new ImageView(this);  
-	            Bitmap myBitmap = BitmapFactory.decodeFile(f.getAbsolutePath());
-	            image.setImageBitmap(myBitmap);
-	            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-	            params.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
-	            image.setLayoutParams(params);
-	            image.setBackgroundColor(getResources().getColor(android.R.color.background_dark));
-	            layout.addView(image);
-	            image.requestFocus();
-	            break;
-	        case VIDEO:
-	        	Log.e(TAG, "showing video");
-				// TODO - add the video in a VideoView to the page
-				final VideoView video = new VideoView(this); //(VideoView) findViewById(R.id.VideoView);
-				MediaController mediacontroller = new MediaController(this);
-				mediacontroller.setAnchorView(video);
-				video.setMediaController(mediacontroller);
-				RelativeLayout.LayoutParams parameters = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-				video.setLayoutParams(parameters);
-				video.setVideoPath(path);
-				
-				final ProgressDialog pDialog = new ProgressDialog(this);
-				pDialog.setTitle("Video " + path);
-				pDialog.setMessage("Buffering...");
-				pDialog.setIndeterminate(false);
-				pDialog.setCancelable(false);
-				pDialog.show();
-				//video.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
-				layout.addView(video);
-				video.requestFocus();
-				video.setOnPreparedListener(new OnPreparedListener() {
-					public void onPrepared(MediaPlayer mp){
-						try {
-							Thread.sleep(2000); // pause for a second before resuming
-						} catch (InterruptedException e) {
-							
-						} finally {
-							pDialog.dismiss();
-							video.start();
-						}
-						
-					}
-				}); 
-				break;
-	        case TEXT:
-	            // do nothing
-	            break;
-	        case CSV:
-	            // TODO - parse the quiz
-	            break;
-	        case UNSUPPORTED:
-	            break;
-	    }
+        
+      
 	}
 	
 	private String getNameFromPath(String path) {
