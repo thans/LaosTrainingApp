@@ -107,7 +107,7 @@ public class ChooseLanguage extends Activity {
 	                Intent intent = new Intent(ChooseLanguage.this, MainActivity.class);
 	                final String f = (String) parent.getItemAtPosition(position);
 	                
-	                TextView tv = (TextView) v.findViewById(R.id.item_text);
+	                TextView tv = (TextView) v.findViewById(R.id.language_text);
 	                String name = laosFilePath + "/" + tv.getText();
 
 	               // TextView tv = (TextView) v.findViewById(R.id.item_text);
