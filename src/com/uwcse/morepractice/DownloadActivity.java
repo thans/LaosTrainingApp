@@ -27,38 +27,48 @@ import com.google.api.services.drive.model.FileList;
 import android.accounts.AccountManager;
 import android.app.Activity;
 import android.app.NotificationManager;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 public class DownloadActivity extends Activity {
     // for accessing drive
-    static final int                	REQUEST_ACCOUNT_PICKER = 1;
-    static final int                	REQUEST_AUTHORIZATION = 2;
-    private static Drive            	mService;
-    private GoogleAccountCredential 	mCredential;
-    private Context                 	mContext;
+    static final int                    REQUEST_ACCOUNT_PICKER = 1;
+    static final int                    REQUEST_AUTHORIZATION = 2;
+    private static Drive                mService;
+    private GoogleAccountCredential     mCredential;
+    private Context                     mContext;
     
     // pertaining to files
-    private List<File>              	languageList;
-    private java.io.File            	targetDir;
+    private List<File>                  languageList;
+    private java.io.File                targetDir;
     private List<java.io.File>          localFiles;
     
-    // notification of update progress
+    // for progress bar in notification bar
     private int                         numDownloading;
     private int                         updateMax;
     private int                         updateProgress;
-    private NotificationManager     	nm;
+    private NotificationManager         nm;
     private NotificationCompat.Builder  mBuilder;
+    
+    // for progress bar on screen
+    private ProgressBar                 mProgress;
+    private Handler                     mHandler = new Handler();
+    
+    private ProgressDialog checkProgress;
+    private int check = 0;
     
     // persistent data that stores the last time the device updated files
     private SharedPreferences           sp;  
@@ -81,10 +91,10 @@ public class DownloadActivity extends Activity {
 
         // setup for credentials for connecting to the Google Drive account
         mCredential = GoogleAccountCredential.usingOAuth2(this, Arrays.asList(DriveScopes.DRIVE));
-	    
+        
         // start activity that prompts the user for their google drive account
         startActivityForResult(mCredential.newChooseAccountIntent(), REQUEST_ACCOUNT_PICKER);
-	    
+        
         mContext = getApplicationContext();
         
         sp = getPreferences(Context.MODE_PRIVATE);
@@ -95,15 +105,9 @@ public class DownloadActivity extends Activity {
         final Button button = (Button) findViewById(R.id.button2);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                button.setEnabled(false);
+                checking();
                 setUPForRecovery();
-                
-                /*nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                mBuilder = new NotificationCompat.Builder(mContext);
-                mBuilder.setContentTitle("Package Update")
-                        .setContentText("Update in progress")
-                        .setSmallIcon(android.R.drawable.stat_sys_download)
-                        .setTicker("Starting update");*/
-                
                 numDownloading = 0;
                 updateMax = 0;
                 updateProgress = 0;
@@ -111,8 +115,24 @@ public class DownloadActivity extends Activity {
                 writePref();
                 update();
                 
-        	}
+            }
         });
+    }
+    
+    private void checking() {
+        checkProgress = new ProgressDialog(DownloadActivity.this);
+        checkProgress.setCancelable(false);
+        checkProgress.setMessage("Checking for updates ...");
+        checkProgress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        checkProgress.setIndeterminate(true);
+        checkProgress.show();
+        new Thread(new Runnable() {
+            public void run() {
+              while (check == 0) {}
+                  checkProgress.dismiss();
+              }
+             }).start();
+
     }
     
     /**
@@ -218,26 +238,42 @@ public class DownloadActivity extends Activity {
                 numDownloading = filteredList.size();
                 Log.e("MAX SET","numDownloading set to max");
                 if (!needsUpdate && isConsistent(filteredList)) {
-                    showToast("Update not needed");
-                    // update notification
-                    /*mBuilder.setContentTitle("Update not needed")
-                    .setContentText("")
-                    .setSmallIcon(R.drawable.ic_action_download)
-                    .setProgress(0, 0, false);
-                    nm.notify(0, mBuilder.build());*/
+                    //showToast("Update not needed");
+                    check++;
                 } else {
-                    /*mBuilder.setProgress(updateMax, 0, false)
-                    .setContentTitle("Checking system for updates....");
-                    // Issues the notification
-                    nm.notify(0, mBuilder.build());*/
+                    check++;
                     nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
                     mBuilder = new NotificationCompat.Builder(mContext);
                     mBuilder.setContentTitle("Checking system for updates....")
                             .setSmallIcon(android.R.drawable.stat_sys_download)
                             .setTicker("Checking system for updates....");
+                    
+                    mProgress = (ProgressBar) findViewById(R.id.progressBar1);
+                    new Thread(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            // TODO Auto-generated method stub
+                            while (numDownloading > 0) {
+                                mHandler.post(new Runnable() {
+
+                                    @Override
+                                    public void run() {
+                                        int progress = 100 * (updateMax - numDownloading) / updateMax; 
+                                        mProgress.setProgress(progress);
+                                        if (numDownloading <= 0) {
+                                            mProgress.setVisibility(4);
+                                        }
+                                    }    
+                                });
+                            }
+                        }
+                    }).start();
+                    
                     if (targetDir.exists()) {
                         deleteFile(targetDir);
                     }
+                    
                     targetDir.mkdirs();
                     getDriveContents();
                 }
@@ -245,12 +281,6 @@ public class DownloadActivity extends Activity {
         });
         t.start();
     }
-    
-    /*nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                mBuilder = new NotificationCompat.Builder(mContext);
-                mBuilder.setContentTitle("Checking system for updates....")
-                        .setSmallIcon(android.R.drawable.stat_sys_download)
-                        .setTicker("Checking system for updates....");*/
     
     /**
      * Gets the contents of a google drive folder
@@ -292,7 +322,7 @@ public class DownloadActivity extends Activity {
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
-            	// get only the folders in the root directory of drive account
+                // get only the folders in the root directory of drive account
                 languageList = getContents(TOP_LEVEL + " and " + NOT_TRASHED + " and " + FOLDER);
                 processLanguages();
             }
@@ -324,8 +354,8 @@ public class DownloadActivity extends Activity {
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
-            	// gets only the folders in the language folder
-            	String whichFiles = "'" + languageFolder.getId() + "' in parents and " + NOT_TRASHED + " and " + FOLDER;
+                // gets only the folders in the language folder
+                String whichFiles = "'" + languageFolder.getId() + "' in parents and " + NOT_TRASHED + " and " + FOLDER;
                 List<File> packageList = getContents(whichFiles);
                 processFolders(packageList, localLanguageFolder);
             }
@@ -575,7 +605,7 @@ public class DownloadActivity extends Activity {
         });
     }
     
-    
+     
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
    
@@ -591,8 +621,8 @@ public class DownloadActivity extends Activity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_accounts) {
-        	new ActionBarFunctions().refresh(this);
-        	return true;
+            new ActionBarFunctions().refresh(this);
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
