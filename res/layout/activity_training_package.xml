@@ -9,13 +9,15 @@
     		android:layout_width="match_parent"
    			android:layout_height="wrap_content">
    		
-       <Button
+       <ImageButton
 		    android:id="@+id/back_button"
 		    android:layout_width="96dp"
 		    android:layout_height="match_parent"
-		    android:background="@drawable/ic_action_previous_item"
-		    android:layout_weight="1">
-		</Button>
+		    android:src="@drawable/ic_action_previous_item"
+		    android:layout_weight="1"
+		    android:contentDescription="@string/back_button"
+		    android:background="#000000">
+		</ImageButton>
 		
 	    <RelativeLayout
 		    android:orientation="vertical"
@@ -28,13 +30,15 @@
 		    android:layout_weight="8">
        	</RelativeLayout>
        	
-		<Button
+		<ImageButton
 		    android:id="@+id/next_button"
 		    android:layout_height="match_parent"
 		    android:layout_width="96dp"
-		    android:background="@drawable/ic_action_next_item"
-		    android:layout_weight="1">
+		    android:src="@drawable/ic_action_next_item"
+		    android:layout_weight="1"
+		    android:contentDescription="@string/next_button"
+		    android:background="#000000">
 		    
-		</Button>
+		</ImageButton>
     </LinearLayout>
 </ScrollView>

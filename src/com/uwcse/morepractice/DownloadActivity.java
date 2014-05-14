@@ -41,21 +41,22 @@ import android.widget.Button;
 import android.widget.Toast;
 
 public class DownloadActivity extends Activity {
+    // for accessing drive
     static final int                	REQUEST_ACCOUNT_PICKER = 1;
     static final int                	REQUEST_AUTHORIZATION = 2;
     private static Drive            	mService;
     private GoogleAccountCredential 	mCredential;
     private Context                 	mContext;
     
+    // pertaining to files
     private List<File>              	languageList;
-    
     private java.io.File            	targetDir;
-    List<java.io.File> localFiles;
+    private List<java.io.File>          localFiles;
     
     // notification of update progress
     private int                         numDownloading;
     private int                         updateMax;
-    private                             int updateProgress;
+    private int                         updateProgress;
     private NotificationManager     	nm;
     private NotificationCompat.Builder  mBuilder;
     
@@ -91,19 +92,18 @@ public class DownloadActivity extends Activity {
         targetDir = new java.io.File(Environment.getExternalStorageDirectory(), 
                 getString(R.string.local_storage_folder));
         
-        
-
         final Button button = (Button) findViewById(R.id.button2);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 setUPForRecovery();
                 
-                nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                /*nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
                 mBuilder = new NotificationCompat.Builder(mContext);
                 mBuilder.setContentTitle("Package Update")
                         .setContentText("Update in progress")
                         .setSmallIcon(android.R.drawable.stat_sys_download)
-                        .setTicker("Starting update");
+                        .setTicker("Starting update");*/
+                
                 numDownloading = 0;
                 updateMax = 0;
                 updateProgress = 0;
@@ -115,12 +115,20 @@ public class DownloadActivity extends Activity {
         });
     }
     
-    
+    /**
+     * Gets all the files in app directory, for recovery
+     */
     private void setUPForRecovery() {
         localFiles = addFiles(null, targetDir);
     }
     
-    public List<java.io.File> addFiles(List<java.io.File> files, java.io.File dir) {
+    /**
+     * Helper method for recovery
+     * @param files, the list of files to process
+     * @param dir, if directory, recurse; if file add to files and return
+     * @return the files in the directory
+     */
+    private List<java.io.File> addFiles(List<java.io.File> files, java.io.File dir) {
         if (files == null)
             files = new LinkedList<java.io.File>();
 
@@ -134,8 +142,20 @@ public class DownloadActivity extends Activity {
         return files;
     }
     
+    
+    /**
+     * Checks that the local app directory and the google drive account are consistent
+     * For seeing whether update is needed
+     * @param list, the list of files from drive
+     * @return true if consistent, false otherwise
+     */
     private boolean isConsistent(List<File> list) {
-        
+        if (!targetDir.exists()) {
+            Log.e("EMPTY","App folder does not exist");
+            return false;
+        }
+
+        // checks whether there is a file locally that is not represented in drive
         for (java.io.File local : localFiles) {
             boolean flag = false;
             for (File drive : list) {
@@ -147,13 +167,12 @@ public class DownloadActivity extends Activity {
                 Log.e("HERE","inconsistency local outer");
                 return false;
             }
-                
         }
-        
+
+        // checks whether there is file in drive that is not represented locally
         for (File drive : list) {
             boolean flag = false;
             for (java.io.File local : localFiles) {
-                
                 if (local.getName().equals(drive.getTitle()))
                     flag = true;
             }
@@ -180,6 +199,7 @@ public class DownloadActivity extends Activity {
                 List<File> filteredList = new ArrayList<File>();
                 updateMax = list.size();
                 
+                // filters out shared drive files and by timestamp
                 boolean needsUpdate = false;
                 for (File f : list) {
                     if(!f.getShared()) {
@@ -190,31 +210,47 @@ public class DownloadActivity extends Activity {
                             break;
                         }
                     }
-                   
+
                 }
-              
+
+                // for notification
+
                 numDownloading = filteredList.size();
+                Log.e("MAX SET","numDownloading set to max");
                 if (!needsUpdate && isConsistent(filteredList)) {
                     showToast("Update not needed");
-                 // update notification
-                    mBuilder.setContentTitle("Update not needed")
-                            .setContentText("")
-                            .setSmallIcon(R.drawable.ic_action_download)
-                            .setProgress(0, 0, false);
-                    nm.notify(0, mBuilder.build());
+                    // update notification
+                    /*mBuilder.setContentTitle("Update not needed")
+                    .setContentText("")
+                    .setSmallIcon(R.drawable.ic_action_download)
+                    .setProgress(0, 0, false);
+                    nm.notify(0, mBuilder.build());*/
                 } else {
-                    mBuilder.setProgress(updateMax, 0, false)
+                    /*mBuilder.setProgress(updateMax, 0, false)
                     .setContentTitle("Checking system for updates....");
                     // Issues the notification
-                    nm.notify(0, mBuilder.build());
-                    deleteFile(targetDir);
+                    nm.notify(0, mBuilder.build());*/
+                    nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                    mBuilder = new NotificationCompat.Builder(mContext);
+                    mBuilder.setContentTitle("Checking system for updates....")
+                            .setSmallIcon(android.R.drawable.stat_sys_download)
+                            .setTicker("Checking system for updates....");
+                    if (targetDir.exists()) {
+                        deleteFile(targetDir);
+                    }
                     targetDir.mkdirs();
                     getDriveContents();
                 }
-           }
+            }
         });
         t.start();
     }
+    
+    /*nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                mBuilder = new NotificationCompat.Builder(mContext);
+                mBuilder.setContentTitle("Checking system for updates....")
+                        .setSmallIcon(android.R.drawable.stat_sys_download)
+                        .setTicker("Checking system for updates....");*/
     
     /**
      * Gets the contents of a google drive folder
@@ -381,9 +417,8 @@ public class DownloadActivity extends Activity {
         });
         t.start();
         try {
-            Thread.sleep(500);
+            Thread.sleep(750);
         } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -415,14 +450,18 @@ public class DownloadActivity extends Activity {
             e.printStackTrace();
         }
         
+        // updates notification and sees if all downloading is finished
+        
         System.out.println("Downloaded file " + file.getAbsolutePath());
+        Log.e("STATUS","numDownloading is at " + numDownloading);
         if (--numDownloading <= 0) {
             //finished downloading all files
-            Log.e("FINISHED", "all downloading should be finished by now");
+            Log.e("STATUS","numDownloading is at " + numDownloading);
             // update notification
             mBuilder.setContentTitle("Update complete")
                     .setContentText("")
                     .setSmallIcon(R.drawable.ic_action_download)
+                    .setTicker("Update complete")
                     .setProgress(0, 0, false);
             nm.notify(0, mBuilder.build());
             finish();
@@ -448,7 +487,7 @@ public class DownloadActivity extends Activity {
     
     
     /**
-     *  deletes the given file by recursively deleting its contents
+     * Deletes the given file by recursively deleting its contents
      * @param file, the file that gets deleted
      * @throws IOException
      */
@@ -551,7 +590,7 @@ public class DownloadActivity extends Activity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_refresh) {
+        if (id == R.id.action_accounts) {
         	new ActionBarFunctions().refresh(this);
         	return true;
         }

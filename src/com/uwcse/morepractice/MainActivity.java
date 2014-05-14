@@ -20,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
@@ -36,11 +37,13 @@ public class MainActivity extends Activity {
     private String[] fileNames;
     private File appRoot;
     private GridView gridview;
+    private Context context;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        context = getApplicationContext();
         
         ActionBar actionBar = getActionBar();
         actionBar.show();
@@ -70,12 +73,12 @@ public class MainActivity extends Activity {
         // Connect each grid to a new activity with a listener
         gridview.setOnItemClickListener(new OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-                Intent intent = new Intent(MainActivity.this, TrainingPackageActivity.class);
+                Intent intent = new Intent(MainActivity.this, TrainingPackageNavigation.class);
 
                 // Reconstruct the full path of the file to send to the new activity
                 TextView tv = (TextView) v.findViewById(R.id.item_text);
                 String name = appRoot.getAbsolutePath() + "/" + tv.getText();
-                intent.putExtra(TrainingPackageActivity.INTENT_KEY_NAME, name);
+                intent.putExtra(TrainingPackageNavigation.INTENT_KEY_NAME, name);
                 startActivity(intent);
             }
         });
@@ -119,9 +122,11 @@ public class MainActivity extends Activity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
-
-        SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
-        searchView.setOnQueryTextListener(new OnQueryTextListener() {
+ 
+        final SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+        searchView.setQueryHint("Search for packages");
+        
+        searchView.setOnQueryTextListener(new OnQueryTextListener() {    
             @Override
             public boolean onQueryTextChange(String newText) {
                 performSearch(newText);
@@ -130,7 +135,7 @@ public class MainActivity extends Activity {
             
             @Override
             public boolean onQueryTextSubmit(String query) { 
-                Log.e("ONTEXTSUBMIT","reached action bar search");
+                hideKeyboard();
                 return true;
             }
         });
@@ -157,6 +162,28 @@ public class MainActivity extends Activity {
         // Construct the gridView, sending in the files and the absolute path where the files reside
         gridview.setAdapter(adapter);
     }
+
+    /**
+     * Hides the keyboard
+     * @param view, the view that brought up the keyboard
+     */
+    private void hideKeyboard() {
+        InputMethodManager inputManager = (InputMethodManager) this
+                .getSystemService(Context.INPUT_METHOD_SERVICE);
+
+        //check if no view has focus:
+        View v=this.getCurrentFocus();
+        if(v != null)
+            inputManager.hideSoftInputFromWindow(v.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+    }
+    
+    
+    @Override
+    protected void onPause() {
+      super.onPause();
+      hideKeyboard();
+    }
+    
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

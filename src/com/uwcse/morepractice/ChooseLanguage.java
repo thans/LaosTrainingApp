@@ -5,6 +5,7 @@ import java.util.Random;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
@@ -14,8 +15,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 
 public class ChooseLanguage extends Activity {
-	private int[] colors = {0xA4C400FF, 0x60A917FF, 0x008A00FF, 0x00ABA9FF, 0x1BA1E2FF, 0x0050EFFF,  0x6A00FFFF, 0xAA00FFFF, 
-			0xF472D0FF, 0xD80073FF, 0xA20025FF, 0xE51400FF, 0xFA6800FF, 0xF0A30AFF, 0xE3C800FF};
+	private String[] colors = {"#F08080", "#8080F0"};
 	private static final int TEXT_SIZE = 30;
 	public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
@@ -64,15 +64,14 @@ public class ChooseLanguage extends Activity {
             
         	layout.addView(btn);
 		} else {
-	        Random ran = new Random();
+	        int i = 0;
 			for (final File f : files) {
 	        	Button btn = new Button(this);
 	        	String[] parts = f.getPath().split("/");
 	        	btn.setText(parts[parts.length - 1]);
 	        	LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, .5f);
 	        	btn.setLayoutParams(params);
-	        	int colorNum = ran.nextInt(colors.length - 1);
-	        	btn.setBackgroundColor(colors[colorNum]);
+	        	btn.setBackgroundColor(Color.parseColor(colors[i % 2]));
 	        	btn.setTextSize(TEXT_SIZE);
 	        	
 
@@ -86,6 +85,7 @@ public class ChooseLanguage extends Activity {
 	            });
 	            
 	        	layout.addView(btn);
+	        	i++;
 	        }
 		}
 	}

@@ -26,12 +26,12 @@
         <activity
             android:name="com.uwcse.morepractice.Splash"
             android:label="@string/splash"
-            android:screenOrientation="landscape">
+            android:screenOrientation="landscape" >
             <intent-filter>
-	            <action android:name="android.intent.action.MAIN" />
-	            <category android:name="android.intent.category.LAUNCHER" />
-	        </intent-filter>
-            
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name="com.uwcse.morepractice.ChooseLanguage"
@@ -49,6 +49,11 @@
 
             <!-- android:label="@string/title_activity_video" > -->
         </activity>
+        <activity
+            android:name="com.uwcse.morepractice.TrainingPackageNavigation"
+            android:label="@string/activity_training_navigation"
+            android:screenOrientation="landscape" >
+        </activity>
 
         <meta-data
             android:name="com.google.android.gms.version"
@@ -56,13 +61,17 @@
 
         <activity
             android:name="com.uwcse.morepractice.DownloadActivity"
-            android:label="@string/title_activity_download" 
-            android:parentActivityName="com.uwcse.morepractice.MainActivity" >
+            android:label="@string/title_activity_download"
+            android:parentActivityName="com.uwcse.morepractice.MainActivity"
+            android:screenOrientation="landscape" >
         </activity>
-        
         <activity
             android:name="com.uwcse.morepractice.QuizActivity"
             android:label="@string/title_activity_quiz" >
+        </activity>
+        <activity
+            android:name="com.uwcse.morepractice.CustomTags"
+            android:label="@string/title_activity_custom_tags" >
         </activity>
     </application>
 
