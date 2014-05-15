@@ -43,6 +43,10 @@ public class ChooseLanguage extends Activity {
 		//LinearLayout layout = (LinearLayout) this.findViewById(R.id.language_layout);
 		LinearLayout layout = (LinearLayout) this.findViewById(R.id.lang_layout);
 		//layout.removeAllViews();
+		/*if(layout.findViewById(R.id.language_button) != null){
+			layout.removeViewAt(R.id.language_button);
+		}*/
+		
         File[] files = setupFileSystem();
         showLanguages(files, layout);
 	}
@@ -64,7 +68,16 @@ public class ChooseLanguage extends Activity {
 	
 	private void showLanguages(File[] files, LinearLayout layout) {
 		if (files.length == 0) {
-			Button btn = new Button(this);
+		
+			  final Button button = (Button) findViewById(R.id.language_button);
+		      button.setOnClickListener(new View.OnClickListener() {
+		            public void onClick(View v) {
+		            	Intent intent = new Intent(ChooseLanguage.this, DownloadActivity.class);
+	                    startActivity(intent);
+		                
+		            }
+		        });
+			/*	Button btn = new Button(this);
         	btn.setText("Download Files");
         	//LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
         	//LinearLayout layout = (LinearLayout) findViewById(R.id.language_layout);
@@ -80,9 +93,19 @@ public class ChooseLanguage extends Activity {
                 }
             });
             
-        	layout.addView(btn);
+        	layout.addView(btn);*/
+		      
 		} else {
 			// Get the short names of the files to populate the grid view
+			
+			
+					if(layout.findViewById(R.id.language_button ) != null){
+						Button button = (Button)layout.findViewById(R.id.language_button);
+						ViewGroup parent = (ViewGroup) button.getParent();
+						parent.removeView(button);
+					}
+			
+			
 			String baseDir = Environment.getExternalStorageDirectory().getAbsolutePath();
             final String laosFilePath = baseDir + "/" + getString(R.string.local_storage_folder);
 			
