@@ -5,6 +5,13 @@
     android:orientation="vertical"
     android:id="@+id/lang_layout" >
     
+     <Button
+        android:id="@+id/language_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:text="Download Files" />
     
     <ListView
     android:id="@+id/listview"
