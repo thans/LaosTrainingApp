@@ -2,10 +2,4 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.uwcse.morepractice.DownloadActivity" >
 
-
-    <item android:id="@+id/action_accounts"
-          android:icon="@drawable/ic_action_accounts"
-          android:title="@string/action_accounts"
-          android:showAsAction="ifRoom|withText" />
-
 </menu>
