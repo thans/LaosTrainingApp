@@ -19,6 +19,7 @@
     <string name="buffering">Buffering&#8230;</string>
     <string name="splash">morePractice</string>
     <string name="language">Choose a Language</string>
+    <string name="search_packages">Search for packages</string>
 
     <color name="dark_grey">#ff444444</color>
 

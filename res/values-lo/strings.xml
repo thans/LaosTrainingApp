@@ -7,4 +7,5 @@
     <string name="notification_message">ການປັບປຸງ</string>
     <string name="update_complete">ສໍາເລັດການປັບປຸງ</string>
     <string name="buffering">ເຂດປ້ອງກັນ&#8230;</string>
+    <string name="search_packages">ຄົ້ນຫາ</string>
 </resources>
