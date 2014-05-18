@@ -26,14 +26,18 @@ import com.google.api.services.drive.model.FileList;
 
 import android.accounts.AccountManager;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.NotificationManager;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.view.Menu;
@@ -84,25 +88,56 @@ public class DownloadActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_download);
-
+        
         getActionBar().setDisplayHomeAsUpEnabled(true);
-
-        // setup for credentials for connecting to the Google Drive account
-        mCredential = GoogleAccountCredential.usingOAuth2(this, Arrays.asList(DriveScopes.DRIVE));
         
-        // start activity that prompts the user for their google drive account
-        startActivityForResult(mCredential.newChooseAccountIntent(), REQUEST_ACCOUNT_PICKER);
-        
-        mContext = getApplicationContext();
+         mContext = getApplicationContext();
         
         sp = getPreferences(Context.MODE_PRIVATE);
     
         targetDir = new java.io.File(Environment.getExternalStorageDirectory(), 
                 getString(R.string.local_storage_folder));
+        
+        checkWIFI();
     }
     
+    
     /**
-     * Starts the download as soon as user picks an account
+     * Checks that wifi is available;
+     * If so, proceeds to the account picker;
+     * If not, alerts the user to check wifi
+     */
+    private void checkWIFI() {
+        ConnectivityManager manager = (ConnectivityManager) 
+                getSystemService(MainActivity.CONNECTIVITY_SERVICE);
+        boolean isWifi = manager.getNetworkInfo(
+                ConnectivityManager.TYPE_WIFI).isConnected();
+        if (isWifi) {
+            // setup for credentials for connecting to the Google Drive account
+            mCredential = GoogleAccountCredential.usingOAuth2(this, Arrays.asList(DriveScopes.DRIVE));
+            // start activity that prompts the user for their google drive account
+            startActivityForResult(mCredential.newChooseAccountIntent(), REQUEST_ACCOUNT_PICKER);
+        } else {
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(DownloadActivity.this);
+            alertDialogBuilder
+                .setTitle(getString(R.string.check_wifi))
+                .setCancelable(false)
+                .setPositiveButton(getString(R.string.exit), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog,int id) {
+                        // if this button is clicked, close
+                        // current activity
+                        DownloadActivity.this.finish();
+                    }
+                });
+
+            AlertDialog alertDialog = alertDialogBuilder.create();
+            alertDialog.show();
+        }
+    }
+    
+    
+    /**
+     * Starts the update as soon as user picks an account
      */
     private void startDownloadActivity() {
         checking();
@@ -298,7 +333,7 @@ public class DownloadActivity extends Activity {
                 result.addAll(fileList.getItems());
                 request.setPageToken(fileList.getNextPageToken());
             } catch (UserRecoverableAuthIOException e) {
-                startActivityForResult(e.getIntent(), REQUEST_AUTHORIZATION);
+                //startActivityForResult(e.getIntent(), REQUEST_AUTHORIZATION);
             } catch (IOException e) {
                 e.printStackTrace();
                 if (request != null) 

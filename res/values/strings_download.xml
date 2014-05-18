@@ -5,4 +5,6 @@
     <string name="updating">Update in progress</string>
     <string name="notification_message">Updating More Practice</string>
     <string name="update_complete">Update complete</string>
+    <string name="exit">Exit</string>
+    <string name="check_wifi">Check your WIFI connection</string>
 </resources>

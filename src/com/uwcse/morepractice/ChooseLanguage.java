@@ -179,12 +179,12 @@ public class ChooseLanguage extends Activity {
 	 */
 	private void setLanguage(String path) {
 	    String name = getName(path);
-	    String langCode = "";
+	    
+	    // English is default
+	    String langCode = "en";
 	    
 	    // finds which language button the user clicked
-	    if (name.equalsIgnoreCase(getString(R.string.english))) {
-	        langCode = "en";
-	    } else if (name.equalsIgnoreCase(getString(R.string.lao))) {
+	    if (name.equalsIgnoreCase(getString(R.string.lao))) {
 	        langCode = "lo";
 	    }
 	    
