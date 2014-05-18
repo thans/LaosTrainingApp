@@ -4,4 +4,5 @@
     <string name="checking_message">Checking for updates&#8230;</string>
     <string name="updating">Update in progress</string>
     <string name="notification_message">Updating More Practice</string>
+    <string name="update_complete">Update complete</string>
 </resources>

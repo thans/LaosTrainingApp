@@ -38,8 +38,6 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -124,7 +122,7 @@ public class DownloadActivity extends Activity {
     private void checking() {
         checkProgress = new ProgressDialog(DownloadActivity.this);
         checkProgress.setCancelable(false);
-        checkProgress.setMessage(getString(R.string.checking_message));
+        checkProgress.setMessage(getResources().getString(R.string.checking_message));
         checkProgress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         checkProgress.setIndeterminate(true);
         checkProgress.show();
@@ -243,11 +241,12 @@ public class DownloadActivity extends Activity {
                     check++;
                 } else {
                     check += 2;
+                    String note = getResources().getString(R.string.notification_message);
                     nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
                     mBuilder = new NotificationCompat.Builder(mContext);
-                    mBuilder.setContentTitle(getString(R.string.notification_message))
+                    mBuilder.setContentTitle(note)
                             .setSmallIcon(android.R.drawable.stat_sys_download)
-                            .setTicker(getString(R.string.notification_message));
+                            .setTicker(note);
                     
                     mProgress = (ProgressBar) findViewById(R.id.progressBar1);
                     new Thread(new Runnable() {
@@ -496,17 +495,17 @@ public class DownloadActivity extends Activity {
             //finished downloading all files
             Log.e("STATUS","numDownloading is at " + numDownloading);
             // update notification
-            mBuilder.setContentTitle("Update complete")
+            String note = getResources().getString(R.string.update_complete);
+            mBuilder.setContentTitle(note)
                     .setContentText("")
                     .setSmallIcon(R.drawable.ic_action_download)
-                    .setTicker("Update complete")
+                    .setTicker(note)
                     .setProgress(0, 0, false);
             nm.notify(0, mBuilder.build());
             finish();
         } else {
-            // Sets an activity indicator for an operation of determinate length
             mBuilder.setProgress(updateMax, ++updateProgress, false)
-            .setContentTitle("Updating More Practice ...");
+            .setContentTitle(getResources().getString(R.string.notification_message));
             // Issues the notification
             nm.notify(0, mBuilder.build());
         }

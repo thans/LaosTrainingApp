@@ -16,10 +16,9 @@
     <string name="action_navigate">Navigate</string>
     <string name="back_button">Back</string>
     <string name="next_button">Next</string>
+    <string name="buffering">Buffering&#8230;</string>
     <string name="splash">morePractice</string>
-    <string name="action_accounts">Accounts</string>
     <string name="language">Choose a Language</string>
-    <string name="update_button">Update Packages</string>
 
     <color name="dark_grey">#ff444444</color>
 
