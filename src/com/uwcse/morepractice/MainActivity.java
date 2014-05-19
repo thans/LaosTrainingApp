@@ -53,6 +53,7 @@ public class MainActivity extends Activity {
 
         // for first design iteration
         String laosFilePath = getIntent().getExtras().getString(LANGUAGE_KEY); 
+        setTitle(getName(laosFilePath));
         appRoot = new File(laosFilePath);
         File[] files = appRoot.listFiles();
 
@@ -182,6 +183,11 @@ public class MainActivity extends Activity {
     protected void onPause() {
       super.onPause();
       hideKeyboard();
+    }
+    
+    private String getName(String path) {
+        String[] names = path.split("\\/");
+        return names[names.length - 1];
     }
     
 

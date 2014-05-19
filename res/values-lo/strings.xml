@@ -10,4 +10,5 @@
     <string name="search_packages">ຄົ້ນຫາ</string>
     <string name="exit">ປະຈາກ</string>
     <string name="check_wifi">ກວດເບິ່ງການເຊື່ອມຕໍ່ WIFI ຂອງທ່ານ</string>
+    <string name="update">ປັບປຸງໃຫ້ທັນ</string>
 </resources>

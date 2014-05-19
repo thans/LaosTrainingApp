@@ -37,7 +37,6 @@ import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.view.Menu;
@@ -88,10 +87,9 @@ public class DownloadActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_download);
-        
-        getActionBar().setDisplayHomeAsUpEnabled(true);
-        
-         mContext = getApplicationContext();
+        setTitle(getString(R.string.update));
+        getActionBar().show();
+        mContext = getApplicationContext();
         
         sp = getPreferences(Context.MODE_PRIVATE);
     

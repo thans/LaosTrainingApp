@@ -23,7 +23,11 @@
         <activity
             android:name="com.uwcse.morepractice.MainActivity"
             android:label="@string/app_name"
-            android:screenOrientation="landscape" >
+            android:screenOrientation="landscape" 
+            android:parentActivityName="com.uwcse.morepractice.ChooseLanguage" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.uwcse.morepractice.ChooseLanguage" />
         </activity>
         <activity
             android:name="com.uwcse.morepractice.Splash"
@@ -63,9 +67,8 @@
 
         <activity
             android:name="com.uwcse.morepractice.DownloadActivity"
-            android:label="@string/title_activity_download"
-            android:parentActivityName="com.uwcse.morepractice.MainActivity"
-            android:screenOrientation="landscape" >
+            android:screenOrientation="landscape"
+            android:label="@string/title_activity_download">
         </activity>
         <activity
             android:name="com.uwcse.morepractice.QuizActivity"

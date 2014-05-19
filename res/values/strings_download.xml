@@ -7,4 +7,5 @@
     <string name="update_complete">Update complete</string>
     <string name="exit">Exit</string>
     <string name="check_wifi">Check your WIFI connection</string>
+    <string name="update">Update</string>
 </resources>
