@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="title_activity_custom_tags">CustomTags</string>
+    <string name="down_arrow">▼</string>
+    <string name="up_arrow">▲</string>
+    <string name="degrees_c">°C</string>
+    <string name="custom_tags_intro">This application will show you how a FridgeTag works.  Click the ">" button to continue.</string>
+    
+    <string-array name="custom_tags_instructions">
+        <item>There are 2 buttons on the FridgeTag - a Set and Read button</item>
+        <item>The Alarm state will show either "OK" or "ALARM" based on the current status of the FridgeTag</item>
+        <item>The Time/Alarm Duration displays the current time, or the amount of time the since the temperature has exceeded one of the limits</item>
+        <item>The Temp/Min-Max shows the current temperature of the FridgeTag</item>
+        <item>The alarm icons indicate how long ago a cold/hot alarm was registered.  Use the scale at the top to determine what day they occurred</item>
+        <item>You have now completed the FridgeTag training.  Thanks!</item>
+    </string-array>
+</resources>

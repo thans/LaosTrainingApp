@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -23,6 +24,9 @@ import android.os.Build;
 
 public class CustomTags extends Activity {
 	private static Random r = new Random();
+	private static int stepNumber;
+	private static final int NUM_STEPS = 7;
+	private static String[] stepInstructions;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -35,17 +39,36 @@ public class CustomTags extends Activity {
 		final CustomTags act = this;
         set.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                // Perform action on click
         		act.setClick();
             }
         });
         
         read.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                // Perform action on click
         		act.readClick();
             }
         });
+        
+        ImageButton next = (ImageButton) this.findViewById(R.id.next_instruction);
+        
+        stepNumber = -1;
+        stepInstructions = getResources().getStringArray(R.array.custom_tags_instructions);
+        
+        next.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+        		act.next();
+            }
+        });
+	}
+
+	protected void next() {
+		stepNumber++;
+		if (stepNumber >= NUM_STEPS) {
+			this.finish();
+		}
+		
+		TextView instructions = (TextView) this.findViewById(R.id.custom_tags_instructions);
+		instructions.setText(stepInstructions[stepNumber]);
 	}
 
 	protected void readClick() {
