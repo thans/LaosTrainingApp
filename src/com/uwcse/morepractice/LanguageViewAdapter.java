@@ -96,23 +96,4 @@ public class LanguageViewAdapter extends BaseAdapter {
 		return row; 
 	}
 	
-	// Special view that populates the gridView
-	// Has a text view and an image view
-	public static class ViewHolder {
-		TextView text;
-		ImageView img;
-	}
-	
-	public File getFileImg(File dir) {
-		File file = null;		
-		if (dir.isDirectory()) {
-			File[] fs = dir.listFiles();
-			for (File f : fs) {
-				if (f.getName().equals("img.jpg")) {
-					file = f;
-				}	
-			}
-		}
-		return file;
-	}
 }

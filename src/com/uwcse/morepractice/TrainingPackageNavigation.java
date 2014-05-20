@@ -40,7 +40,7 @@ public class TrainingPackageNavigation extends Activity {
 	private int currentFile;
 	private String packageName;
 	private GridView gridview;
-	private MyViewAdapter adapter;
+	private NavigationAdapter adapter;
 	
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -73,7 +73,7 @@ public class TrainingPackageNavigation extends Activity {
             fileNames[i] = FILES[i].getName();
         }
         //adapter = new MyViewAdapter(this, fileNames, appRoot.getAbsolutePath() + "/", R.layout.row_grid );
-        adapter = new MyViewAdapter(this, fileNames, packageName, R.layout.row_grid );
+        adapter = new NavigationAdapter(this, fileNames, packageName, R.layout.row_grid );
         
         // Construct the gridView, sending in the files and the absolute path where the files reside
         gridview.setAdapter(adapter);
@@ -210,7 +210,7 @@ public class TrainingPackageNavigation extends Activity {
         // the new array to give to the adapter
         String[] filteredArray = filteredList.toArray(new String[filteredList.size()]);
         adapter = null;
-        adapter = new MyViewAdapter(this, filteredArray, packageName, R.layout.row_grid );
+        adapter = new NavigationAdapter(this, filteredArray, packageName, R.layout.row_grid );
         
         // Construct the gridView, sending in the files and the absolute path where the files reside
         gridview.setAdapter(adapter);
