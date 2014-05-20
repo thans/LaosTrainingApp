@@ -1,29 +1,70 @@
 package com.uwcse.morepractice;
 
+import java.util.Random;
+
 import android.app.Activity;
 import android.app.ActionBar;
 import android.app.Fragment;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.os.Build;
 
 public class CustomTags extends Activity {
-
+	private static Random r = new Random();
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_custom_tags);
 
-		if (savedInstanceState == null) {
-			getFragmentManager().beginTransaction()
-					.add(R.id.container, new PlaceholderFragment()).commit();
+//		TextView timeText = (TextView) this.findViewById(R.id.time_text);
+		Button set = (Button) this.findViewById(R.id.set_button);
+		Button read = (Button) this.findViewById(R.id.read_button);
+		
+		final CustomTags act = this;
+        set.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // Perform action on click
+        		act.setClick();
+            }
+        });
+        
+        read.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // Perform action on click
+        		act.readClick();
+            }
+        });
+	}
+
+	protected void readClick() {
+		TextView tempText = (TextView) this.findViewById(R.id.temp_text);
+		TextView alarmText = (TextView) this.findViewById(R.id.alarm_text);
+		
+		tempText.setText(String.format("%02d:%01d", (r.nextInt(10)), (r.nextInt(10))));
+		
+		if (r.nextBoolean()) {
+			alarmText.setText("ALM");
+		} else {
+			alarmText.setText("OK");
 		}
+	}
+
+	protected void setClick() {
+		TextView timeText = (TextView) this.findViewById(R.id.time_text);
 		
-		
+		timeText.setText(String.format("%02d:%02d", r.nextInt(24), r.nextInt(60)));
 	}
 
 	@Override
@@ -47,21 +88,5 @@ public class CustomTags extends Activity {
 		return super.onOptionsItemSelected(item);
 	}
 
-	/**
-	 * A placeholder fragment containing a simple view.
-	 */
-	public static class PlaceholderFragment extends Fragment {
-
-		public PlaceholderFragment() {
-		}
-
-		@Override
-		public View onCreateView(LayoutInflater inflater, ViewGroup container,
-				Bundle savedInstanceState) {
-			View rootView = inflater.inflate(R.layout.fragment_custom_tags,
-					container, false);
-			return rootView;
-		}
-	}
 
 }

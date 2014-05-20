@@ -200,6 +200,10 @@ public class MainActivity extends Activity {
             new ActionBarFunctions().quizActivity(this);
             return true;
         }
+        
+        if (id == R.id.action_custom) {
+        	new ActionBarFunctions().customActivity(this);
+        }
         return super.onOptionsItemSelected(item);
     }
     

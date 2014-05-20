@@ -19,14 +19,14 @@ public class Splash extends Activity {
 
     /** Called when the activity is first created. */
     @Override
-    public void onCreate(Bundle icicle) {
-        super.onCreate(icicle);
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         // remove title
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.splash);
         
         
-        final ImageView splash = (ImageView) findViewById(R.id.splashscreen);
+        final ImageView splash = (ImageView) this.findViewById(R.id.splashscreen);
         // Delay, then animate the image
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -41,7 +41,6 @@ public class Splash extends Activity {
 
                 // Start animating the image
                 splash.startAnimation(anim);
-
             }
         }, DELAY);  
 
@@ -59,5 +58,9 @@ public class Splash extends Activity {
 
             }
         }, SPLASH_DISPLAY_LENGTH);    
+    }
+    
+    public void onFinishInflate() {
+    	
     }
 }

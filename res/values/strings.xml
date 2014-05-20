@@ -24,4 +24,8 @@
     <string name="activity_training_navigation">PackageNavigation</string>
     <string name="title_activity_custom_tags">CustomTags</string>
 
+    
+    <string name="down_arrow">▼</string>
+    <string name="up_arrow">▲</string>
+    <string name="degrees_c">°C</string>
 </resources>

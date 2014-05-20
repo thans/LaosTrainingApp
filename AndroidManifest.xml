@@ -46,8 +46,6 @@
         <activity
             android:name="com.uwcse.morepractice.VideoActivity"
             android:screenOrientation="landscape" >
-
-            <!-- android:label="@string/title_activity_video" > -->
         </activity>
         <activity
             android:name="com.uwcse.morepractice.TrainingPackageNavigation"
@@ -71,7 +69,8 @@
         </activity>
         <activity
             android:name="com.uwcse.morepractice.CustomTags"
-            android:label="@string/title_activity_custom_tags" >
+            android:label="@string/title_activity_custom_tags"
+            android:screenOrientation="landscape" >
         </activity>
     </application>
 
