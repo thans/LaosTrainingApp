@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="begin">ເລີ່ມຕົ້ນການຝຶກອົບຮົມ</string>
+    <string name="wait">ກະລຸນາລໍຖ້າ</string>
+    <string name="checking_message">ກວດກາເບິ່ງການສໍາລັບການປັບປຸງ&#8230;</string>
+    <string name="updating">ປັບປຸງໃຫ້ທັນມີຄວາມຄືບຫນ້າ</string>
+    <string name="notification_message">ການປັບປຸງ</string>
+    <string name="update_complete">ສໍາເລັດການປັບປຸງ</string>
+    <string name="buffering">ເຂດປ້ອງກັນ&#8230;</string>
+    <string name="search_packages">ຄົ້ນຫາ</string>
+    <string name="exit">ປະຈາກ</string>
+    <string name="check_wifi">ກວດເບິ່ງການເຊື່ອມຕໍ່ WIFI ຂອງທ່ານ</string>
+    <string name="update">ປັບປຸງໃຫ້ທັນ</string>
+</resources>

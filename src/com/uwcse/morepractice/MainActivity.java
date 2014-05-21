@@ -53,6 +53,7 @@ public class MainActivity extends Activity {
 
         // for first design iteration
         String laosFilePath = getIntent().getExtras().getString(LANGUAGE_KEY); 
+        setTitle(getName(laosFilePath));
         appRoot = new File(laosFilePath);
         File[] files = appRoot.listFiles();
 
@@ -124,7 +125,7 @@ public class MainActivity extends Activity {
         getMenuInflater().inflate(R.menu.main, menu);
  
         final SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
-        searchView.setQueryHint("Search for packages");
+        searchView.setQueryHint(getString(R.string.search_packages));
         
         searchView.setOnQueryTextListener(new OnQueryTextListener() {    
             @Override
@@ -182,6 +183,11 @@ public class MainActivity extends Activity {
     protected void onPause() {
       super.onPause();
       hideKeyboard();
+    }
+    
+    private String getName(String path) {
+        String[] names = path.split("\\/");
+        return names[names.length - 1];
     }
     
 

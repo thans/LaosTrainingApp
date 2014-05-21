@@ -25,7 +25,7 @@ public class VideoActivity extends Activity{
 		final ProgressDialog pDialog = new ProgressDialog(VideoActivity.this);
 		videoName = this.getIntent().getExtras().getString("VIDEO_NAME");
 		pDialog.setTitle("SMS Video" + videoName);
-		pDialog.setMessage("Buffering...");
+		pDialog.setMessage(getString(R.string.buffering));
 		pDialog.setIndeterminate(false);
 		pDialog.setCancelable(false);
 		pDialog.show();

@@ -2,10 +2,12 @@ package com.uwcse.morepractice;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Random;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Environment;
@@ -132,7 +134,10 @@ public class ChooseLanguage extends Activity {
 	                
 	                TextView tv = (TextView) v.findViewById(R.id.language_text);
 	                String name = laosFilePath + "/" + tv.getText();
-
+	                
+	                // sets device configurations so that lao script appears
+	                setLanguage(name);
+	                
 	               // TextView tv = (TextView) v.findViewById(R.id.item_text);
 	                //String fullname = laosFilePath + "/" + f;
 	                intent.putExtra(MainActivity.LANGUAGE_KEY, name);
@@ -166,5 +171,42 @@ public class ChooseLanguage extends Activity {
 	        	i++;
 	        }*/
 		}
+	}
+
+	/**
+	 * Determines which language to use in the app
+	 * @param path, the file path of the language folder in local storage
+	 */
+	private void setLanguage(String path) {
+	    String name = getName(path);
+	    
+	    // English is default
+	    String langCode = "en";
+	    
+	    // finds which language button the user clicked
+	    if (name.equalsIgnoreCase(getString(R.string.lao))) {
+	        langCode = "lo";
+	    }
+	    
+	    // changes the device's locale
+	    Locale locale = new Locale(langCode); 
+	    Locale.setDefault(locale);
+	    Configuration config = new Configuration();
+	    config.locale = locale;
+	    getBaseContext().getResources().updateConfiguration(config, getBaseContext().getResources().getDisplayMetrics());
+
+	    // resets the content after resetting the locale
+	    setContentView(R.layout.activity_language);
+
+	}
+
+	/**
+	 * Gets the name of the folder
+	 * @param path, the filepath where the folder to return is located
+	 * @return the name of the folder
+	 */
+	private String getName(String path) {
+	    String[] names = path.split("\\/");
+	    return names[names.length - 1];
 	}
 }
