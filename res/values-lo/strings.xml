@@ -11,4 +11,10 @@
     <string name="exit">ປະຈາກ</string>
     <string name="check_wifi">ກວດເບິ່ງການເຊື່ອມຕໍ່ WIFI ຂອງທ່ານ</string>
     <string name="update">ປັບປຸງໃຫ້ທັນ</string>
+    
+    
+    <string name="please_try_again">ກະລຸນາພະຍາຍາມອີກເທື່ອຫນຶ່ງ!</string>
+    <string name="try_again">ພະຍາຍາມອີກເທື່ອຫນຶ່ງ?</string>
+    <string name="next">ຕໍ່ໄປ</string>
+    <string name="hint">ຄຶດ</string>
 </resources>
