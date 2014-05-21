@@ -67,7 +67,8 @@
         </activity>
         <activity
             android:name="com.uwcse.morepractice.QuizActivity"
-            android:label="@string/title_activity_quiz" >
+            android:label="@string/title_activity_quiz"
+            android:screenOrientation="landscape" >
         </activity>
         <activity
             android:name="com.uwcse.morepractice.CustomTags"

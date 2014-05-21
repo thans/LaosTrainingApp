@@ -13,12 +13,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
-    tools:context="com.uwcse.morepractice.QuizActivity" >
+    tools:context="com.uwcse.morepractice.QuizActivity"
+    android:background="@color/Black" >
     
     <!-- Left column -->
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/quiz_left_column"
-        android:layout_width="450dp"
+        android:layout_width="550dp"
         android:layout_height="match_parent"
         android:orientation="vertical" >
         
@@ -27,33 +28,32 @@
 	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
 	        android:text="@string/question_number"
-	        android:textSize="28sp" />
+	        android:textSize="20sp"
+	        android:textColor="@color/White"
+	        android:layout_alignParentTop="true" />
 	    <TextView
 	        android:id="@+id/quiz_question"
 	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
 	        android:text="@string/question"
-	        android:textSize="28sp" />
+	        android:textSize="24sp"
+	        android:textColor="@color/White"
+	        android:layout_below="@id/quiz_question_number" />
 	    <TextView
 	        android:id="@+id/quiz_hint"
 	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
-	        android:layout_marginTop="20sp"
-	        android:textSize="28sp"
-	        android:textColor="@color/Red" />
-	    <TextView
-	        android:id="@+id/quiz_feedback"
-	        android:layout_width="match_parent"
-	        android:layout_height="wrap_content"
-	        android:layout_marginTop="20sp"
-	        android:textSize="28sp"
-	        android:textColor="@color/Green" />
+	        android:layout_marginTop="10sp"
+	        android:textSize="24sp"
+	        android:textColor="@color/White"
+	        android:textStyle="italic"
+	        android:layout_below="@id/quiz_question" />
 	        
-    </LinearLayout>
+    </RelativeLayout>
     
     <!-- Right column -->
-    <LinearLayout
-        android:layout_width="500dp"
+    <RelativeLayout
+        android:layout_width="400dp"
         android:layout_height="match_parent"
         android:orientation="vertical" >
 	    
@@ -62,30 +62,58 @@
 	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
 	        android:text="@string/answer_1"
-	        android:textSize="28sp"
-	        android:onClick="buttonOnClick" />
+	        android:textSize="22sp"
+	        android:drawable="@color/White"
+	        android:textColor="@color/White"
+	        android:onClick="buttonOnClick"
+	        android:layout_alignParentTop="true" />
 	    <Button
 	        android:id="@+id/quiz_answer_2"
 	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
 	        android:text="@string/answer_2"
-	    	android:textSize="28sp"
- 		    android:onClick="buttonOnClick" />
+	    	android:textSize="22sp"
+	    	android:textColor="@color/White"
+ 		    android:onClick="buttonOnClick"
+ 		    android:layout_below="@id/quiz_answer_1" />
 	    <Button
 	        android:id="@+id/quiz_answer_3"
 	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
 	        android:text="@string/answer_3"
-	    	android:textSize="28sp"
-	    	android:onClick="buttonOnClick" />
+	    	android:textSize="22sp"
+	    	android:textColor="@color/White"
+	    	android:onClick="buttonOnClick"
+	    	android:layout_below="@id/quiz_answer_2" />
 	    <Button
 	        android:id="@+id/quiz_answer_4"
 	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
 	        android:text="@string/answer_4"
-	        android:textSize="28sp"
-	        android:onClick="buttonOnClick" />
+	        android:textSize="22sp"
+	        android:textColor="@color/White"
+	        android:onClick="buttonOnClick"
+	        android:layout_below="@id/quiz_answer_3" />
+   	    <TextView
+	        android:id="@+id/quiz_feedback"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_marginTop="10sp"
+	        android:layout_alignParentBottom="true"
+	        android:layout_centerHorizontal="true"
+	        android:textSize="50sp"
+	        android:textColor="@color/White" />
+	    <Button
+	        android:id="@+id/quiz_next"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="@string/next"
+	        android:textSize="30sp"
+	        android:textColor="@color/White"
+	        android:onClick="buttonOnClick"
+	        android:layout_alignParentBottom="true"
+	        android:layout_alignParentRight="true" />
 
-    </LinearLayout>
+    </RelativeLayout>
     
 </LinearLayout>

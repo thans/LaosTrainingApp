@@ -2,6 +2,7 @@ package com.uwcse.morepractice;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -10,17 +11,23 @@ import java.util.Scanner;
 import android.util.Log;
 
 /**
- * A class that provides a static method for reading a quiz from a CSV file and returning a Quiz object.
+ * A class that provides a static method for reading a quiz from a CSV file and returning a Quiz
+ * object.
  * @author James
  */
 public class CsvParser {
 
 	/**
+	 * Android logging tag.
+	 */
+	public static final String TAG = "CsvParser";
+	
+	/**
 	 * Reads a quiz stored in a CSV file, and returns a Quiz object
 	 * @param path The path to the CSV file storing the quiz.
 	 * @return The Quiz object.
 	 */
-	public static Quiz parseQuizFromCsv(String path) {
+	public static Quiz parseQuizFromCsv(String path) throws ParseException {
 		return parseQuizFromCsv(new File(path));
 	}
 	
@@ -80,6 +87,7 @@ public class CsvParser {
 			} catch (NumberFormatException e) {
 				questionNumber = 0;
 			}
+			Log.v(TAG, firstLine[1]);
 			question = firstLine[1];
 			answers.add(firstLine[2]);
 			if (firstLine.length > 3 && firstLine[3].equals("1")) {

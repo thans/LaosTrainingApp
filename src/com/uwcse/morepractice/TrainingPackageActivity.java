@@ -143,6 +143,9 @@ public class TrainingPackageActivity extends Activity {
 		}
 	}
 	
+	/**
+	 * Refresh the current file in the current package.
+	 */
 	public void refreshFile() {
 		RelativeLayout layout = 
 		        (RelativeLayout) this.findViewById(R.id.activity_training_package_layout);
@@ -168,6 +171,7 @@ public class TrainingPackageActivity extends Activity {
 	 * Determines and returns the type of the file based on its extension
 	 * mp4 for videos
 	 * jpg, png, and gif for images
+	 * csv for quiz files
 	 * TODO all other file types are currently unsupported
 	 * @param filename the filename to parse
 	 * @return the {@link Filetype} associated with the filename
@@ -322,7 +326,7 @@ public class TrainingPackageActivity extends Activity {
 	        	
 	        	Button button = new Button(this);
 	        	button.setText(R.string.try_again);
-	        	button.setTextSize(40);
+	        	button.setTextSize(32);
 	        	button.setOnClickListener(new OnClickListener() {
 					@Override
 					public void onClick(View view) {
@@ -332,7 +336,7 @@ public class TrainingPackageActivity extends Activity {
 	        	RelativeLayout.LayoutParams buttonParams = new RelativeLayout.LayoutParams(
 	        			LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 	        	buttonParams.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
-	        	buttonParams.addRule(RelativeLayout.BELOW, textView.getId());
+	        	buttonParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
 	        	layout.addView(button, buttonParams);
 	        }
 	    }

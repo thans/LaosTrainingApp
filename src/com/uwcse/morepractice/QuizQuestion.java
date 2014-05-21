@@ -87,6 +87,13 @@ public class QuizQuestion {
 	}
 	
 	/**
+	 * @return The index of the correct answer. Zero-based indexing is used.
+	 */
+	public int getCorrectAnswer() {
+		return correctAnswer;
+	}
+	
+	/**
 	 * @return This question's question number.
 	 */
 	public int getQuestionNumber() {
