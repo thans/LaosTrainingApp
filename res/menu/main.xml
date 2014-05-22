@@ -1,29 +1,24 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.uwcse.morepractice.MainActivity" >
-    
+
     <item android:id="@+id/action_search"
           android:icon="@drawable/ic_action_search"
           android:title="@string/action_search"
-          android:showAsAction="ifRoom" 
+          android:showAsAction="ifRoom"
           android:actionViewClass="android.widget.SearchView"/>
-    
+
     <item
         android:id="@+id/action_download"
         android:icon="@drawable/ic_action_download"
         android:orderInCategory="100"
         android:showAsAction="ifRoom"
         android:title="@string/action_download"/>
-    
+
     <item
         android:id="@+id/action_quiz"
         android:icon="@drawable/ic_action_cloud"
         android:showAsAction="ifRoom"
         android:title="@string/action_quiz" />
-    
-    <item
-        android:id="@+id/action_custom"
-        android:icon="@drawable/ic_action_settings"
-        android:showAsAction="ifRoom" />
 
 </menu>

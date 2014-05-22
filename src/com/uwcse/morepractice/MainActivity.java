@@ -38,21 +38,22 @@ public class MainActivity extends Activity {
     private File appRoot;
     private GridView gridview;
     private Context context;
-    
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         context = getApplicationContext();
-        
+
         ActionBar actionBar = getActionBar();
         actionBar.show();
         actionBar.setDisplayHomeAsUpEnabled(true);
-        
+
         String baseDir = Environment.getExternalStorageDirectory().getAbsolutePath();
 
         // for first design iteration
-        String laosFilePath = getIntent().getExtras().getString(LANGUAGE_KEY); 
+        String laosFilePath = getIntent().getExtras().getString(LANGUAGE_KEY);
+        setTitle(getName(laosFilePath));
         appRoot = new File(laosFilePath);
         File[] files = appRoot.listFiles();
 
@@ -78,40 +79,39 @@ public class MainActivity extends Activity {
                 // Reconstruct the full path of the file to send to the new activity
                 TextView tv = (TextView) v.findViewById(R.id.item_text);
                 String name = appRoot.getAbsolutePath() + "/" + tv.getText();
-                //intent.putExtra(TrainingPackageActivity.INTENT_KEY_NAME, name);
                 intent.putExtra(TrainingPackageNavigation.INTENT_KEY_NAME, name);
                 startActivity(intent);
             }
         });
 
     }
-        
+
     public void addTrainingPackageButtons(String baseDir) {
-        //LinearLayout layout = 
+        //LinearLayout layout =
             //    (LinearLayout) this.findViewById(R.id.activity_main_linear_layout);
         Log.e(TAG, "checking in: " + R.string.local_storage_folder);
         File appRoot = new File(baseDir + "/" + getString(R.string.local_storage_folder));
         File[] files = appRoot.listFiles();
 
         for (File f : files) {
-        
+
             Button toTrainingPackage = new Button(this);
             Log.e(TAG, f.getName());
             Log.e(TAG, f.getPath());
-            
+
             // Gets the size of the current window and stores it using a Point
-            Display display = getWindowManager().getDefaultDisplay(); 
+            Display display = getWindowManager().getDefaultDisplay();
             Point size = new Point();
-            
+
             display.getSize(size);
             toTrainingPackage.setWidth(size.x / 3);
             toTrainingPackage.setHeight(size.y / 3);
             toTrainingPackage.setTextSize(50);
             toTrainingPackage.setBackgroundColor(Color.parseColor("#4169e1"));
-            
+
             toTrainingPackage.setText(f.getName());
             toTrainingPackage.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-            
+
             Intent intent = new Intent(MainActivity.this, TrainingPackageActivity.class);
             intent.putExtra(TrainingPackageActivity.INTENT_KEY_NAME, f.getAbsolutePath());
             toTrainingPackage.setOnClickListener(new TrainingPackageClickListener((Activity) this, intent));
@@ -123,19 +123,19 @@ public class MainActivity extends Activity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
- 
+
         final SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
-        searchView.setQueryHint("Search for packages");
-        
-        searchView.setOnQueryTextListener(new OnQueryTextListener() {    
+        searchView.setQueryHint(getString(R.string.search_packages));
+
+        searchView.setOnQueryTextListener(new OnQueryTextListener() {
             @Override
             public boolean onQueryTextChange(String newText) {
                 performSearch(newText);
                 return false;
             }
-            
+
             @Override
-            public boolean onQueryTextSubmit(String query) { 
+            public boolean onQueryTextSubmit(String query) {
                 hideKeyboard();
                 return true;
             }
@@ -143,7 +143,7 @@ public class MainActivity extends Activity {
 
         return super.onCreateOptionsMenu(menu);
     }
-    
+
     /**
      * Performs the search by filtering package names
      * @param search, the text to search for
@@ -159,7 +159,7 @@ public class MainActivity extends Activity {
         String[] filteredArray = filteredList.toArray(new String[filteredList.size()]);
         adapter = null;
         adapter = new MyViewAdapter(this, filteredArray, appRoot.getAbsolutePath() + "/", R.layout.row_grid );
-        
+
         // Construct the gridView, sending in the files and the absolute path where the files reside
         gridview.setAdapter(adapter);
     }
@@ -177,14 +177,19 @@ public class MainActivity extends Activity {
         if(v != null)
             inputManager.hideSoftInputFromWindow(v.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
     }
-    
-    
+
+
     @Override
     protected void onPause() {
       super.onPause();
       hideKeyboard();
     }
-    
+
+    private String getName(String path) {
+        String[] names = path.split("\\/");
+        return names[names.length - 1];
+    }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -196,26 +201,22 @@ public class MainActivity extends Activity {
             new ActionBarFunctions().downloadsActivity(this);
             return true;
         }
-        if (id == R.id.action_quiz) {
-            new ActionBarFunctions().quizActivity(this);
-            return true;
-        }
-        
+
         if (id == R.id.action_custom) {
         	new ActionBarFunctions().customActivity(this);
         }
         return super.onOptionsItemSelected(item);
     }
-    
 
-    public void showToast(String text) { 
+
+    public void showToast(String text) {
         Context context = getApplicationContext();
         int duration = Toast.LENGTH_SHORT;
-    
+
         Toast toast = Toast.makeText(context, text, duration);
         toast.show();
     }
-    
+
     /**
      * A placeholder fragment containing a simple view.
      */

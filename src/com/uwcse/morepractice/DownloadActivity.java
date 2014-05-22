@@ -26,39 +26,50 @@ import com.google.api.services.drive.model.FileList;
 
 import android.accounts.AccountManager;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.NotificationManager;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 public class DownloadActivity extends Activity {
     // for accessing drive
-    static final int                	REQUEST_ACCOUNT_PICKER = 1;
-    static final int                	REQUEST_AUTHORIZATION = 2;
-    private static Drive            	mService;
-    private GoogleAccountCredential 	mCredential;
-    private Context                 	mContext;
+    static final int                    REQUEST_ACCOUNT_PICKER = 1;
+    static final int                    REQUEST_AUTHORIZATION = 2;
+    private static Drive                mService;
+    private GoogleAccountCredential     mCredential;
+    private Context                     mContext;
     
     // pertaining to files
-    private List<File>              	languageList;
-    private java.io.File            	targetDir;
+    private java.io.File                targetDir;
     private List<java.io.File>          localFiles;
     
-    // notification of update progress
+    // for progress bar in notification bar
     private int                         numDownloading;
     private int                         updateMax;
     private int                         updateProgress;
-    private NotificationManager     	nm;
+    private NotificationManager         nm;
     private NotificationCompat.Builder  mBuilder;
+    
+    // for progress bar on screen
+    private ProgressBar                 mProgress;
+    private Handler                     mHandler = new Handler();
+    
+    // for pop up dialog while checking to see if update is necessary
+    private ProgressDialog              checkProgress;
+    private int                         check = 0;
     
     // persistent data that stores the last time the device updated files
     private SharedPreferences           sp;  
@@ -76,15 +87,8 @@ public class DownloadActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_download);
-
-        getActionBar().setDisplayHomeAsUpEnabled(true);
-
-        // setup for credentials for connecting to the Google Drive account
-        mCredential = GoogleAccountCredential.usingOAuth2(this, Arrays.asList(DriveScopes.DRIVE));
-	    
-        // start activity that prompts the user for their google drive account
-        startActivityForResult(mCredential.newChooseAccountIntent(), REQUEST_ACCOUNT_PICKER);
-	    
+        setTitle(getString(R.string.update));
+        getActionBar().show();
         mContext = getApplicationContext();
         
         sp = getPreferences(Context.MODE_PRIVATE);
@@ -92,29 +96,80 @@ public class DownloadActivity extends Activity {
         targetDir = new java.io.File(Environment.getExternalStorageDirectory(), 
                 getString(R.string.local_storage_folder));
         
-        final Button button = (Button) findViewById(R.id.button2);
-        button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                setUPForRecovery();
-                
-                /*nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                mBuilder = new NotificationCompat.Builder(mContext);
-                mBuilder.setContentTitle("Package Update")
-                        .setContentText("Update in progress")
-                        .setSmallIcon(android.R.drawable.stat_sys_download)
-                        .setTicker("Starting update");*/
-                
-                numDownloading = 0;
-                updateMax = 0;
-                updateProgress = 0;
-                readPref();
-                writePref();
-                update();
-                
-        	}
-        });
+        checkWIFI();
     }
     
+    
+    /**
+     * Checks that wifi is available;
+     * If so, proceeds to the account picker;
+     * If not, alerts the user to check wifi
+     */
+    private void checkWIFI() {
+        ConnectivityManager manager = (ConnectivityManager) 
+                getSystemService(MainActivity.CONNECTIVITY_SERVICE);
+        boolean isWifi = manager.getNetworkInfo(
+                ConnectivityManager.TYPE_WIFI).isConnected();
+        if (isWifi) {
+            // setup for credentials for connecting to the Google Drive account
+            mCredential = GoogleAccountCredential.usingOAuth2(this, Arrays.asList(DriveScopes.DRIVE));
+            // start activity that prompts the user for their google drive account
+            startActivityForResult(mCredential.newChooseAccountIntent(), REQUEST_ACCOUNT_PICKER);
+        } else {
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(DownloadActivity.this);
+            alertDialogBuilder
+                .setTitle(getString(R.string.check_wifi))
+                .setCancelable(false)
+                .setPositiveButton(getString(R.string.exit), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog,int id) {
+                        // if this button is clicked, close
+                        // current activity
+                        DownloadActivity.this.finish();
+                    }
+                });
+
+            AlertDialog alertDialog = alertDialogBuilder.create();
+            alertDialog.show();
+        }
+    }
+    
+    
+    /**
+     * Starts the update as soon as user picks an account
+     */
+    private void startDownloadActivity() {
+        checking();
+        setUPForRecovery();
+        numDownloading = 0;
+        updateMax = 0;
+        updateProgress = 0;
+        readPref();
+        writePref();
+        update();
+    }
+    
+    /**
+     * Shows the indeterminate progress dialog for checking to see if 
+     * an update is needed
+     */
+    private void checking() {
+        checkProgress = new ProgressDialog(DownloadActivity.this);
+        checkProgress.setCancelable(false);
+        checkProgress.setMessage(getResources().getString(R.string.checking_message));
+        checkProgress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        checkProgress.setIndeterminate(true);
+        checkProgress.show();
+        new Thread(new Runnable() {
+            public void run() {
+                while (check == 0) {}
+                checkProgress.dismiss();
+                if (check == 1)
+                    DownloadActivity.this.finish();
+            }
+        }).start();
+
+    }
+
     /**
      * Gets all the files in app directory, for recovery
      */
@@ -144,7 +199,7 @@ public class DownloadActivity extends Activity {
     
     
     /**
-     * Checks that the local app directory and the google drive account are consistent
+     * Checks that the local app directory and the google drive account are consistent;
      * For seeing whether update is needed
      * @param list, the list of files from drive
      * @return true if consistent, false otherwise
@@ -197,7 +252,6 @@ public class DownloadActivity extends Activity {
             public void run() {
                 List<File> list = getContents(NOT_TRASHED + " and " + NOT_FOLDER);
                 List<File> filteredList = new ArrayList<File>();
-                updateMax = list.size();
                 
                 // filters out shared drive files and by timestamp
                 boolean needsUpdate = false;
@@ -206,38 +260,49 @@ public class DownloadActivity extends Activity {
                         filteredList.add(f);
                         if (checkTimeStamp(f)) {
                             needsUpdate = true;
-                            showToast("Update is necessary");
                             break;
                         }
                     }
-
                 }
 
-                // for notification
+                // for showing progress to user
 
                 numDownloading = filteredList.size();
-                Log.e("MAX SET","numDownloading set to max");
+                updateMax = numDownloading;
                 if (!needsUpdate && isConsistent(filteredList)) {
-                    showToast("Update not needed");
-                    // update notification
-                    /*mBuilder.setContentTitle("Update not needed")
-                    .setContentText("")
-                    .setSmallIcon(R.drawable.ic_action_download)
-                    .setProgress(0, 0, false);
-                    nm.notify(0, mBuilder.build());*/
+                    //showToast("Update not needed");
+                    check++;
                 } else {
-                    /*mBuilder.setProgress(updateMax, 0, false)
-                    .setContentTitle("Checking system for updates....");
-                    // Issues the notification
-                    nm.notify(0, mBuilder.build());*/
+                    check += 2;
+                    String note = getResources().getString(R.string.notification_message);
                     nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
                     mBuilder = new NotificationCompat.Builder(mContext);
-                    mBuilder.setContentTitle("Checking system for updates....")
+                    mBuilder.setContentTitle(note)
                             .setSmallIcon(android.R.drawable.stat_sys_download)
-                            .setTicker("Checking system for updates....");
-                    if (targetDir.exists()) {
+                            .setTicker(note);
+                    
+                    mProgress = (ProgressBar) findViewById(R.id.progressBar1);
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            while (numDownloading > 0) {
+                                mHandler.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        int progress = 100 * (updateMax - numDownloading) / updateMax; 
+                                        mProgress.setProgress(progress);
+                                        if (numDownloading <= 0) {
+                                            mProgress.setVisibility(4);
+                                        }
+                                    }    
+                                });
+                            }
+                        }
+                    }).start();
+                    
+                    if (targetDir.exists())
                         deleteFile(targetDir);
-                    }
+                    
                     targetDir.mkdirs();
                     getDriveContents();
                 }
@@ -245,12 +310,6 @@ public class DownloadActivity extends Activity {
         });
         t.start();
     }
-    
-    /*nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                mBuilder = new NotificationCompat.Builder(mContext);
-                mBuilder.setContentTitle("Checking system for updates....")
-                        .setSmallIcon(android.R.drawable.stat_sys_download)
-                        .setTicker("Checking system for updates....");*/
     
     /**
      * Gets the contents of a google drive folder
@@ -272,7 +331,7 @@ public class DownloadActivity extends Activity {
                 result.addAll(fileList.getItems());
                 request.setPageToken(fileList.getNextPageToken());
             } catch (UserRecoverableAuthIOException e) {
-                startActivityForResult(e.getIntent(), REQUEST_AUTHORIZATION);
+                //startActivityForResult(e.getIntent(), REQUEST_AUTHORIZATION);
             } catch (IOException e) {
                 e.printStackTrace();
                 if (request != null) 
@@ -292,9 +351,16 @@ public class DownloadActivity extends Activity {
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
-            	// get only the folders in the root directory of drive account
-                languageList = getContents(TOP_LEVEL + " and " + NOT_TRASHED + " and " + FOLDER);
-                processLanguages();
+                // get only the folders in the root directory of drive account
+                List<File> files = getContents(TOP_LEVEL + " and " + NOT_TRASHED);
+                List<File> languageList = new ArrayList<File>();
+                for (File f : files) {
+                    if (isFolder(f)) 
+                        languageList.add(f);
+                    else 
+                        numDownloading--;
+                }
+                processLanguages(languageList);
             }
         });
         t.start();
@@ -304,7 +370,7 @@ public class DownloadActivity extends Activity {
     /**
      * Processes the language folders downloaded from the drive
      */
-    private void processLanguages() {
+    private void processLanguages(List<File> languageList) {
         // process each drive folder to download;
         for (File f : languageList) {
             String langName = f.getTitle();
@@ -324,9 +390,16 @@ public class DownloadActivity extends Activity {
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
-            	// gets only the folders in the language folder
-            	String whichFiles = "'" + languageFolder.getId() + "' in parents and " + NOT_TRASHED + " and " + FOLDER;
-                List<File> packageList = getContents(whichFiles);
+                // gets only the folders in the language folder
+                String whichFiles = "'" + languageFolder.getId() + "' in parents and " + NOT_TRASHED;
+                List<File> files = getContents(whichFiles);
+                List<File> packageList = new ArrayList<File>();
+                for (File f : files) {
+                    if (isFolder(f)) 
+                        packageList.add(f);
+                    else 
+                        numDownloading--;
+                }
                 processFolders(packageList, localLanguageFolder);
             }
         });
@@ -345,9 +418,6 @@ public class DownloadActivity extends Activity {
             String folderName = f.getTitle();
             java.io.File localFolder = new java.io.File(parentFolder, folderName);
             Log.e("folder",localFolder.getAbsolutePath());
-            if (localFolder.exists()) {
-                Log.e("EXISTS", folderName + " exists");
-            }
             localFolder.mkdirs();
             getFolderContents(f, localFolder);
         }
@@ -380,7 +450,7 @@ public class DownloadActivity extends Activity {
         t.start();
     }
     
-    
+
     /**
      * Begins the downloading process of the given file from a google drive account folder
      * @param mFile, the file to download
@@ -390,29 +460,29 @@ public class DownloadActivity extends Activity {
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
-                    if (mFile.getDownloadUrl() != null && mFile.getDownloadUrl().length() > 0) {
-                        try {
-                            com.google.api.client.http.HttpResponse resp =
-                                    mService.getRequestFactory()
-                                    .buildGetRequest(new GenericUrl(mFile.getDownloadUrl()))
-                                    .execute();
-                            
-                            // gets the file's contents
-                            InputStream inputStream = resp.getContent();
+                if (mFile.getDownloadUrl() != null && mFile.getDownloadUrl().length() > 0) {
+                    try {
+                        com.google.api.client.http.HttpResponse resp =
+                                mService.getRequestFactory()
+                                .buildGetRequest(new GenericUrl(mFile.getDownloadUrl()))
+                                .execute();
 
-                            // stores the contents to the device's external storage
-                            try {
-                                final java.io.File file = new java.io.File(targetFolder, mFile.getTitle());
-                                System.out.println("Downloading: " + mFile.getTitle() + " to " + file.getPath());
-                                //numDownloading++;
-                                storeFile(file, inputStream);
-                            } finally {
-                                inputStream.close();
-                            }
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                        // gets the file's contents
+                        InputStream inputStream = resp.getContent();
+
+                        // stores the contents to the device's external storage
+                        try {
+                            final java.io.File file = new java.io.File(targetFolder, mFile.getTitle());
+                            System.out.println("Downloading: " + mFile.getTitle() + " to " + file.getPath());
+                            //numDownloading++;
+                            storeFile(file, inputStream);
+                        } finally {
+                            inputStream.close();
                         }
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
+                }
             }
         });
         t.start();
@@ -441,7 +511,7 @@ public class DownloadActivity extends Activity {
                     }
                     oStream.flush();
                 } finally {
-                    oStream.close();
+                    oStream.close(); 
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -458,20 +528,29 @@ public class DownloadActivity extends Activity {
             //finished downloading all files
             Log.e("STATUS","numDownloading is at " + numDownloading);
             // update notification
-            mBuilder.setContentTitle("Update complete")
+            String note = getResources().getString(R.string.update_complete);
+            mBuilder.setContentTitle(note)
                     .setContentText("")
                     .setSmallIcon(R.drawable.ic_action_download)
-                    .setTicker("Update complete")
+                    .setTicker(note)
                     .setProgress(0, 0, false);
             nm.notify(0, mBuilder.build());
             finish();
         } else {
-            // Sets an activity indicator for an operation of determinate length
             mBuilder.setProgress(updateMax, ++updateProgress, false)
-            .setContentTitle("Updating....");
+            .setContentTitle(getResources().getString(R.string.notification_message));
             // Issues the notification
             nm.notify(0, mBuilder.build());
         }
+    }
+    
+    /**
+     * Checks if the given file is a folder
+     * @param f, the file to check
+     * @return true if file is a folder, false otherwise
+     */
+    private boolean isFolder(File f) {
+        return f.getMimeType() != null && f.getMimeType().equals("application/vnd.google-apps.folder");
     }
     
     
@@ -544,11 +623,16 @@ public class DownloadActivity extends Activity {
         switch (requestCode) {
             case REQUEST_ACCOUNT_PICKER:
                 if (resultCode == RESULT_OK && data != null && data.getExtras() != null) {
+                    // gets drive account information and proceeds to download packages
                     String accountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
                     if (accountName != null) {
                         mCredential.setSelectedAccountName(accountName);
                         mService = getDriveService(mCredential);
+                        startDownloadActivity();
                     }
+                } else {
+                    // exits the activity if user clicks "cancel"
+                    DownloadActivity.this.finish();
                 }
                 break;
             case REQUEST_AUTHORIZATION:
@@ -575,25 +659,20 @@ public class DownloadActivity extends Activity {
         });
     }
     
-    
+     
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-   
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.download, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
+    
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_accounts) {
-        	new ActionBarFunctions().refresh(this);
-        	return true;
-        }
         return super.onOptionsItemSelected(item);
     }
 }

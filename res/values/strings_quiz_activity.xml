@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="question">Question</string>
+	<string name="question_number">#</string>
 	<string name="answer_1">Answer 1</string>
 	<string name="answer_2">Answer 2</string>
 	<string name="answer_3">Answer 3</string>
@@ -10,4 +11,12 @@
 	<string name="explanation_3">Answer 3 is incorrect because ___.</string>
 	<string name="explanation_4">Answer 4 is incorrect because ___.</string>
 	<string name="action_quiz">Try quiz</string>
+	<string name="plus_one">+1</string>
+	<string name="plus_one_half">+½</string>
+	<string name="one_half">½</string>
+	<string name="plus_zero">+0</string>
+	<string name="please_try_again">Please try again!</string>
+	<string name="try_again">Try again?</string>
+	<string name="next">Next</string>
+	<string name="hint">Hint</string>
 </resources>

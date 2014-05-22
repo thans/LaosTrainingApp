@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="wait">Please wait</string>
+    <string name="checking_message">Checking for updates&#8230;</string>
+    <string name="updating">Update in progress</string>
+    <string name="notification_message">Updating More Practice</string>
+    <string name="update_complete">Update complete</string>
+    <string name="exit">Exit</string>
+    <string name="check_wifi">Check your WIFI connection</string>
+    <string name="update">Update</string>
+</resources>

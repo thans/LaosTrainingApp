@@ -21,9 +21,9 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class MyViewAdapter extends BaseAdapter {
+public class NavigationAdapter extends BaseAdapter {
 
-	private static final String TAG = MyViewAdapter.class.getSimpleName();
+	private static final String TAG = NavigationAdapter.class.getSimpleName();
 		//	MainActivity.class.getSimpleName();
 	
 	private Context mContext;
@@ -35,14 +35,14 @@ public class MyViewAdapter extends BaseAdapter {
 	public LayoutInflater inflater;
 	public int LayoutResourceId;
 	
-	public MyViewAdapter(Context c, String[] s, String d, int id){
+	public NavigationAdapter(Context c, String[] s, String d, int id){
 		mContext = c;
 		files = s;
 		directory = d;
 		LayoutResourceId = id;
 	}
 	
-	public MyViewAdapter(Context c){
+	public NavigationAdapter(Context c){
 		mContext = c;
 	}
 	
@@ -84,16 +84,22 @@ public class MyViewAdapter extends BaseAdapter {
         	holder = (ViewHolder) row.getTag();
         }
 		
-		holder.text.setText(files[position]);
+		String[] parts = files[position].split("\\.");
 		
-		File file = this.getFileImg(new File(directory + files[position]));
+		holder.text.setText(parts[0].toLowerCase());
 		
-		if(file != null){
-			Log.e(TAG, "FILE:"  + file.getName());
-	        Bitmap myBitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-			holder.img.setImageBitmap(myBitmap);
-			file = null;
-		}else {
+		String extension = getExtension(files[position]);
+		if (extension == null) {
+			holder.img.setImageBitmap(null);
+		} else if (extension.equals("jpg") || extension.equals("jpeg") || extension.equals("png") || extension.equals("gif")) {
+			holder.img.setImageResource(R.drawable.pic_img);
+		} else if (extension.equals("mp4")) {
+			holder.img.setImageResource(R.drawable.video_img);
+		} /*else if (extension.equals("txt")) {
+		    return Filetype.TEXT;
+		}*/ else if (extension.equals("csv")) {
+			holder.img.setImageResource(R.drawable.quiz_img);
+		} else {
 			holder.img.setImageBitmap(null);
 		}
 		
@@ -122,5 +128,15 @@ public class MyViewAdapter extends BaseAdapter {
 			}
 		}
 		return file;
+	}
+	
+	/**
+	 * Returns the extension of the given filename or null if there is no extension
+	 * @param filename the file name to parse
+	 * @return the extension of the given filename, or null if there is no extension
+	 */
+	private String getExtension(String filename) {
+		String[] parts = filename.split("\\.");
+		return parts[parts.length - 1].toLowerCase();
 	}
 }

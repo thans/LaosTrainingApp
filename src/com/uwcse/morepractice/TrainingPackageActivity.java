@@ -2,14 +2,10 @@ package com.uwcse.morepractice;
 
 import java.io.File;
 
-import com.uwcse.morepractice.R;
-
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -32,11 +28,10 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.MediaController;
 import android.widget.RelativeLayout;
-import android.widget.ScrollView;
+import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
@@ -149,6 +144,15 @@ public class TrainingPackageActivity extends Activity {
 	}
 	
 	/**
+	 * Refresh the current file in the current package.
+	 */
+	public void refreshFile() {
+		RelativeLayout layout = 
+		        (RelativeLayout) this.findViewById(R.id.activity_training_package_layout);
+		addToActivity(FILES[currentFile], layout);
+	}
+	
+	/**
 	 * Navigate to the file at the given position
 	 * @param pos the file to navigate to
 	 */
@@ -167,6 +171,7 @@ public class TrainingPackageActivity extends Activity {
 	 * Determines and returns the type of the file based on its extension
 	 * mp4 for videos
 	 * jpg, png, and gif for images
+	 * csv for quiz files
 	 * TODO all other file types are currently unsupported
 	 * @param filename the filename to parse
 	 * @return the {@link Filetype} associated with the filename
@@ -181,6 +186,8 @@ public class TrainingPackageActivity extends Activity {
 			return Filetype.VIDEO;
 		} else if (extension.equals("txt")) {
 		    return Filetype.TEXT;
+		} else if (extension.equals("csv")) {
+			return Filetype.CSV;
 		} else {
 			return Filetype.UNSUPPORTED;
 		}
@@ -235,6 +242,7 @@ public class TrainingPackageActivity extends Activity {
 		// params unused
 		Filetype type = getType(f.getName());
 		String path = f.getAbsolutePath();
+		Log.v(TAG, "Adding a " + type.name() + " file to the activity. File: " + path);
 		layout.removeAllViews();
 		switch (type)  {
 	        case IMAGE:
@@ -286,10 +294,51 @@ public class TrainingPackageActivity extends Activity {
 	            // do nothing
 	            break;
 	        case CSV:
-	            // TODO - parse the quiz
+	        	Log.v(TAG, "CSV file encountered.");
+	    		Intent intent = new Intent(this, QuizActivity.class);
+	    		Bundle bundle = new Bundle();
+	    		bundle.putString(QuizActivity.QUIZ_FILE_FULL_PATH_KEY, path);
+	    		intent.putExtras(bundle);
+	    		this.startActivityForResult(intent, QuizActivity.GET_QUIZ_SCORE_REQUEST);
 	            break;
 	        case UNSUPPORTED:
 	            break;
+	    }
+	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+	    // Check which request we're responding to
+	    if (requestCode == QuizActivity.GET_QUIZ_SCORE_REQUEST) {
+	        // Make sure the request was successful
+	        if (resultCode == RESULT_OK) {
+	        	String quizScore = data.getExtras().getString(QuizActivity.QUIZ_SCORE_KEY);
+	        	
+	        	RelativeLayout layout = (RelativeLayout) findViewById(R.id.activity_training_package_layout);
+	        	TextView textView = new TextView(this);
+	        	textView.setText(quizScore);
+	        	textView.setTextSize(40);
+	        	RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+	        	        LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+	        	params.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
+	        	params.addRule(RelativeLayout.CENTER_VERTICAL, RelativeLayout.TRUE);
+	        	layout.addView(textView, params);
+	        	
+	        	Button button = new Button(this);
+	        	button.setText(R.string.try_again);
+	        	button.setTextSize(32);
+	        	button.setOnClickListener(new OnClickListener() {
+					@Override
+					public void onClick(View view) {
+						TrainingPackageActivity.this.refreshFile();
+					}
+	        	});
+	        	RelativeLayout.LayoutParams buttonParams = new RelativeLayout.LayoutParams(
+	        			LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+	        	buttonParams.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
+	        	buttonParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
+	        	layout.addView(button, buttonParams);
+	        }
 	    }
 	}
 

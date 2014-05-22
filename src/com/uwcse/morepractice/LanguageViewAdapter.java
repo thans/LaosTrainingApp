@@ -21,9 +21,9 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class MyViewAdapter extends BaseAdapter {
+public class LanguageViewAdapter extends BaseAdapter {
 
-	private static final String TAG = MyViewAdapter.class.getSimpleName();
+	private static final String TAG = LanguageViewAdapter.class.getSimpleName();
 		//	MainActivity.class.getSimpleName();
 	
 	private Context mContext;
@@ -35,14 +35,14 @@ public class MyViewAdapter extends BaseAdapter {
 	public LayoutInflater inflater;
 	public int LayoutResourceId;
 	
-	public MyViewAdapter(Context c, String[] s, String d, int id){
+	public LanguageViewAdapter(Context c, String[] s, String d, int id){
 		mContext = c;
 		files = s;
 		directory = d;
 		LayoutResourceId = id;
 	}
 	
-	public MyViewAdapter(Context c){
+	public LanguageViewAdapter(Context c){
 		mContext = c;
 	}
 	
@@ -69,58 +69,31 @@ public class MyViewAdapter extends BaseAdapter {
 		
 		TextView view;
 		
-		ViewHolder holder = null;
+		//ViewHolder holder = null;
 		
 		View row = convertView;
 		
 		if (row == null) {  // if it's not recycled, initialize some attributes
            	LayoutInflater inflater = ((Activity) mContext).getLayoutInflater();
            	row = inflater.inflate(LayoutResourceId, parent, false); 
-           	holder = new ViewHolder();	
-            holder.text = (TextView) row.findViewById(R.id.item_text);
-            holder.img = (ImageView) row.findViewById(R.id.item_image);
-            row.setTag(holder);
+           	view = (TextView) row.findViewById(R.id.language_text);
+           	//holder = new ViewHolder();	
+            //holder.text = (TextView) row.findViewById(R.id.item_text);
+            //holder.img = (ImageView) row.findViewById(R.id.item_image);
+            row.setTag(view);
         } else {
-        	holder = (ViewHolder) row.getTag();
+        	view = (TextView) row.getTag();
         }
 		
-		holder.text.setText(files[position]);
+		view.setText(files[position]);
+		  Log.e(TAG, "In language view" + files[position]);
+		//File file = this.getFileImg(new File(directory + files[position]));
 		
-		File file = this.getFileImg(new File(directory + files[position]));
 		
-		if(file != null){
-			Log.e(TAG, "FILE:"  + file.getName());
-	        Bitmap myBitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-			holder.img.setImageBitmap(myBitmap);
-			file = null;
-		}else {
-			holder.img.setImageBitmap(null);
-		}
-		
-		Random ran = new Random();
 			
-		holder.text.setBackgroundColor(Color.parseColor(colors[position % colors.length]));
-		holder.img.setBackgroundColor(Color.parseColor(colors[position % colors.length]));
+		view.setBackgroundColor(Color.parseColor(colors[position % colors.length]));
+		//holder.img.setBackgroundColor(Color.parseColor(colors[position % colors.length]));
 		return row; 
 	}
 	
-	// Special view that populates the gridView
-	// Has a text view and an image view
-	public static class ViewHolder {
-		TextView text;
-		ImageView img;
-	}
-	
-	public File getFileImg(File dir) {
-		File file = null;		
-		if (dir.isDirectory()) {
-			File[] fs = dir.listFiles();
-			for (File f : fs) {
-				if (f.getName().equals("img.jpg")) {
-					file = f;
-				}	
-			}
-		}
-		return file;
-	}
 }

@@ -2,23 +2,32 @@ package com.uwcse.morepractice;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
+import android.util.Log;
+
 /**
- * A class that provides a static method for reading a quiz from a CSV file and returning a Quiz object.
+ * A class that provides a static method for reading a quiz from a CSV file and returning a Quiz
+ * object.
  * @author James
  */
 public class CsvParser {
 
 	/**
+	 * Android logging tag.
+	 */
+	public static final String TAG = "CsvParser";
+	
+	/**
 	 * Reads a quiz stored in a CSV file, and returns a Quiz object
 	 * @param path The path to the CSV file storing the quiz.
 	 * @return The Quiz object.
 	 */
-	public static Quiz parseQuizFromCsv(String path) {
+	public static Quiz parseQuizFromCsv(String path) throws ParseException {
 		return parseQuizFromCsv(new File(path));
 	}
 	
@@ -63,22 +72,33 @@ public class CsvParser {
 				}
 			}
 			
-			int questionNumber = -1;
-			String question;
+			int questionNumber = 0;
+			String question = "";
 			List<String> answers = new ArrayList<String>();
 			int correctAnswer = -1;
-			List<String> explanations = new ArrayList<String>();
+			String hint = "";
+			String imageFile = "";
 			
 			// Read the first line of a quiz question, which stores the question number and the question
 			String[] firstLine = questionLines.get(0).split(",");
 			stripQuotationMarks(firstLine);
-			questionNumber = Integer.parseInt(firstLine[0]);
+			try {
+				questionNumber = Integer.parseInt(firstLine[0]);
+			} catch (NumberFormatException e) {
+				questionNumber = 0;
+			}
+			Log.v(TAG, firstLine[1]);
 			question = firstLine[1];
 			answers.add(firstLine[2]);
-			if (firstLine[3].equals("1")) {
+			if (firstLine.length > 3 && firstLine[3].equals("1")) {
 				correctAnswer = 0;
 			}
-			explanations.add(firstLine[4]);
+			if (firstLine.length > 4) {
+				hint = firstLine[4];
+			}
+			if (firstLine.length > 5) {
+				imageFile = firstLine[5];
+			}
 			
 			// Read the following lines of a quiz question
 			for (int i = 1; i < QuizQuestion.NUM_ANSWERS; i++) {
@@ -90,13 +110,12 @@ public class CsvParser {
 				
 				stripQuotationMarks(line);
 				answers.add(line[2]);
-				if (line[3].equals("1")) {
+				if (line.length > 3 && line[3].equals("1")) {
 					correctAnswer = i;
 				}
-				explanations.add(line[4]);
 			}
 			
-			if (questionNumber == -1 || correctAnswer == -1) {
+			if (correctAnswer == -1) {
 				System.err.println("The CSV file is not properly formatted!");
 				scanner.close();
 				return null;
@@ -104,7 +123,7 @@ public class CsvParser {
 			
 			// Add a QuizQuestion to list of QuizQuestions
 			QuizQuestion quizQuestion = new QuizQuestion(questionNumber,
-					question, answers, correctAnswer, explanations);
+					question, answers, correctAnswer, hint, imageFile);
 			quizQuestions.add(quizQuestion);
 		}
 		// After the list of QuizQuestions has been created, create and return the Quiz object

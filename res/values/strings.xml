@@ -7,7 +7,7 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_search">Search</string>
     <string name="action_refresh">Refresh</string>
-    <string name="action_accounts">Choose Account</string>
+
     <string name="action_download">Download</string>
     <string name="local_storage_folder">LaosTrainingApp</string>
     <string name="button_download">Download</string>
@@ -16,10 +16,14 @@
     <string name="action_navigate">Navigate</string>
     <string name="back_button">Back</string>
     <string name="next_button">Next</string>
+    <string name="buffering">Buffering&#8230;</string>
     <string name="splash">morePractice</string>
     <string name="language">Choose a Language</string>
+    <string name="search_packages">Search for packages</string>
 
     <color name="dark_grey">#ff444444</color>
 
     <string name="activity_training_navigation">PackageNavigation</string>
+    <string name="title_activity_custom_tags">CustomTags</string>
+	<string name="begin">Begin Training</string>
 </resources>
