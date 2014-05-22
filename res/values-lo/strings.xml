@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="begin">ເລີ່ມຕົ້ນການຝຶກອົບຮົມ</string>
-    <string name="wait">ກະລຸນາລໍຖ້າ</string>
-    <string name="checking_message">ກວດກາເບິ່ງການສໍາລັບການປັບປຸງ&#8230;</string>
-    <string name="updating">ປັບປຸງໃຫ້ທັນມີຄວາມຄືບຫນ້າ</string>
-    <string name="notification_message">ການປັບປຸງ</string>
-    <string name="update_complete">ສໍາເລັດການປັບປຸງ</string>
-    <string name="buffering">ເຂດປ້ອງກັນ&#8230;</string>
-    <string name="search_packages">ຄົ້ນຫາ</string>
-    <string name="exit">ປະຈາກ</string>
-    <string name="check_wifi">ກວດເບິ່ງການເຊື່ອມຕໍ່ WIFI ຂອງທ່ານ</string>
-    <string name="update">ປັບປຸງໃຫ້ທັນ</string>
+    <string name="begin">ເລີ່ມຕົ້ນການຝຶກອົບຮົມ</string>                              <!-- Begin Training  -->
+    <string name="wait">ກະລຸນາລໍຖ້າ</string>                                     <!-- Please wait -->
+    <string name="checking_message">ກວດກາເບິ່ງການສໍາລັບການປັບປຸງ&#8230;</string>      <!-- Checking for updates ... -->
+    <string name="updating">ປັບປຸງໃຫ້ທັນມີຄວາມຄືບຫນ້າ</string>                        <!-- Update in progress -->
+    <string name="notification_message">ການປັບປຸງ</string>                      <!-- Updating More Practice -->
+    <string name="update_complete">ສໍາເລັດການປັບປຸງ</string>                       <!-- Update complete -->
+    <string name="buffering">ເຂດປ້ອງກັນ&#8230;</string>                          <!-- Buffering ... -->
+    <string name="search_packages">ຄົ້ນຫາ</string>                              <!-- Search -->
+    <string name="exit">ປະຈາກ</string>                                        <!-- Exit -->
+    <string name="check_wifi">ກວດເບິ່ງການເຊື່ອມຕໍ່ WIFI ຂອງທ່ານ</string>                <!-- Check your WIFI connection -->
+    <string name="update">ປັບປຸງໃຫ້ທັນ</string>                                   <!-- Update -->
     
     
-    <string name="please_try_again">ກະລຸນາພະຍາຍາມອີກເທື່ອຫນຶ່ງ!</string>
-    <string name="try_again">ພະຍາຍາມອີກເທື່ອຫນຶ່ງ?</string>
-    <string name="next">ຕໍ່ໄປ</string>
-    <string name="hint">ຄຶດ</string>
-</resources>
+    <string name="please_try_again">ກະລຸນາພະຍາຍາມອີກເທື່ອຫນຶ່ງ!</string>              <!-- Please try again! -->
+    <string name="try_again">ພະຍາຍາມອີກເທື່ອຫນຶ່ງ?</string>                         <!-- Try again? -->
+    <string name="next">ຕໍ່ໄປ</string>                                         <!-- Next -->
+    <string name="hint">ຄຶດ</string>                                          <!-- Hint -->
+</resources>    
