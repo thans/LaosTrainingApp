@@ -205,6 +205,7 @@ public class MainActivity extends Activity {
         if (id == R.id.action_custom) {
         	new ActionBarFunctions().customActivity(this);
         }
+        
         return super.onOptionsItemSelected(item);
     }
 
