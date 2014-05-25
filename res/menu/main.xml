@@ -28,5 +28,10 @@
         android:title="@string/action_quiz" />
     
 
-
+	  <item
+        android:id="@+id/action_sms"
+        android:icon="@drawable/quiz_img"
+        android:showAsAction="ifRoom"
+        android:title="@string/action_sms" />
+	  
 </menu>

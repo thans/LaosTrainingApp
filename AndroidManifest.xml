@@ -78,6 +78,11 @@
             android:label="@string/title_activity_custom_tags"
             android:screenOrientation="landscape" >
         </activity>
+        <activity
+            android:name="com.uwcse.morepractice.SMSActivity"
+            android:label="@string/title_activity_sms"
+            android:screenOrientation="portrait" >
+        </activity>
     </application>
 
 </manifest>

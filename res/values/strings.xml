@@ -13,6 +13,7 @@
     <string name="button_download">Download</string>
     <string name="title_activity_download">DownloadActivity</string>
     <string name="title_activity_quiz">QuizActivity</string>
+    <string name="title_activity_sms">SMSActivity</string>
     <string name="action_navigate">Navigate</string>
     <string name="back_button">Back</string>
     <string name="next_button">Next</string>
@@ -24,5 +25,6 @@
     <color name="dark_grey">#ff444444</color>
 
     <string name="activity_training_navigation">PackageNavigation</string>
+    
 	<string name="begin">Begin Training</string>
 </resources>

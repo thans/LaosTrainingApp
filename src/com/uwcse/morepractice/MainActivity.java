@@ -126,7 +126,7 @@ public class MainActivity extends Activity {
 
         final SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
         searchView.setQueryHint(getString(R.string.search_packages));
-
+        
         searchView.setOnQueryTextListener(new OnQueryTextListener() {
             @Override
             public boolean onQueryTextChange(String newText) {
@@ -206,6 +206,9 @@ public class MainActivity extends Activity {
         	new ActionBarFunctions().customActivity(this);
         }
         
+        if (id == R.id.action_sms) {
+        	new ActionBarFunctions().smsActivity(this);
+        }
         return super.onOptionsItemSelected(item);
     }
 
