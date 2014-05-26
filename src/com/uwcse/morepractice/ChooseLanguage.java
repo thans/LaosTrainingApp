@@ -38,6 +38,9 @@ public class ChooseLanguage extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_language);
        // setContentView(R.layout.language);
+        
+        // sets default font to better accommodate Lao script
+        ChangeFont.setDefaultFont(this, "MONOSPACE", "fonts/Phetsarath OT.ttf");
 	}
 	
 	public void onResume() {
