@@ -83,7 +83,23 @@
 	        android:layout_marginTop="150dp"
 	        android:layout_marginLeft="260dp"
 	        android:textSize="60sp"
-	        android:text="10:48"
+	        android:text="@string/starting_time"
+	        android:textColor="#000000" />
+	    
+	    
+	    <TextView
+	        android:id="@+id/negative_temp"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignLeft="@+id/fridge_tag"
+	        android:layout_alignTop="@+id/fridge_tag"
+	        android:layout_alignRight="@+id/fridge_tag"
+	        android:layout_alignBottom="@+id/fridge_tag"
+	        android:layout_marginLeft="433dp"
+	        android:layout_marginTop="149dp"
+	        android:text="@string/negative_temperature"
+	        android:textSize="60sp"
+	        android:visibility="invisible" 
 	        android:textColor="#000000" />
 	    
 	    <TextView
@@ -96,7 +112,7 @@
 	        android:layout_alignBottom="@+id/fridge_tag"
 	        android:layout_marginLeft="450dp"
 	        android:layout_marginTop="150dp"
-	        android:text="03.1"
+	        android:text="@string/starting_temp"
 	        android:textSize="60sp"
 	        android:textColor="#000000" />
 	    

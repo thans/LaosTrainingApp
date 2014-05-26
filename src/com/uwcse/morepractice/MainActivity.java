@@ -202,7 +202,7 @@ public class MainActivity extends Activity {
             return true;
         }
 
-        if (id == R.id.action_custom) {
+        if (id == R.id.action_custom) { 
         	new ActionBarFunctions().customActivity(this);
         }
         

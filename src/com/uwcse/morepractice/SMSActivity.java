@@ -41,8 +41,6 @@ public class SMSActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_sms);
 		
-		
-		
 		RelativeLayout layout = (RelativeLayout) this.findViewById(R.id.sms_relative_layout);
 		
 		counters = new int[10];

@@ -5,24 +5,19 @@
     <string name="up_arrow">▲</string>
     <string name="degrees_c">°C</string>
     <string name="custom_tags_intro">This application will show you how a FridgeTag works.  Click the ">" button to continue.</string>
+    <string name="custom_tags_history_intro">Pressing READ once displays the highest temperature reached and the cumulative time duration in hours and minutes that the temperature was above the given upper limit for the current day that is today.</string>
     <string name="alarm_ok">OK</string>
     <string name="alarm_alarm">ALARM</string>
-    
+    <string name="complete_custom_tags">You have completed the Refrigerator Tags training application!  Press next to exit.</string>
+    <string name="negative_temperature">-</string>
+    <string name="starting_temp">03.1</string>
+    <string name="starting_time">10:48</string>
     
     <string-array name="custom_tags_instructions">
-        <item>There are 2 buttons on the FridgeTag - a Set and Read button</item>
-        <item>The Alarm state will show either "OK" or "ALARM" based on the current status of the FridgeTag</item>
+        <item>There are 2 buttons on the FridgeTag - a SET and READ button.  The SET button is used mainly during device setup, and the READ button is used to view the history of the device.</item>
+        <item>The Alarm state will show either "OK" or "ALARM" based on the current status of the FridgeTag, or the status at a given point in time when in history mode</item>
         <item>The Time/Alarm Duration displays the current time, or the amount of time the since the temperature has exceeded one of the limits</item>
-        <item>The Temp/Min-Max shows the current temperature of the FridgeTag</item>
-        <item>The alarm icons indicate how long ago a cold/hot alarm was registered.  Use the scale at the top to determine what day they occurred. ▲ indicates a high alarm; ▼ indicates a low alarm</item>
-        <item>You have now completed the FridgeTag overview.  Press > to continue</item>
-    </string-array>
-    
-    <string-array name="custom_tags_history_instructions">
-        <item>The blinking high alarm indicates your are viewing the data for that alarm.</item>
-        <item>The Alarm state will show either "OK" or "ALARM" based on the current status of the FridgeTag</item>
-        <item>The Time/Alarm Duration displays the current time, or the amount of time the since the temperature has exceeded one of the limits</item>
-        <item>The Temp/Min-Max shows the current temperature of the FridgeTag</item>
+        <item>The Temp/Min-Max shows the current temperature of the FridgeTag or the max/min temperature reached during an alarm period</item>
         <item>The alarm icons indicate how long ago a cold/hot alarm was registered.  Use the scale at the top to determine what day they occurred. ▲ indicates a high alarm; ▼ indicates a low alarm</item>
         <item>You have now completed the FridgeTag overview.  Press > to continue</item>
     </string-array>
