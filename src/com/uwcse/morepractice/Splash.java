@@ -25,6 +25,8 @@ public class Splash extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.splash);
         
+        // sets a font to better accommodate Lao script
+        ChangeFont.setDefaultFont(this, "MONOSPACE", "fonts/Phetsarath_OT.ttf");
         
         final ImageView splash = (ImageView) this.findViewById(R.id.splashscreen);
         // Delay, then animate the image

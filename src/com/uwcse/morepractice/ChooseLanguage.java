@@ -38,9 +38,6 @@ public class ChooseLanguage extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_language);
        // setContentView(R.layout.language);
-        
-        // sets default font to better accommodate Lao script
-        ChangeFont.setDefaultFont(this, "MONOSPACE", "fonts/Phetsarath OT.ttf");
 	}
 	
 	public void onResume() {
@@ -127,8 +124,8 @@ public class ChooseLanguage extends Activity {
 	        listView.setAdapter(adapter);
 	        
 	        Log.e(TAG, "IN CHOOSE LANGUAGE");
-	        Log.e(TAG, "File 1" + fileNames[0]);
-	        Log.e(TAG, "File 1" + fileNames[1]);
+	        /*Log.e(TAG, "File 1" + fileNames[0]);
+	        Log.e(TAG, "File 1" + fileNames[1]);*/
 	        
 	        listView.setOnItemClickListener(new OnItemClickListener() {
 	            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
