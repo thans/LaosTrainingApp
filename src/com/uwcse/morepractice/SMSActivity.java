@@ -64,17 +64,21 @@ public class SMSActivity extends Activity {
 		
 		back.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-            	letterCount = 0;
-            	last = 0;
             	TextView screen = (TextView) findViewById(R.id.phone_screen);
-            	
-            	if(screenCount != 0){
-                	screenCount--;
-                	screen.setText(text, 0, screenCount +1);
-                } else {
-                	screen.setText(text, 0, screenCount);
-                	firstClick = true;
-                }
+            	if (screenCount > 0) {	
+	            	if (back.getId() == last) {
+	                		screenCount--;	
+	                	}
+	            		last = back.getId();
+	            		letterCount = 0;
+		            	
+		            	
+		                screen.setText(text, 0, screenCount);
+		                firstClick = true;	
+	            } else {
+	            	screen.setText(text,0,0);
+	            	firstClick = true;
+	            }
             }
         });
 		
@@ -82,27 +86,54 @@ public class SMSActivity extends Activity {
             public void onClick(View v) {
             	letterCount = 0;
             	last = 0;
-            	TextView screen = (TextView) findViewById(R.id.phone_screen);
-            	
-            	screenCount++;
+            	//screenCount++;
             }
         });
 		
 		one.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-            	if (screenCount < text.length - 1) {
-	            	if (firstClick) {
-	            		firstClick = false;
-	            		last = one.getId();
-	            	} 
-	            	screenCount++;
-	            	TextView screen = (TextView) findViewById(R.id.phone_screen);
-	                int c = 49;
-	                text[screenCount] = (char) c;
-	                screen.setText(text, 0, screenCount + 1);
-	                
+            	if (firstClick) {
+            		firstClick = false;
+            		last = one.getId();
+            	} else if (one.getId() != last) {
+            		last = one.getId();
+            		screenCount++;
+            		letterCount = 0;
             	}
-            }
+            	TextView screen = (TextView) findViewById(R.id.phone_screen);
+                int c;
+            	if(letterCount == 0){
+                	c = 46; // "."
+                	letterCount++;
+                } else if(letterCount == 1){
+                	c = 64; // "@"
+                	letterCount++;
+                }else if(letterCount == 2){
+                	c = 44; // ","
+                	letterCount++;
+                }else if(letterCount == 3){
+                	c = 45; // "-"
+                	letterCount++;
+                }else if(letterCount == 4){
+                	c = 63; // "?"
+                	letterCount++;
+                } else if(letterCount == 5){
+                	c = 33; // "!"
+                	letterCount++;
+                } else if(letterCount == 6){
+                	c = 58; // ":"
+                	letterCount++;
+                }else if(letterCount == 7){
+                	c = 47; // "/"
+                	letterCount++;
+                }else {
+                	c = 49; // "1"
+                	letterCount = 0;
+                }
+                text[screenCount] = (char) c;
+                screen.setText(text, 0, screenCount + 1);
+        		}
+            
         });
 		
 		two.setOnClickListener(new View.OnClickListener() {
