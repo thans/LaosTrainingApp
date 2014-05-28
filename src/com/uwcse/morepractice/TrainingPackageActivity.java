@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -28,6 +29,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.MediaController;
 import android.widget.RelativeLayout;
@@ -306,6 +308,23 @@ public class TrainingPackageActivity extends Activity {
 	    }
 	}
 	
+	private LinearLayout getStarIcons(int numStars) {
+		LinearLayout ll = new LinearLayout(this);
+		ll.setOrientation(LinearLayout.HORIZONTAL);
+		int numEmptyStars = 5 - numStars;
+		for (int i = 0; i < numStars; i++) {
+			ImageView image = new ImageView(this);
+			image.setImageResource(R.drawable.star_filled);
+			ll.addView(image);
+		}
+		for (int i = 0; i < numEmptyStars; i++) {
+			ImageView image = new ImageView(this);
+			image.setImageResource(R.drawable.star_empty);
+			ll.addView(image);
+		}
+		return ll;
+	}
+	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 	    // Check which request we're responding to
@@ -314,17 +333,21 @@ public class TrainingPackageActivity extends Activity {
 	        	// If the activity result was successful, display the quiz score and a "Try again?"
 	        	// button in the UI
 	        	
+	        	int numStars = data.getExtras().getInt(QuizActivity.QUIZ_SCORE_STAR_KEY);
+	        	LinearLayout stars = getStarIcons(numStars);
+	        	LinearLayout group = new LinearLayout(this);
+	        	group.setOrientation(LinearLayout.VERTICAL);
+	        	group.addView(stars);
+	        	
 	        	// Create a TextView with the quiz score
 	        	String quizScore = data.getExtras().getString(QuizActivity.QUIZ_SCORE_KEY);
 	        	RelativeLayout layout = (RelativeLayout) findViewById(R.id.activity_training_package_layout);
+	        	layout.setBackgroundColor(getResources().getColor(R.color.LightGrey));
 	        	TextView textView = new TextView(this);
 	        	textView.setText(getResources().getString(R.string.score) + "\n" + quizScore);
 	        	textView.setTextSize(40);
-	        	RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
-	        	        LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-	        	params.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
-	        	params.addRule(RelativeLayout.CENTER_VERTICAL, RelativeLayout.TRUE);
-	        	layout.addView(textView, params);
+	        	textView.setGravity(Gravity.CENTER);
+	        	group.addView(textView);
 	        	
 	        	// Create the "Try again?" button
 	        	Button button = new Button(this);
@@ -336,11 +359,12 @@ public class TrainingPackageActivity extends Activity {
 						TrainingPackageActivity.this.refreshFile();
 					}
 	        	});
-	        	RelativeLayout.LayoutParams buttonParams = new RelativeLayout.LayoutParams(
+	        	group.addView(button);
+	        	RelativeLayout.LayoutParams rlParams = new RelativeLayout.LayoutParams(
 	        			LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-	        	buttonParams.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
-	        	buttonParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
-	        	layout.addView(button, buttonParams);
+	        	rlParams.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
+	        	rlParams.addRule(RelativeLayout.CENTER_VERTICAL, RelativeLayout.TRUE);
+	        	layout.addView(group, rlParams);
 	        } else if (resultCode == RESULT_CANCELED) {
 	        	// If the activity result was not successful, display the error message in the UI.
 	        	// The error message attempts to report the line and column number in the Excel

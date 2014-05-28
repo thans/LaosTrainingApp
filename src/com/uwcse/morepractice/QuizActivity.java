@@ -4,10 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.List;
-
-import com.uwcse.morepractice.CsvParser.QuizParseException;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -19,7 +16,6 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -28,10 +24,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.uwcse.morepractice.CsvParser.QuizParseException;
 
 /**
  * The quiz activity. In progress!
@@ -69,6 +66,12 @@ public class QuizActivity extends Activity {
 	 * Key used to pass the user's quiz score back to the calling activity.
 	 */
 	public static final String QUIZ_SCORE_KEY = "QuizScore";
+	
+	/**
+	 * Key used to pass to the calling activity the number of star icons to display with the user's
+	 * quiz score, out of five possible stars. 
+	 */
+	public static final String QUIZ_SCORE_STAR_KEY = "QuizScoreStars";
 	
 	/**
 	 * Key used to pass a helpful error message back to the calling activity. If there is some error
@@ -502,6 +505,7 @@ public class QuizActivity extends Activity {
 	public void finishResultOk() {
 		Intent data = new Intent();
 		data.putExtra(QUIZ_SCORE_KEY, getQuizScoreString());
+		data.putExtra(QUIZ_SCORE_STAR_KEY, getQuizScoreNumStars());
 		setResult(RESULT_OK, data);
 		finish();
 	}
@@ -526,9 +530,30 @@ public class QuizActivity extends Activity {
 		if (mTotalScore % 2 == 1) {
 			sb.append("\u00BD"); // "1/2" symbol
 		}
-		sb.append(" out of ");
+		sb.append(" " + getResources().getString(R.string.out_of) + " ");
 		sb.append(mMaxScore / 2);
 		return sb.toString();
+	}
+	
+	/**
+	 * @return Return the number of star icons to display with the user's score, out of five stars
+	 * possible.
+	 */
+	private int getQuizScoreNumStars() {
+		double score = (double) mTotalScore / (double) mMaxScore;
+		if (score >= 0.8) {
+			return 5;
+		} else if (score >= 0.6) {
+			return 4;
+		} else if (score >= 0.4) {
+			return 3;
+		} else if (score >= 0.2) {
+			return 2;
+		} else if (score > 0){
+			return 1;
+		} else {
+			return 0;
+		}
 	}
 
 	/**
