@@ -9,7 +9,6 @@ import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 
 import com.uwcse.morepractice.R;
@@ -39,8 +38,6 @@ import android.os.Environment;
 import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -54,7 +51,6 @@ public class DownloadActivity extends Activity {
     
     // pertaining to files
     private java.io.File                targetDir;
-    private List<java.io.File>          localFiles;
     
     // for progress bar in notification bar
     private int                         numDownloading;
@@ -77,11 +73,19 @@ public class DownloadActivity extends Activity {
     private long                        lastUpdate;
     
     // strings for getting files from drive
-    private static final String FOLDER      = "mimeType='application/vnd.google-apps.folder'";
-    private static final String NOT_FOLDER  = "mimeType!='application/vnd.google-apps.folder'";
-    private static final String TOP_LEVEL   = "'root' in parents";
-    private static final String NOT_TRASHED = "trashed=false";
+    private static final String FOLDER          = "mimeType='application/vnd.google-apps.folder'";
+    private static final String NOT_FOLDER      = "mimeType!='application/vnd.google-apps.folder'";
+    private static final String TOP_LEVEL       = "'root' in parents";
+    private static final String NOT_TRASHED     = "trashed=false";
+    private static final String NOT_XLS         = "mimeType!='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'";
+    private static final String NOT_XLSX        = "mimeType!='application/vnd.ms-excel'";
+    private static final String NOT_SPREADSHEET = NOT_XLS + " and " + NOT_XLSX;
     
+    private static final String MOVIE           = "mimeType='video/mp4'";
+    private static final String IMAGE           = "mimeType='image/jpeg' or mimeType='image/png' or mimeType='image/gif'";
+    private static final String TEXT            = "mimeType='text/plain'";
+    private static final String CSV             = "mimeType='text/csv'";
+    private static final String SUPPORTED_FILES = "(" + MOVIE + " or " + IMAGE + " or " + TEXT + " or " + CSV + ")";       
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,14 +120,14 @@ public class DownloadActivity extends Activity {
             // start activity that prompts the user for their google drive account
             startActivityForResult(mCredential.newChooseAccountIntent(), REQUEST_ACCOUNT_PICKER);
         } else {
+            // alert user that wifi needs to be checked
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(DownloadActivity.this);
             alertDialogBuilder
                 .setTitle(getString(R.string.check_wifi))
                 .setCancelable(false)
                 .setPositiveButton(getString(R.string.exit), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog,int id) {
-                        // if this button is clicked, close
-                        // current activity
+                        // if this button is clicked, close current activity
                         DownloadActivity.this.finish();
                     }
                 });
@@ -139,7 +143,6 @@ public class DownloadActivity extends Activity {
      */
     private void startDownloadActivity() {
         checking();
-        setUPForRecovery();
         numDownloading = 0;
         updateMax = 0;
         updateProgress = 0;
@@ -163,83 +166,10 @@ public class DownloadActivity extends Activity {
             public void run() {
                 while (check == 0) {}
                 checkProgress.dismiss();
-                if (check == 1)
-                    DownloadActivity.this.finish();
             }
         }).start();
-
     }
 
-    /**
-     * Gets all the files in app directory, for recovery
-     */
-    private void setUPForRecovery() {
-        localFiles = addFiles(null, targetDir);
-    }
-    
-    /**
-     * Helper method for recovery
-     * @param files, the list of files to process
-     * @param dir, if directory, recurse; if file add to files and return
-     * @return the files in the directory
-     */
-    private List<java.io.File> addFiles(List<java.io.File> files, java.io.File dir) {
-        if (files == null)
-            files = new LinkedList<java.io.File>();
-
-        if (!dir.isDirectory()) {
-            files.add(dir);
-            return files;
-        }
-
-        for (java.io.File file : dir.listFiles())
-            addFiles(files, file);
-        return files;
-    }
-    
-    
-    /**
-     * Checks that the local app directory and the google drive account are consistent;
-     * For seeing whether update is needed
-     * @param list, the list of files from drive
-     * @return true if consistent, false otherwise
-     */
-    private boolean isConsistent(List<File> list) {
-        if (!targetDir.exists()) {
-            Log.e("EMPTY","App folder does not exist");
-            return false;
-        }
-
-        // checks whether there is a file locally that is not represented in drive
-        for (java.io.File local : localFiles) {
-            boolean flag = false;
-            for (File drive : list) {
-                if (local.getName().equals(drive.getTitle()))
-                    flag = true;
-            }
-            if (!flag) {
-                // not found, so not consistent
-                Log.e("HERE","inconsistency local outer");
-                return false;
-            }
-        }
-
-        // checks whether there is file in drive that is not represented locally
-        for (File drive : list) {
-            boolean flag = false;
-            for (java.io.File local : localFiles) {
-                if (local.getName().equals(drive.getTitle()))
-                    flag = true;
-            }
-            if (!flag) {
-                // not found, so not consistent
-                Log.e("HERE","inconsistency drive outer");
-                return false;
-            }
-        }
-        return true;
-    }
-    
     
     /**
      * Sees if the app filesystem needs to be downloaded;
@@ -250,62 +180,50 @@ public class DownloadActivity extends Activity {
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
-                List<File> list = getContents(NOT_TRASHED + " and " + NOT_FOLDER);
+                List<File> list = getContents(NOT_TRASHED + " and " + NOT_FOLDER + " and " + SUPPORTED_FILES);
                 List<File> filteredList = new ArrayList<File>();
                 
-                // filters out shared drive files and by timestamp
-                boolean needsUpdate = false;
+                // filters out shared drive files
                 for (File f : list) {
                     if(!f.getShared()) {
                         filteredList.add(f);
-                        if (checkTimeStamp(f)) {
-                            needsUpdate = true;
-                            break;
-                        }
                     }
                 }
 
-                // for showing progress to user
-
                 numDownloading = filteredList.size();
+                Log.e("START NUM", "" + numDownloading);
                 updateMax = numDownloading;
-                if (!needsUpdate && isConsistent(filteredList)) {
-                    //showToast("Update not needed");
-                    check++;
-                } else {
-                    check += 2;
-                    String note = getResources().getString(R.string.notification_message);
-                    nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                    mBuilder = new NotificationCompat.Builder(mContext);
-                    mBuilder.setContentTitle(note)
-                            .setSmallIcon(android.R.drawable.stat_sys_download)
-                            .setTicker(note);
-                    
-                    mProgress = (ProgressBar) findViewById(R.id.progressBar1);
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            while (numDownloading > 0) {
-                                mHandler.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        int progress = 100 * (updateMax - numDownloading) / updateMax; 
-                                        mProgress.setProgress(progress);
-                                        if (numDownloading <= 0) {
-                                            mProgress.setVisibility(4);
-                                        }
-                                    }    
-                                });
-                            }
+                
+                // notification progress bar
+                String note = getResources().getString(R.string.notification_message);
+                nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                mBuilder = new NotificationCompat.Builder(mContext);
+                mBuilder.setContentTitle(note)
+                        .setSmallIcon(android.R.drawable.stat_sys_download)
+                        .setTicker(note);
+
+                // main progress bar
+                mProgress = (ProgressBar) findViewById(R.id.progressBar1);
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        while (numDownloading > 0) {
+                            mHandler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    int progress = 100 * (updateMax - numDownloading) / updateMax; 
+                                    mProgress.setProgress(progress);
+                                    if (numDownloading <= 0) 
+                                        finish();
+                                }    
+                            });
                         }
-                    }).start();
-                    
-                    if (targetDir.exists())
-                        deleteFile(targetDir);
-                    
+                    }
+                }).start();
+
+                if (!targetDir.exists())
                     targetDir.mkdirs();
-                    getDriveContents();
-                }
+                getDriveContents();
             }
         });
         t.start();
@@ -331,7 +249,7 @@ public class DownloadActivity extends Activity {
                 result.addAll(fileList.getItems());
                 request.setPageToken(fileList.getNextPageToken());
             } catch (UserRecoverableAuthIOException e) {
-                //startActivityForResult(e.getIntent(), REQUEST_AUTHORIZATION);
+                startActivityForResult(e.getIntent(), REQUEST_AUTHORIZATION);
             } catch (IOException e) {
                 e.printStackTrace();
                 if (request != null) 
@@ -352,15 +270,10 @@ public class DownloadActivity extends Activity {
             @Override
             public void run() {
                 // get only the folders in the root directory of drive account
-                List<File> files = getContents(TOP_LEVEL + " and " + NOT_TRASHED);
-                List<File> languageList = new ArrayList<File>();
-                for (File f : files) {
-                    if (isFolder(f)) 
-                        languageList.add(f);
-                    else 
-                        numDownloading--;
-                }
-                processLanguages(languageList);
+                List<File> files = getContents(TOP_LEVEL + " and " + NOT_TRASHED + " and " + FOLDER + " and " + NOT_SPREADSHEET);
+                
+                prune(targetDir, files);
+                processLanguages(files);
             }
         });
         t.start();
@@ -375,7 +288,8 @@ public class DownloadActivity extends Activity {
         for (File f : languageList) {
             String langName = f.getTitle();
             java.io.File localLangFolder = new java.io.File(targetDir, langName);
-            localLangFolder.mkdirs();
+            if (!localLangFolder.exists())
+                localLangFolder.mkdirs();
             getLanguageContents(f, localLangFolder);
         }
     }
@@ -391,16 +305,11 @@ public class DownloadActivity extends Activity {
             @Override
             public void run() {
                 // gets only the folders in the language folder
-                String whichFiles = "'" + languageFolder.getId() + "' in parents and " + NOT_TRASHED;
+                String whichFiles = "'" + languageFolder.getId() + "' in parents and " + NOT_TRASHED + " and " + FOLDER + " and " + NOT_SPREADSHEET;
                 List<File> files = getContents(whichFiles);
-                List<File> packageList = new ArrayList<File>();
-                for (File f : files) {
-                    if (isFolder(f)) 
-                        packageList.add(f);
-                    else 
-                        numDownloading--;
-                }
-                processFolders(packageList, localLanguageFolder);
+                
+                prune(localLanguageFolder, files);
+                processFolders(files, localLanguageFolder);
             }
         });
         t.start();
@@ -418,7 +327,8 @@ public class DownloadActivity extends Activity {
             String folderName = f.getTitle();
             java.io.File localFolder = new java.io.File(parentFolder, folderName);
             Log.e("folder",localFolder.getAbsolutePath());
-            localFolder.mkdirs();
+            if (!localFolder.exists())
+                localFolder.mkdirs();
             getFolderContents(f, localFolder);
         }
     }
@@ -434,20 +344,54 @@ public class DownloadActivity extends Activity {
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
-                // list of contents in f that are files
-                List<File> mFileList = getContents("'" + f.getId() + "' in parents and " + NOT_TRASHED+ " and " + NOT_FOLDER);
-                for (File file : mFileList) {
-                    downloadFile(file, targetFolder);
-                }
-                
                 // list of contents in f that are directories
-                List<File> mFolderList = getContents("'" + f.getId() + "' in parents and " + NOT_TRASHED + " and " + FOLDER);
+                List<File> mFolderList = getContents("'" + f.getId() + "' in parents and " + NOT_TRASHED + " and " + FOLDER + " and " + NOT_SPREADSHEET);
+                // check if there is a folder
                 if (!mFolderList.isEmpty()) {
+                    prune(targetFolder, mFolderList, false);
                     processFolders(mFolderList, targetFolder);
                 }
+                
+                // list of contents in f that are files
+                List<File> mFileList = getContents("'" + f.getId() + "' in parents and " + NOT_TRASHED + " and " + NOT_FOLDER + " and " + SUPPORTED_FILES);
+                
+                prune(targetFolder, mFileList, true);
+                processFiles(mFileList, targetFolder);
             }
         });
         t.start();
+    }
+    
+    
+    /**
+     * Processes each file in a google drive folder
+     * @param mFileList, the list of files in a google drive folder
+     * @param targetFolder, the local folder where mFileList will be downloaded into
+     */
+    private void processFiles(List<File> mFileList, java.io.File targetFolder) {
+        // check if the local file exists
+        for (File file : mFileList) {
+            java.io.File local = new java.io.File(targetFolder, file.getTitle());
+            if (!local.exists()) {
+                downloadFile(file, targetFolder);
+            } else {
+                if (checkTimeStamp(file)) {
+                    Log.e("DELETE TIME", local.getParentFile().getName() + "/" + local.getName());
+                    deleteFile(local);
+                    downloadFile(file, targetFolder);
+                } else {
+                    check = 1;
+                    Log.e("DL NOT NEEDED", local.getParentFile().getName() + "/" + local.getName());
+                    numDownloading--;
+                    Log.e("STATUS NOT DL","numDownloading is at " + numDownloading);
+                    
+                    setNotification();
+                    if (numDownloading <= 0) {
+                        setFinalNotification();
+                    }
+                }
+            }
+        }
     }
     
 
@@ -521,38 +465,77 @@ public class DownloadActivity extends Activity {
         }
         
         // updates notification and sees if all downloading is finished
-        
+        check = 1;
         System.out.println("Downloaded file " + file.getAbsolutePath());
         Log.e("STATUS","numDownloading is at " + numDownloading);
         if (--numDownloading <= 0) {
             //finished downloading all files
             Log.e("STATUS","numDownloading is at " + numDownloading);
-            // update notification
-            String note = getResources().getString(R.string.update_complete);
-            mBuilder.setContentTitle(note)
-                    .setContentText("")
-                    .setSmallIcon(R.drawable.ic_action_download)
-                    .setTicker(note)
-                    .setProgress(0, 0, false);
-            nm.notify(0, mBuilder.build());
+            setFinalNotification();
             finish();
         } else {
-            mBuilder.setProgress(updateMax, ++updateProgress, false)
-            .setContentTitle(getResources().getString(R.string.notification_message));
-            // Issues the notification
-            nm.notify(0, mBuilder.build());
+            setNotification();
         }
     }
     
+    
     /**
-     * Checks if the given file is a folder
-     * @param f, the file to check
-     * @return true if file is a folder, false otherwise
+     * Deletes files in local storage if they are not in drive account;
+     * For a directory with only folders
+     * @param localDir, the local folder that is the parent folder of the files to prune
+     * @param driveFiles, the list of files in drive to compare against
      */
-    private boolean isFolder(File f) {
-        return f.getMimeType() != null && f.getMimeType().equals("application/vnd.google-apps.folder");
+    private void prune(java.io.File localDir, List<File> driveFiles) {
+        java.io.File[] localArray = localDir.listFiles();
+        for (java.io.File f : localArray) {
+            boolean found = false;
+            String lname = f.getName();
+            for (File gf : driveFiles) {
+                String gname = gf.getTitle();
+                if (lname.equals(gname))
+                    found = true;
+            }
+            if (!found) {
+                Log.e("DELETE PRUNE", f.getParentFile().getName() + "/" + f.getName());
+                deleteFile(f);
+            }
+        }
     }
     
+    
+    /**
+     * Deletes files in local storage if they are not in drive account; 
+     * For a directory with both folders and files
+     * @param localDir, the local folder that is the parent folder of the files to prune
+     * @param driveFiles, the list of files in drive to compare against
+     * @param dir, true if only considering files, false if only considering folders
+     */
+    private void prune(java.io.File localDir, List<File> driveFiles, boolean dir) {
+        java.io.File[] localArray = localDir.listFiles();
+        for (java.io.File f : localArray) {
+            if (!dir) {
+                // only consider folders
+                if (!f.isDirectory())
+                    continue;
+            } else {
+                // only consider files
+                if (f.isDirectory())
+                    continue;
+            }
+            boolean found = false;
+            String lname = f.getName();
+            for (File gf : driveFiles) {
+                String gname = gf.getTitle();
+                if (lname.equals(gname))
+                    found = true;
+            }
+            if (!found) {
+                Log.e("DELETE PRUNE", f.getParentFile().getName() + "/" + f.getName());
+                deleteFile(f);
+            }
+        }
+    }
+
     
     /**
      * Compares the time stamps on the given folder 
@@ -583,6 +566,33 @@ public class DownloadActivity extends Activity {
                 System.err.println("Delete of file " + file.getAbsolutePath() + " failed");
                 e.printStackTrace();
             }
+    }
+    
+    
+    /**
+     * Updates the notification progress bar
+     */
+    private void setNotification() {
+        mBuilder.setProgress(updateMax, ++updateProgress, false)
+        .setContentTitle(getResources().getString(R.string.notification_message));
+        // Issues the notification
+        nm.notify(0, mBuilder.build());
+    }
+    
+    
+    /**
+     * Finishes the notification progress bar
+     */
+    private void setFinalNotification() {
+      //finished downloading all files
+        // update notification
+        String note = getResources().getString(R.string.update_complete);
+        mBuilder.setContentTitle(note)
+                .setContentText("")
+                .setSmallIcon(R.drawable.ic_launcher_mp)
+                .setTicker(note)
+                .setProgress(0, 0, false);
+        nm.notify(0, mBuilder.build());
     }
     
     
@@ -657,22 +667,5 @@ public class DownloadActivity extends Activity {
                 Toast.makeText(getApplicationContext(), toast, Toast.LENGTH_SHORT).show();
             }
         });
-    }
-    
-     
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.download, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        return super.onOptionsItemSelected(item);
     }
 }

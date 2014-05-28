@@ -112,10 +112,21 @@ public class TrainingPackageNavigation extends Activity {
         File currentDir = new File(directory);
         File[] files = currentDir.listFiles();
         
+        List<File> list = new ArrayList<File>();
+        // remove all folders in package directory
+        for (File f : files) {
+            String name = f.getName();
+            if (!f.isDirectory()) {
+                list.add(f);
+            } else {
+                System.out.println("/////////////////REMOVED " + name);
+            }
+        }
+        
         // finds and parses the text file for order;
         // if text file is found, the files array will be ordered;
         // if not found, the array will remain the same
-        return getSortedFiles(files);
+        return getSortedFiles(list.toArray(new File[list.size()]));
 	}
 
 	private File[] getSortedFiles(File[] files) {

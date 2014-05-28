@@ -16,4 +16,14 @@ public class ActionBarFunctions {
     	((Activity) c).finish();
     	c.startActivity(intent);
     }
+
+	public void customActivity(Context c) {
+		Intent intent = new Intent(c, CustomTags.class);
+    	c.startActivity(intent);
+	}
+	
+	public void smsActivity(Context c) {
+		Intent intent = new Intent(c, SMSActivity.class);
+		c.startActivity(intent);
+	}
 }

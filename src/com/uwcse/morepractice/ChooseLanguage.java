@@ -124,8 +124,8 @@ public class ChooseLanguage extends Activity {
 	        listView.setAdapter(adapter);
 	        
 	        Log.e(TAG, "IN CHOOSE LANGUAGE");
-	        Log.e(TAG, "File 1" + fileNames[0]);
-	        Log.e(TAG, "File 1" + fileNames[1]);
+	        /*Log.e(TAG, "File 1" + fileNames[0]);
+	        Log.e(TAG, "File 1" + fileNames[1]);*/
 	        
 	        listView.setOnItemClickListener(new OnItemClickListener() {
 	            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
