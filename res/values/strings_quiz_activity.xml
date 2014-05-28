@@ -11,6 +11,7 @@
 	<string name="explanation_3">Answer 3 is incorrect because ___.</string>
 	<string name="explanation_4">Answer 4 is incorrect because ___.</string>
 	<string name="action_quiz">Try quiz</string>
+	<string name="score">Score:</string>
 	<string name="plus_one">+1</string>
 	<string name="plus_one_half">+½</string>
 	<string name="one_half">½</string>

@@ -39,7 +39,7 @@ public class CsvParser {
 	 * returns a message with the line and column number where the unexpected item is found in the CSV file.
 	 * @throws IOException If there is some error reading the file.
 	 */
-	public static Quiz parseQuizFromCsv(String path, char delimiter) throws ParseException, IOException {
+	public static Quiz parseQuizFromCsv(String path, char delimiter) throws QuizParseException, IOException {
 		return parseQuizFromCsv(new File(path), delimiter);
 	}
 	
@@ -53,7 +53,7 @@ public class CsvParser {
 	 * @throws IOException If there is some error reading the file.
 	 */
 	@SuppressWarnings("resource")
-	public static Quiz parseQuizFromCsv(File file, char delimiter) throws ParseException, IOException {
+	public static Quiz parseQuizFromCsv(File file, char delimiter) throws QuizParseException, IOException {
 		CSVReader reader;
 		try {
 			reader = new CSVReader(new FileReader(file), delimiter, QUOTE, LINE_NUM);
@@ -108,13 +108,13 @@ public class CsvParser {
 					// Attempt to the parse and return the quiz using the alternate delimiter
 					Quiz quiz = parseQuizFromCsv(file, ALTERNATE_DELIMITER);
 					return quiz;
-				} catch (ParseException e){
+				} catch (QuizParseException e){
 					// If it fails, do nothing, and throw the original exception
 				}
-				throw new ParseException("The quiz file does not have "
+				throw new QuizParseException("The quiz file does not have "
 						+ NUM_COLUMNS + " columns as expected. Please check that the \""
 						+ DELIMITER + "\" character is used as the column delimiter when "
-						+ "exporting the CSV file.", excelLineNum);
+						+ "exporting the CSV file.");
 			}
 			
 			// Parse the question number
@@ -126,34 +126,34 @@ public class CsvParser {
 			// Parse the question text
 			question = line1[1];
 			if (question.equals("")) {
-				throw new ParseException("The quiz file is missing a question. Please see line "
-						+ excelLineNum + ", column B in " + file.getName() + ".", excelLineNum);
+				throw new QuizParseException("The quiz file is missing a question. Please see line "
+						+ excelLineNum + ", column B in " + file.getName() + ".");
 			}
 			// Parse the first answer choice
 			if (line1[2].equals("")) {
-				throw new ParseException("The quiz file is missing an answer. Please see line "
-						+ excelLineNum + ", column C in " + file.getName() + ".", excelLineNum);
+				throw new QuizParseException("The quiz file is missing an answer. Please see line "
+						+ excelLineNum + ", column C in " + file.getName() + ".");
 			} else {
 				answers.add(line1[2]);
 			}
 			// Parse the second answer choice
 			if (line2[2].equals("")) {
-				throw new ParseException("The quiz file is missing an answer. Please see line "
-						+ (excelLineNum + 1) + ", column C in " + file.getName() + ".", excelLineNum + 1);
+				throw new QuizParseException("The quiz file is missing an answer. Please see line "
+						+ (excelLineNum + 1) + ", column C in " + file.getName() + ".");
 			} else {
 				answers.add(line2[2]);
 			}
 			// Parse the third answer choice
 			if (line3[2].equals("")) {
-				throw new ParseException("The quiz file is missing an answer. Please see line "
-						+ (excelLineNum + 2) + ", column C in " + file.getName() + ".", excelLineNum + 2);
+				throw new QuizParseException("The quiz file is missing an answer. Please see line "
+						+ (excelLineNum + 2) + ", column C in " + file.getName() + ".");
 			} else {
 				answers.add(line3[2]);
 			}
 			// Parse the fourth answer choice
 			if (line4[2].equals("")) {
-				throw new ParseException("The quiz file is missing an answer. Please see line "
-						+ (excelLineNum + 3) + ", column C in " + file.getName() + ".", excelLineNum + 3);
+				throw new QuizParseException("The quiz file is missing an answer. Please see line "
+						+ (excelLineNum + 3) + ", column C in " + file.getName() + ".");
 			} else {
 				answers.add(line4[2]);
 			}
@@ -167,8 +167,8 @@ public class CsvParser {
 			} else if (!line4[3].equals("")) {
 				correctAnswer = 3;
 			} else {
-				throw new ParseException("The quiz file is missing a correct answer. Please see line "
-						+ excelLineNum + ", column D in " + file.getName() + ".", excelLineNum);
+				throw new QuizParseException("The quiz file is missing a correct answer. Please see line "
+						+ excelLineNum + ", column D in " + file.getName() + ".");
 			}
 			// Parse the hint, or keep the empty string if one is not provided
 			hint = line1[4];
@@ -317,6 +317,24 @@ public class CsvParser {
 		if (string.charAt(0) == '"'
 				&& string.charAt(string.length() - 1) == '"') {
 			string.substring(1, string.length() - 1);
+		}
+	}
+	
+	/**
+	 * An exception class for quiz parsing errors. 
+	 */
+	public static class QuizParseException extends Exception {
+		/**
+		 * Serial version UID.
+		 */
+		private static final long serialVersionUID = 1L;
+
+		/**
+		 * @param message The error message which attempts to report the line and column number
+		 * in the Excel file where the unexpected item or formatting occurs.
+		 */
+		public QuizParseException(String message) {
+			super(message);
 		}
 	}
 	

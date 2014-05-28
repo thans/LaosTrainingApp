@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.List;
 
+import com.uwcse.morepractice.CsvParser.QuizParseException;
+
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
@@ -67,6 +69,13 @@ public class QuizActivity extends Activity {
 	 * Key used to pass the user's quiz score back to the calling activity.
 	 */
 	public static final String QUIZ_SCORE_KEY = "QuizScore";
+	
+	/**
+	 * Key used to pass a helpful error message back to the calling activity. If there is some error
+	 * parsing the CSV quiz file, the error message attempts to indicate the line and column
+	 * number where the parsing error occurs.
+	 */
+	public static final String QUIZ_ERROR_MSG_KEY = "QuizError";
 
 	/**
 	 * The delay between a user's answer selection button press and the loading of the next
@@ -176,14 +185,18 @@ public class QuizActivity extends Activity {
 		// Parse a Quiz object from the CSV file
 		try {
 			this.mQuiz = CsvParser.parseQuizFromCsv(mQuizFilePath, CsvParser.DELIMITER);
-		} catch (ParseException e) {
-			Log.e(TAG, "Error parsing the CSV quiz file. It is not properly formatted");
-			Log.e(TAG, "Quiz file: " + mQuizFilePath);
+		} catch (QuizParseException e) {
+			// If there is a parsing error, pass the error message to the calling activity so that
+			// it may be displayed in the UI for the quiz file writer.
+			Log.e(TAG, "Error parsing the CSV quiz file.");
 			Log.e(TAG, e.getMessage());
-			this.finish();
+			this.finishResultNotOk(e.getMessage());
+			return;
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Log.e(TAG, "Error reading the CSV quiz file.");
+			Log.e(TAG, e.getMessage());
+			this.finishResultNotOk(e.getMessage());
+			return;
 		}
 		
 		if (mQuiz == null) {
@@ -354,6 +367,7 @@ public class QuizActivity extends Activity {
 			
 			// Set the question number and question text
 			int questionNumber = mCurrentQuestion.getQuestionNumber();
+			Log.v(TAG, "Setting question number " + questionNumber);
 			mQuestionNumber.setText("#" + questionNumber);
 			mQuestion.setText(mCurrentQuestion.getQuestionText());
 			
@@ -380,21 +394,20 @@ public class QuizActivity extends Activity {
 	private void setImage() {
 		if (mCurrentQuestion.getImageFileName() == null ||
 				mCurrentQuestion.getImageFileName() == "") {
+			Log.v(TAG, "No image file for question number " + mCurrentQuestion.getQuestionNumber());
 			return;
 		}
         String imageFileName = mCurrentQuestion.getImageFileName();
         String imageFullPath = getImageFullPath(imageFileName);
         
         if (imageFullPath == null || imageFullPath == "") {
+        	Log.v(TAG, "No image file for question number " + mCurrentQuestion.getQuestionNumber());
         	return;
         }
 
 		RelativeLayout layout = (RelativeLayout) findViewById(R.id.quiz_left_column);
         mImageView = new ImageView(this);
-//        Bitmap myBitmap = BitmapFactory.decodeFile(imageFullPath);
-        
         Bitmap myBitmap = decodeFile(new File(imageFullPath));
-        
         mImageView.setImageBitmap(myBitmap);
         RelativeLayout.LayoutParams params
         		= new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
@@ -404,27 +417,36 @@ public class QuizActivity extends Activity {
         mImageView.setLayoutParams(params);
         layout.addView(mImageView);
         mImageView.requestFocus();
+        Log.v(TAG, "Set the image for question number " + mCurrentQuestion.getQuestionNumber());
 	}
-	
-	// TODO
+
+	/**
+	 * A method used to scale Bitmaps down to a manageable size. Necessary for avoiding
+	 * OutOfMemoryErrors when loading many large image files. 
+	 */
 	private Bitmap decodeFile(File f){
+		/*
+		Courtesy: http://stackoverflow.com/questions/477572/
+		strange-out-of-memory-issue-while-loading-an-image-to-a-bitmap-object/823966#823966
+		*/
 	    try {
-	        //Decode image size
+	        // Decode image size
 	        BitmapFactory.Options o = new BitmapFactory.Options();
 	        o.inJustDecodeBounds = true;
-	        BitmapFactory.decodeStream(new FileInputStream(f),null,o);
+	        BitmapFactory.decodeStream(new FileInputStream(f), null, o);
 
-	        //The new size we want to scale to
-	        final int REQUIRED_SIZE=70;
+	        // The new size we want to scale to
+	        final int REQUIRED_SIZE = 550;
 
-	        //Find the correct scale value. It should be the power of 2.
-	        int scale=1;
-	        while(o.outWidth/scale/2>=REQUIRED_SIZE && o.outHeight/scale/2>=REQUIRED_SIZE)
-	            scale*=2;
+	        // Find the correct scale value. It should be a power of 2.
+	        int scale = 1;
+	        while (o.outWidth / scale / 2 >= REQUIRED_SIZE && o.outHeight / scale / 2 >= REQUIRED_SIZE) {
+	            scale *= 2;
+	    	}
 
-	        //Decode with inSampleSize
+	        // Decode with inSampleSize
 	        BitmapFactory.Options o2 = new BitmapFactory.Options();
-	        o2.inSampleSize=scale;
+	        o2.inSampleSize = scale;
 	        return BitmapFactory.decodeStream(new FileInputStream(f), null, o2);
 	    } catch (FileNotFoundException e) {}
 	    return null;
@@ -458,20 +480,21 @@ public class QuizActivity extends Activity {
 		return "";
 	}
 	
-	//	/**
-	//	 * @param imageFileName The image's file name, i.e. "fridge_tag.jpg"
-	//	 * @return The image file's full path, i.e.
-	//	 * "/sdcard/LaosTrainingApp/Fridge Tag Package/Fridge Tag Quiz/fridge_tag.jpg" 
-	//	 */
-	//	private String getImageFullPath(String imageFileName) {
-	//		// A quiz's images are expected to be placed in a directory
-	//		// with the exact same name as the quiz, minus ".csv"
-	//		
-	//		// Remove the last period, add a slash, and add the image file name
-	//		int indexOfPeriod = mQuizFilePath.lastIndexOf(".");
-	//		String imageDirPath = mQuizFilePath.substring(0, indexOfPeriod);
-	//		return imageDirPath + "/" + imageFileName;
-	//	}
+	/**
+	 * @param imageFileName The image's file name, i.e. "fridge_tag.jpg"
+	 * @return The image file's full path, i.e.
+	 * "/sdcard/LaosTrainingApp/Fridge Tag Package/Fridge Tag Quiz/fridge_tag.jpg" 
+	 */
+	@Deprecated
+	private String getImageFullPath2(String imageFileName) {
+		// A quiz's images are expected to be placed in a directory
+		// with the exact same name as the quiz, minus ".csv"
+		
+		// Remove the last period, add a slash, and add the image file name
+		int indexOfPeriod = mQuizFilePath.lastIndexOf(".");
+		String imageDirPath = mQuizFilePath.substring(0, indexOfPeriod);
+		return imageDirPath + "/" + imageFileName;
+	}
 
 	/**
 	 * Finish this activity with RESULT_OK, and return the user's quiz score.
@@ -480,6 +503,17 @@ public class QuizActivity extends Activity {
 		Intent data = new Intent();
 		data.putExtra(QUIZ_SCORE_KEY, getQuizScoreString());
 		setResult(RESULT_OK, data);
+		finish();
+	}
+	
+	/**
+	 * Finish this activity with RESULT_CANCELLED, and return the helpful error message.
+	 * @param errorMsg The error message to return to the calling activity.
+	 */
+	public void finishResultNotOk(String errorMsg) {
+		Intent data = new Intent();
+		data.putExtra(QUIZ_ERROR_MSG_KEY, errorMsg);
+		setResult(RESULT_CANCELED, data);
 		finish();
 	}
 	

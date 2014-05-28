@@ -310,13 +310,15 @@ public class TrainingPackageActivity extends Activity {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 	    // Check which request we're responding to
 	    if (requestCode == QuizActivity.GET_QUIZ_SCORE_REQUEST) {
-	        // Make sure the request was successful
 	        if (resultCode == RESULT_OK) {
-	        	String quizScore = data.getExtras().getString(QuizActivity.QUIZ_SCORE_KEY);
+	        	// If the activity result was successful, display the quiz score and a "Try again?"
+	        	// button in the UI
 	        	
+	        	// Create a TextView with the quiz score
+	        	String quizScore = data.getExtras().getString(QuizActivity.QUIZ_SCORE_KEY);
 	        	RelativeLayout layout = (RelativeLayout) findViewById(R.id.activity_training_package_layout);
 	        	TextView textView = new TextView(this);
-	        	textView.setText(quizScore);
+	        	textView.setText(getResources().getString(R.string.score) + "\n" + quizScore);
 	        	textView.setTextSize(40);
 	        	RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
 	        	        LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
@@ -324,6 +326,7 @@ public class TrainingPackageActivity extends Activity {
 	        	params.addRule(RelativeLayout.CENTER_VERTICAL, RelativeLayout.TRUE);
 	        	layout.addView(textView, params);
 	        	
+	        	// Create the "Try again?" button
 	        	Button button = new Button(this);
 	        	button.setText(R.string.try_again);
 	        	button.setTextSize(32);
@@ -338,6 +341,20 @@ public class TrainingPackageActivity extends Activity {
 	        	buttonParams.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
 	        	buttonParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
 	        	layout.addView(button, buttonParams);
+	        } else if (resultCode == RESULT_CANCELED) {
+	        	// If the activity result was not successful, display the error message in the UI.
+	        	// The error message attempts to report the line and column number in the Excel
+	        	// file where the parsing error occurs.
+	        	String errorMsg = data.getExtras().getString(QuizActivity.QUIZ_ERROR_MSG_KEY);
+	        	RelativeLayout layout = (RelativeLayout) findViewById(R.id.activity_training_package_layout);
+	        	TextView textView = new TextView(this);
+	        	textView.setText(errorMsg);
+	        	textView.setTextSize(30);
+	        	RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+	        			LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+	        	params.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
+	        	params.addRule(RelativeLayout.CENTER_VERTICAL, RelativeLayout.TRUE);
+	        	layout.addView(textView, params);
 	        }
 	    }
 	}
