@@ -1,6 +1,9 @@
 package com.uwcse.morepractice;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.List;
 
@@ -172,13 +175,17 @@ public class QuizActivity extends Activity {
 		
 		// Parse a Quiz object from the CSV file
 		try {
-			this.mQuiz = CsvParser.parseQuizFromCsv(mQuizFilePath);
+			this.mQuiz = CsvParser.parseQuizFromCsv(mQuizFilePath, CsvParser.DELIMITER);
 		} catch (ParseException e) {
 			Log.e(TAG, "Error parsing the CSV quiz file. It is not properly formatted");
 			Log.e(TAG, "Quiz file: " + mQuizFilePath);
 			Log.e(TAG, e.getMessage());
 			this.finish();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+		
 		if (mQuiz == null) {
 			// Parsing error, close the activity
 			Log.e(TAG, "Error parsing the CSV quiz file. It is not properly formatted");
@@ -384,7 +391,10 @@ public class QuizActivity extends Activity {
 
 		RelativeLayout layout = (RelativeLayout) findViewById(R.id.quiz_left_column);
         mImageView = new ImageView(this);
-        Bitmap myBitmap = BitmapFactory.decodeFile(imageFullPath);
+//        Bitmap myBitmap = BitmapFactory.decodeFile(imageFullPath);
+        
+        Bitmap myBitmap = decodeFile(new File(imageFullPath));
+        
         mImageView.setImageBitmap(myBitmap);
         RelativeLayout.LayoutParams params
         		= new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
@@ -394,6 +404,30 @@ public class QuizActivity extends Activity {
         mImageView.setLayoutParams(params);
         layout.addView(mImageView);
         mImageView.requestFocus();
+	}
+	
+	// TODO
+	private Bitmap decodeFile(File f){
+	    try {
+	        //Decode image size
+	        BitmapFactory.Options o = new BitmapFactory.Options();
+	        o.inJustDecodeBounds = true;
+	        BitmapFactory.decodeStream(new FileInputStream(f),null,o);
+
+	        //The new size we want to scale to
+	        final int REQUIRED_SIZE=70;
+
+	        //Find the correct scale value. It should be the power of 2.
+	        int scale=1;
+	        while(o.outWidth/scale/2>=REQUIRED_SIZE && o.outHeight/scale/2>=REQUIRED_SIZE)
+	            scale*=2;
+
+	        //Decode with inSampleSize
+	        BitmapFactory.Options o2 = new BitmapFactory.Options();
+	        o2.inSampleSize=scale;
+	        return BitmapFactory.decodeStream(new FileInputStream(f), null, o2);
+	    } catch (FileNotFoundException e) {}
+	    return null;
 	}
 		
 	/**
