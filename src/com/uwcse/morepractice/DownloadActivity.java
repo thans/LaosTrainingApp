@@ -85,7 +85,8 @@ public class DownloadActivity extends Activity {
     private static final String IMAGE           = "mimeType='image/jpeg' or mimeType='image/png' or mimeType='image/gif'";
     private static final String TEXT            = "mimeType='text/plain'";
     private static final String CSV             = "mimeType='text/csv'";
-    private static final String SUPPORTED_FILES = "(" + MOVIE + " or " + IMAGE + " or " + TEXT + " or " + CSV + ")";       
+    private static final String PDF             = "mimeType='application/pdf'";
+    private static final String SUPPORTED_FILES = "(" + MOVIE + " or " + IMAGE + " or " + TEXT + " or " + CSV + " or " + PDF + ")";       
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -172,9 +173,7 @@ public class DownloadActivity extends Activity {
 
     
     /**
-     * Sees if the app filesystem needs to be downloaded;
-     * If at least one file in drive has been modified since that last 
-     * time the device has updated, proceeds to download drive contents
+     * Sets up progress bars and starts the download process
      */
     private void update() {
         Thread t = new Thread(new Runnable() {
