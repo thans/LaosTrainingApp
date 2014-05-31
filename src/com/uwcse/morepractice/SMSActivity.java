@@ -4,12 +4,15 @@ import java.util.Random;
 
 import android.app.Activity;
 import android.app.ActionBar;
+import android.app.AlertDialog;
 import android.app.Fragment;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -36,12 +39,21 @@ public class SMSActivity extends Activity {
 	private int letterCount;
 	boolean firstClick = true;
 	
+	private static final String[] answers = {"ADA", "GJG", "GJM", "PTW"};
+	private static final int[] images = {R.drawable.fridgetag, 0, 1, 2};
+	private int index;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_sms);
 		
 		RelativeLayout layout = (RelativeLayout) this.findViewById(R.id.sms_relative_layout);
+		
+		index = 0;//new Random().nextInt(answers.length);
+		ImageView imageView = (ImageView) findViewById(R.id.tag_img);
+		imageView.setImageResource(images[index]);
+		Log.e("ANSWER", "'" + answers[index] + "'");
 		
 		counters = new int[10];
 		text = new char[48];
@@ -83,12 +95,13 @@ public class SMSActivity extends Activity {
         });
 		
 		next.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-            	letterCount = 0;
-            	last = 0;
-            	//screenCount++;
-            }
-        });
+		    public void onClick(View v) {
+		        letterCount = 0;
+		        last = 0;
+		        //screenCount++;
+		        sendMessage();
+		    }
+		});
 		
 		one.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -368,6 +381,53 @@ public class SMSActivity extends Activity {
             	}
             }
         });
+		
+		Button send = (Button) findViewById(R.id.send_text);
+		send.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendMessage();
+            }
+        });
+	}
+	
+	
+	private void sendMessage() {
+	    TextView screen = (TextView) findViewById(R.id.phone_screen);
+        String s = screen.getText().toString();
+        
+        // get the title for the alert
+        String title = "";
+        String answer = answers[index];
+        if (s.equals(answer)) {
+            title += getString(R.string.texting_correct) + "\n " + getString(R.string.try_again);
+        } else {
+            title += getString(R.string.texting_answer) + " " + answer + ". ";
+            title += "\n " + getString(R.string.try_again);
+        }
+        
+        // alert user if answer is correct
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(SMSActivity.this);
+        alertDialogBuilder
+        .setTitle(title)
+        .setCancelable(false)
+        .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog,int id) {
+                // if this button is clicked, refresh activity
+                Intent intent = new Intent(SMSActivity.this, SMSActivity.class);
+                SMSActivity.this.finish();
+                SMSActivity.this.startActivity(intent);
+            }
+        })
+        .setNegativeButton(getString(R.string.no), new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog,int id) {
+                // if this button is clicked, close current activity
+                SMSActivity.this.finish();
+            }
+        });
+
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
 	}
 
 

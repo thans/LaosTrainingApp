@@ -17,4 +17,10 @@
     <string name="try_again">ລອງໃໝ່ອີກຄັ້ງ?</string>                         <!-- Try again? -->
     <string name="next">ຕໍ່ໄປ </string>                                         <!-- Next -->
     <string name="hint">ຄຳແນະນຳ </string>                                          <!-- Hint -->
+    
+    <string name="yes">ແມ່ນແລ້ວ</string>
+    <string name="no">ບໍ່ມີ</string>
+    <string name="texting_correct">Correct!</string>
+    <string name="texting_answer">The correct answer is </string>
+    <string name="send_text_button">Send Text Message</string>
 </resources>    
