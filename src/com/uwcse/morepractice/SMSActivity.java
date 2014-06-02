@@ -6,8 +6,10 @@ import android.app.Activity;
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.Fragment;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
@@ -39,18 +41,27 @@ public class SMSActivity extends Activity {
 	private int letterCount;
 	boolean firstClick = true;
 	
-	private static final String[] answers = {"ADA", "A32", "GJM", "PTW"};
-	private static final int[] images = {R.drawable.fridgetag, R.drawable.fridgetag3, 1, 2};
+	private SharedPreferences sp;  
+    public static final String VERSION = "version"; 
+	
+	private static final String[] answers = {"A32", "A70", ""};
+	private static final int[] images = {R.drawable.tag1, R.drawable.tag2, R.drawable.tag3};
 	private int index;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_sms);
-		
+		setTitle(getString(R.string.sms_training));
 		RelativeLayout layout = (RelativeLayout) this.findViewById(R.id.sms_relative_layout);
 		
-		index = 1;//new Random().nextInt(answers.length);
+		sp = getPreferences(Context.MODE_PRIVATE);
+		// get the last version; if not set, version is 0
+        index = sp.getInt(VERSION, 0);
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putInt(VERSION, (index + 1) % answers.length);
+        editor.commit();
+		
 		ImageView imageView = (ImageView) findViewById(R.id.tag_img);
 		imageView.setImageResource(images[index]);
 		Log.e("ANSWER", "'" + answers[index] + "'");
@@ -399,7 +410,9 @@ public class SMSActivity extends Activity {
         // get the title for the alert
         String title = "";
         String answer = answers[index];
-        if (s.equals(answer)) {
+        if (index == 2) {
+            title += getString(R.string.okay_tag) + "\n " + getString(R.string.try_again);
+        } else if (s.equals(answer)) {
             title += getString(R.string.texting_correct) + "\n " + getString(R.string.try_again);
         } else {
             title += getString(R.string.texting_answer) + " " + answer + ". ";

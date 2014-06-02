@@ -23,4 +23,8 @@
     <string name="texting_correct">Correct!</string>
     <string name="texting_answer">The correct answer is </string>
     <string name="send_text_button">Send Text Message</string>
+    
+    <string name="refrigerator">Refrigerator A</string>
+    <string name="okay_tag">Message does not need to be sent.</string>
+    <string name="sms_training">SMS Training</string>
 </resources>    
