@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Typeface;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.os.Bundle;
@@ -321,7 +322,77 @@ public class TrainingPackageActivity extends Activity {
 	    }
 	}
 	
-	private LinearLayout getStarIcons(int numStars) {
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+	    if (requestCode == QuizActivity.GET_QUIZ_SCORE_REQUEST) {
+	        if (resultCode == RESULT_OK) {
+	        	// If the activity result was successful, display the quiz score and a "Try again?"
+	        	// button in the UI
+	        	String quizScore = data.getExtras().getString(QuizActivity.QUIZ_SCORE_KEY);
+	        	int numStars = data.getExtras().getInt(QuizActivity.QUIZ_SCORE_STAR_KEY);
+	        	showQuizScore(quizScore, numStars);
+	        } else if (resultCode == RESULT_CANCELED) {
+	        	// If the activity result was not successful, check to see if an error message
+	        	// was returned
+	        	if (data == null) {
+	        		// The user must have pressed the back button to close the activity
+	        		showQuizButton();
+	        	} else if (data.hasExtra(QuizActivity.QUIZ_ERROR_MSG_KEY)) {
+		        	String errorMsg = data.getExtras().getString(QuizActivity.QUIZ_ERROR_MSG_KEY);
+	        		showQuizErrorMsg(errorMsg);
+	        	}
+	        }
+	    }
+	}
+
+	/**
+	 * Add the user's quiz score and the star score-feedback icons to the UI.
+	 * @param quizScore The user's quiz score.
+	 * @param numStars The number of star icons to display.
+	 */
+	private void showQuizScore(String quizScore, int numStars) {
+    	// Create a new linear layout
+		LinearLayout group = new LinearLayout(this);
+    	group.setOrientation(LinearLayout.VERTICAL);
+
+    	// Get the star score-feedback icons
+		LinearLayout stars = getQuizStarIcons(numStars);
+    	group.addView(stars);
+    	
+    	// Create a text view to display the quiz score
+    	TextView textView = new TextView(this);
+    	textView.setText(getResources().getString(R.string.score) + "\n" + quizScore);
+    	textView.setTextSize(40);
+    	textView.setGravity(Gravity.CENTER);
+    	group.addView(textView);
+    	
+    	// Create the "Try again?" button
+    	Button button = new Button(this);
+    	button.setText(R.string.try_again);
+    	button.setTextSize(32);
+    	button.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				TrainingPackageActivity.this.refreshFile();
+			}
+    	});
+    	group.addView(button);
+    	
+    	// Add the linear layout to the activity layout
+    	RelativeLayout layout = (RelativeLayout) findViewById(R.id.activity_training_package_layout);
+    	RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+    			LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+    	params.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
+    	params.addRule(RelativeLayout.CENTER_VERTICAL, RelativeLayout.TRUE);
+    	layout.addView(group, params);
+	}
+	
+	/**
+	 * Returns a linear layout with star icons to display for quiz score feedback.
+	 * @param numStars The number of star icons to display.
+	 * @return The linear layout containing the icons.
+	 */
+	private LinearLayout getQuizStarIcons(int numStars) {
 		LinearLayout ll = new LinearLayout(this);
 		ll.setOrientation(LinearLayout.HORIZONTAL);
 		int numEmptyStars = 5 - numStars;
@@ -337,63 +408,43 @@ public class TrainingPackageActivity extends Activity {
 		}
 		return ll;
 	}
+
+	/**
+	 * Add an error message to the UI describing why the quiz activity was not successful.
+	 * @param errorMsg The error message to display.
+	 */
+	private void showQuizErrorMsg(String errorMsg) {
+    	TextView textView = new TextView(this);
+    	textView.setText(errorMsg);
+    	textView.setTextSize(30);
+    	textView.setTypeface(null, Typeface.ITALIC);
+    	RelativeLayout layout = (RelativeLayout) findViewById(R.id.activity_training_package_layout);
+    	RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+    			LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+    	params.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
+    	params.addRule(RelativeLayout.CENTER_VERTICAL, RelativeLayout.TRUE);
+    	layout.addView(textView, params);
+	}
 	
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-	    // Check which request we're responding to
-	    if (requestCode == QuizActivity.GET_QUIZ_SCORE_REQUEST) {
-	        if (resultCode == RESULT_OK) {
-	        	// If the activity result was successful, display the quiz score and a "Try again?"
-	        	// button in the UI
-	        	
-	        	int numStars = data.getExtras().getInt(QuizActivity.QUIZ_SCORE_STAR_KEY);
-	        	LinearLayout stars = getStarIcons(numStars);
-	        	LinearLayout group = new LinearLayout(this);
-	        	group.setOrientation(LinearLayout.VERTICAL);
-	        	group.addView(stars);
-	        	
-	        	// Create a TextView with the quiz score
-	        	String quizScore = data.getExtras().getString(QuizActivity.QUIZ_SCORE_KEY);
-	        	RelativeLayout layout = (RelativeLayout) findViewById(R.id.activity_training_package_layout);
-	        	layout.setBackgroundColor(getResources().getColor(R.color.LightGrey));
-	        	TextView textView = new TextView(this);
-	        	textView.setText(getResources().getString(R.string.score) + "\n" + quizScore);
-	        	textView.setTextSize(40);
-	        	textView.setGravity(Gravity.CENTER);
-	        	group.addView(textView);
-	        	
-	        	// Create the "Try again?" button
-	        	Button button = new Button(this);
-	        	button.setText(R.string.try_again);
-	        	button.setTextSize(32);
-	        	button.setOnClickListener(new OnClickListener() {
-					@Override
-					public void onClick(View view) {
-						TrainingPackageActivity.this.refreshFile();
-					}
-	        	});
-	        	group.addView(button);
-	        	RelativeLayout.LayoutParams rlParams = new RelativeLayout.LayoutParams(
-	        			LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-	        	rlParams.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
-	        	rlParams.addRule(RelativeLayout.CENTER_VERTICAL, RelativeLayout.TRUE);
-	        	layout.addView(group, rlParams);
-	        } else if (resultCode == RESULT_CANCELED) {
-	        	// If the activity result was not successful, display the error message in the UI.
-	        	// The error message attempts to report the line and column number in the Excel
-	        	// file where the parsing error occurs.
-	        	String errorMsg = data.getExtras().getString(QuizActivity.QUIZ_ERROR_MSG_KEY);
-	        	RelativeLayout layout = (RelativeLayout) findViewById(R.id.activity_training_package_layout);
-	        	TextView textView = new TextView(this);
-	        	textView.setText(errorMsg);
-	        	textView.setTextSize(30);
-	        	RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
-	        			LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-	        	params.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
-	        	params.addRule(RelativeLayout.CENTER_VERTICAL, RelativeLayout.TRUE);
-	        	layout.addView(textView, params);
-	        }
-	    }
+	/**
+	 * Add a "Take quiz" button to the UI.
+	 */
+	private void showQuizButton() {
+    	Button button = new Button(this);
+    	button.setText(R.string.take_quiz);
+    	button.setTextSize(32);
+    	button.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				TrainingPackageActivity.this.refreshFile();
+			}
+    	});
+    	RelativeLayout layout = (RelativeLayout) findViewById(R.id.activity_training_package_layout);
+    	RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+    			LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+    	params.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
+    	params.addRule(RelativeLayout.CENTER_VERTICAL, RelativeLayout.TRUE);
+    	layout.addView(button, params);
 	}
 
 	@Override
