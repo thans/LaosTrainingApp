@@ -39,8 +39,8 @@ public class SMSActivity extends Activity {
 	private int letterCount;
 	boolean firstClick = true;
 	
-	private static final String[] answers = {"ADA", "GJG", "GJM", "PTW"};
-	private static final int[] images = {R.drawable.fridgetag, 0, 1, 2};
+	private static final String[] answers = {"ADA", "A32", "GJM", "PTW"};
+	private static final int[] images = {R.drawable.fridgetag, R.drawable.fridgetag3, 1, 2};
 	private int index;
 	
 	@Override
@@ -50,7 +50,7 @@ public class SMSActivity extends Activity {
 		
 		RelativeLayout layout = (RelativeLayout) this.findViewById(R.id.sms_relative_layout);
 		
-		index = 0;//new Random().nextInt(answers.length);
+		index = 1;//new Random().nextInt(answers.length);
 		ImageView imageView = (ImageView) findViewById(R.id.tag_img);
 		imageView.setImageResource(images[index]);
 		Log.e("ANSWER", "'" + answers[index] + "'");

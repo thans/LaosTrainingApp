@@ -142,7 +142,7 @@
             android:layout_toRightOf="@+id/back_button"
             android:adjustViewBounds="true"
             android:maxHeight="500dp"
-            android:maxWidth="4500dp" />
+            android:maxWidth="500dp" />
 
         <Button
             android:id="@+id/send_text"

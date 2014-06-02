@@ -118,6 +118,7 @@ public class TrainingPackageNavigation extends Activity {
             String name = f.getName();
             if (!f.isDirectory()) {
                 list.add(f);
+                System.out.println("/////////////////ADDED " + name);
             } else {
                 System.out.println("/////////////////REMOVED " + name);
             }
