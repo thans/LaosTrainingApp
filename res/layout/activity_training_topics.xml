@@ -1,0 +1,72 @@
+<RelativeLayout
+		    xmlns:android="http://schemas.android.com/apk/res/android" 
+    		xmlns:tools="http://schemas.android.com/tools" 
+         	android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:id="@+id/nav_layout"
+            android:background="#000000"
+            >
+		
+			<!--  <Button
+			    android:id="@+id/button_start"
+				android:layout_width="500dp"
+			    android:layout_height="125dp"
+			    android:textSize="50sp" 
+			    android:text="@string/begin"
+				android:onClick="buttonOnClick"
+				android:background="#A4C400"
+			/>-->
+			
+			<Button
+			    android:id="@+id/button_learning"
+				android:layout_width="450dp"
+			    android:layout_height="220dp"
+			    android:layout_marginLeft="10dp"
+            	android:layout_marginTop="0dp"
+			    android:textSize="50sp" 
+			    android:text="@string/learning"
+				android:onClick="buttonOnClick"
+				android:background="#A4C400"
+			/>
+		
+		
+			<Button
+			    android:id="@+id/button_quizzes"
+				android:layout_width="450dp"
+			    android:layout_height="220dp"
+			    android:layout_marginLeft="500dp"
+            	android:layout_marginTop="0dp"
+			    android:textSize="50sp" 
+			    android:text="@string/quizzes"
+				android:onClick="buttonOnClick"
+				android:background="#60A917"
+			/>
+		
+		
+			<Button
+			    android:id="@+id/button_videos"
+				android:layout_width="450dp"
+			    android:layout_height="220dp"
+			    android:layout_marginLeft="10dp"
+            	android:layout_marginTop="260dp"
+			    android:textSize="50sp" 
+			    android:text="@string/videos"
+				android:onClick="buttonOnClick"
+				android:background="#008A00"
+			/>
+		
+		
+			<Button
+			    android:id="@+id/button_ref"
+				android:layout_width="450dp"
+			    android:layout_height="220dp"
+			    android:layout_marginLeft="500dp"
+            	android:layout_marginTop="260dp"
+			    android:textSize="50sp" 
+			    android:text="@string/references"
+				android:onClick="buttonOnClick"
+				android:background="#00ABA9"
+			/>
+		</RelativeLayout>
+		
+		
