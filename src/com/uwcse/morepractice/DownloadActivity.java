@@ -471,7 +471,7 @@ public class DownloadActivity extends Activity {
             //finished downloading all files
             Log.e("STATUS","numDownloading is at " + numDownloading);
             setFinalNotification();
-            back();//finish();
+            //back();
         } else {
             setNotification();
         }
