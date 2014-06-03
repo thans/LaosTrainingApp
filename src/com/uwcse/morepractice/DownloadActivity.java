@@ -213,7 +213,7 @@ public class DownloadActivity extends Activity {
                                     int progress = 100 * (updateMax - numDownloading) / updateMax; 
                                     mProgress.setProgress(progress);
                                     if (numDownloading <= 0) 
-                                        finish();
+                                        back();//finish();
                                 }    
                             });
                         }
@@ -471,7 +471,7 @@ public class DownloadActivity extends Activity {
             //finished downloading all files
             Log.e("STATUS","numDownloading is at " + numDownloading);
             setFinalNotification();
-            finish();
+            back();//finish();
         } else {
             setNotification();
         }
@@ -624,6 +624,12 @@ public class DownloadActivity extends Activity {
         editor.putLong(UPDATE, currentTime);
         editor.commit();
         System.out.println("Time of current update: " + getDateFromLong(currentTime));
+    }
+    
+    private void back() {
+        Intent intent = new Intent(this, ChooseLanguage.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
     }
     
 

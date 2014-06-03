@@ -140,7 +140,7 @@ public class ChooseLanguage extends Activity {
 	                
 	               // TextView tv = (TextView) v.findViewById(R.id.item_text);
 	                //String fullname = laosFilePath + "/" + f;
-	                intent.putExtra(MainActivity.LANGUAGE_KEY, name);
+	                intent.putExtra(MainActivity.LANGUAGE_KEY, name); 
                     startActivity(intent);
 	            }
 	        });
