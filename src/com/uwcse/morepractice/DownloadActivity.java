@@ -212,8 +212,8 @@ public class DownloadActivity extends Activity {
                                 public void run() {
                                     int progress = 100 * (updateMax - numDownloading) / updateMax; 
                                     mProgress.setProgress(progress);
-                                    if (numDownloading <= 0) 
-                                        back();//finish();
+                                    //if (numDownloading <= 0) 
+                                        //back();//finish();
                                 }    
                             });
                         }
@@ -471,7 +471,7 @@ public class DownloadActivity extends Activity {
             //finished downloading all files
             Log.e("STATUS","numDownloading is at " + numDownloading);
             setFinalNotification();
-            //back();
+            back();
         } else {
             setNotification();
         }
