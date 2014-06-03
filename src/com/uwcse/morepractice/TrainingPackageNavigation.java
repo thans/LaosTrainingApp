@@ -140,18 +140,18 @@ public class TrainingPackageNavigation extends Activity {
                 textFileFound = true;
                 TextParser parser = new TextParser(path, files);
                 // gets the ordered files
-                if (parser.getNumInconsistency() > 0) {
+                /*if (parser.getNumInconsistency() > 0) {
                     showToast("Inconsistency between text file and directory.");
-                }
+                }*/
                 files = parser.getOrderedFiles();
                 break;
             } else {
                 continue;
             }
         }
-		if (!textFileFound) {
+		/*if (!textFileFound) {
             showToast("text file not found;  order is random");
-        }
+        }*/
 		return files;
 	}
 	

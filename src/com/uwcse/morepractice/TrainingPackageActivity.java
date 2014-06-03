@@ -242,18 +242,15 @@ public class TrainingPackageActivity extends Activity {
                 textFileFound = true;
                 TextParser parser = new TextParser(path, files);
                 // gets the ordered files
-                if (parser.getNumInconsistency() > 0) {
+                /*if (parser.getNumInconsistency() > 0) {
                     showToast("Inconsistency between text file and directory.");
-                }
+                }*/
                 files = parser.getOrderedFiles();
                 break;
             } else {
                 continue;
             }
         }
-//		if (!textFileFound) {
-//            showToast("text file not found;  order is random");
-//        }
 		return files;
 	}
 
@@ -530,10 +527,10 @@ public class TrainingPackageActivity extends Activity {
 	            if (Math.abs(e1.getY() - e2.getY()) > SWIPE_MAX_OFF_PATH)
 	                return false;
 	            if(e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-	                showToast("leftSwipe");
+	                //showToast("leftSwipe");
 	                gotoNext();
 	            }  else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-	            	showToast("rightSwipe");
+	            	//showToast("rightSwipe");
 	            	gotoPrevious();
 	            }
 	        } catch (Exception e) {
