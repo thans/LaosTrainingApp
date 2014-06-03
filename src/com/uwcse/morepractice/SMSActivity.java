@@ -101,6 +101,7 @@ public class SMSActivity extends Activity {
 	            } else {
 	            	screen.setText(text,0,0);
 	            	firstClick = true;
+	            	letterCount = 0;
 	            }
             }
         });
@@ -383,11 +384,11 @@ public class SMSActivity extends Activity {
 	            	if (firstClick) {
 	            		firstClick = false;
 	            		last = zero.getId();
+	            		screenCount--;
 	            	}
-	            	if(last == zero.getId()){
-	            	    screenCount++;
-	            	}
-	            	//screenCount++;
+            		last = zero.getId();
+            		letterCount = 0;
+	            	screenCount++;
 	            	TextView screen = (TextView) findViewById(R.id.phone_screen);
 	                int c = 48;
 	                text[screenCount] = (char) c;
