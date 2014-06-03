@@ -27,4 +27,11 @@
     <string name="activity_training_navigation">PackageNavigation</string>
     
 	<string name="begin">Begin Training</string>
+	<string name="learning">Learning</string>
+	<string name="quizzes">Quizzes</string>
+	<string name="videos">Videos</string>
+	<string name="references">References</string>
+	<string name="title_activity_topics">Topics</string>
+	<string name="title_topics">Topic</string>
+	
 </resources>

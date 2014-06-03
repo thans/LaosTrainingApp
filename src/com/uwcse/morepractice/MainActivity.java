@@ -72,7 +72,7 @@ public class MainActivity extends Activity {
         //gridview.setVerticalSpacing(100);
 
         // Connect each grid to a new activity with a listener
-        gridview.setOnItemClickListener(new OnItemClickListener() {
+        /*gridview.setOnItemClickListener(new OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
                 Intent intent = new Intent(MainActivity.this, TrainingPackageNavigation.class);
 
@@ -82,7 +82,20 @@ public class MainActivity extends Activity {
                 intent.putExtra(TrainingPackageNavigation.INTENT_KEY_NAME, name);
                 startActivity(intent);
             }
+        });*/
+        
+        gridview.setOnItemClickListener(new OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+                Intent intent = new Intent(MainActivity.this, TrainingPackageTopics.class);
+
+                // Reconstruct the full path of the file to send to the new activity
+                TextView tv = (TextView) v.findViewById(R.id.item_text);
+                String name = appRoot.getAbsolutePath() + "/" + tv.getText();
+                intent.putExtra(TrainingPackageTopics.INTENT_KEY_NAME, name);
+                startActivity(intent);
+            }
         });
+
 
     }
 

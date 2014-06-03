@@ -83,6 +83,20 @@
             android:label="@string/title_activity_sms"
             android:screenOrientation="landscape" >
         </activity>
+        <activity
+            android:name="com.uwcse.morepractice.TrainingPackageTopics"
+            android:screenOrientation="landscape"
+            android:label="@string/title_activity_topics">
+        </activity>
+        <activity
+            android:name="com.uwcse.morepractice.Topic"
+            android:screenOrientation="landscape"
+            android:label="@string/title_topics">
+        </activity>
+        <activity
+            android:name="com.uwcse.morepractice.Single"
+            android:screenOrientation="landscape">
+        </activity>
     </application>
 
 </manifest>

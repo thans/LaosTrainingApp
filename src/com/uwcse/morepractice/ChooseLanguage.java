@@ -37,14 +37,16 @@ public class ChooseLanguage extends Activity {
         // remove title
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_language);
-       // setContentView(R.layout.language);
+        //setContentView(R.layout.language);
 	}
 	
 	public void onResume() {
 		super.onResume();
 		//LinearLayout layout = (LinearLayout) this.findViewById(R.id.language_layout);
+		
 		LinearLayout layout = (LinearLayout) this.findViewById(R.id.lang_layout);
 		//layout.removeAllViews();
+		
 		/*if(layout.findViewById(R.id.language_button) != null){
 			layout.removeViewAt(R.id.language_button);
 		}*/
