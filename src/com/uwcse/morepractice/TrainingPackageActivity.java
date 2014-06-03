@@ -1,4 +1,5 @@
 package com.uwcse.morepractice;
+import android.net.Uri;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -193,6 +194,8 @@ public class TrainingPackageActivity extends Activity {
 		    return Filetype.TEXT;
 		} else if (extension.equals("csv")) {
 			return Filetype.CSV;
+		} else if (extension.equals("pdf")) {
+			return Filetype.PDF;
 		} else {
 			return Filetype.UNSUPPORTED;
 		}
@@ -248,9 +251,9 @@ public class TrainingPackageActivity extends Activity {
                 continue;
             }
         }
-		if (!textFileFound) {
-            showToast("text file not found;  order is random");
-        }
+//		if (!textFileFound) {
+//            showToast("text file not found;  order is random");
+//        }
 		return files;
 	}
 
@@ -306,16 +309,29 @@ public class TrainingPackageActivity extends Activity {
 					}
 				}); 
 				break;
+	        case PDF:
+	        	Log.e(TAG, "Display PDF");
+	        	System.out.println("File path: " +  path);
+	        	Uri uriPath = Uri.fromFile(new File(path));
+	        	Intent intent = new Intent(Intent.ACTION_VIEW);
+	        	intent.setDataAndType(uriPath, "application/pdf");
+	        	
+	        	//intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+	        	
+	            startActivity(intent);
+	            finish();
+	            break;
+	        	//startActivity(intent);
 	        case TEXT:
 	            // do nothing
 	            break;
 	        case CSV:
 	        	Log.v(TAG, "CSV file encountered.");
-	    		Intent intent = new Intent(this, QuizActivity.class);
+	    		Intent csvIntent = new Intent(this, QuizActivity.class);
 	    		Bundle bundle = new Bundle();
 	    		bundle.putString(QuizActivity.QUIZ_FILE_FULL_PATH_KEY, path);
-	    		intent.putExtras(bundle);
-	    		this.startActivityForResult(intent, QuizActivity.GET_QUIZ_SCORE_REQUEST);
+	    		csvIntent.putExtras(bundle);
+	    		this.startActivityForResult(csvIntent, QuizActivity.GET_QUIZ_SCORE_REQUEST);
 	            break;
 	        case UNSUPPORTED:
 	            break;

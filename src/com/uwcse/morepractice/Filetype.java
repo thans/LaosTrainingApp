@@ -6,5 +6,5 @@ package com.uwcse.morepractice;
  * @author toreh
  */
 public enum Filetype {
-	IMAGE, VIDEO, TEXT, CSV, UNSUPPORTED;
+	IMAGE, VIDEO, TEXT, CSV, PDF, UNSUPPORTED;
 }
