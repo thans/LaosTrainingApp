@@ -44,7 +44,7 @@ public class SMSActivity extends Activity {
 	private SharedPreferences sp;  
     public static final String VERSION = "version"; 
 	
-	private static final String[] answers = {"A32", "A70", ""};
+	private static final String[] answers = {"A32", "A70", "0"};
 	private static final int[] images = {R.drawable.tag1, R.drawable.tag2, R.drawable.tag3};
 	private int index;
 	
@@ -383,12 +383,16 @@ public class SMSActivity extends Activity {
 	            	if (firstClick) {
 	            		firstClick = false;
 	            		last = zero.getId();
-	            	} 
-	            	screenCount++;
+	            	}
+	            	if(last == zero.getId()){
+	            	    screenCount++;
+	            	}
+	            	//screenCount++;
 	            	TextView screen = (TextView) findViewById(R.id.phone_screen);
 	                int c = 48;
 	                text[screenCount] = (char) c;
 	                screen.setText(text, 0, screenCount + 1);
+	                //screenCount++;
             	}
             }
         });
@@ -410,9 +414,9 @@ public class SMSActivity extends Activity {
         // get the title for the alert
         String title = "";
         String answer = answers[index];
-        if (index == 2) {
-            title += getString(R.string.okay_tag) + "\n " + getString(R.string.try_again);
-        } else if (s.equals(answer)) {
+        Log.e("REAL ANSWER", answer);
+        Log.e("USER ANSWER", s);
+        if (s.equals(answer)) {
             title += getString(R.string.texting_correct) + "\n " + getString(R.string.try_again);
         } else {
             title += getString(R.string.texting_answer) + " " + answer + ". ";
