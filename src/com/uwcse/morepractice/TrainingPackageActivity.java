@@ -211,6 +211,11 @@ public class TrainingPackageActivity extends Activity {
 		return parts[parts.length - 1].toLowerCase();
 	}
 	
+	private String getNameWithoutExtension(String filename) {
+	    String[] parts = filename.split("\\.");
+	    return parts[0].toLowerCase();
+	}
+	
 	public File[] getOrderedFiles(String directory) {
         File currentDir = new File(directory);
         File[] files = currentDir.listFiles();
@@ -218,11 +223,11 @@ public class TrainingPackageActivity extends Activity {
         // remove all folders in package directory
         for (File f : files) {
             String name = f.getName();
-            if (!f.isDirectory()) {
+            if (!f.isDirectory() && !getNameWithoutExtension(f.getName()).equals("img")) {
                 list.add(f);
-                System.out.println("/////////////////ADDED " + name);
+                System.out.println("/////////////////ADDED in activity " + name);
             } else {
-                System.out.println("/////////////////REMOVED " + name);
+                System.out.println("/////////////////REMOVED in activity" + name);
             }
         }
         
