@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="question">ຄໍາຖາມ</string>
+	<string name="answer_1">ຄໍາຕອບ 1</string>
+	<string name="answer_2">ຄໍາຕອບ 2</string>
+	<string name="answer_3">ຄໍາຕອບ 3</string>
+	<string name="answer_4">ຄໍາຕອບ 4</string>
+	<string name="take_quiz">ສອບເສັງ</string>
+
+	<string name="score">ຄະແນນ:</string>
+	<string name="out_of">/</string>
+
+	<!--
+	<string name="try_again">ລອງອີກຄັ້ງໜຶ່ງ?</string>
+	<string name="please_try_again">ກະລຸນາລອງອີກຄັ້ງໜຶ່ງ!</string>
+	<string name="hint">ແນະນໍາ</string>
+	<string name="next">ຕໍ່ໄປ</string>
+	-->
+</resources>
