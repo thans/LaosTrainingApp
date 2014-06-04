@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnPreparedListener;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -104,16 +105,29 @@ public class Single extends Activity {
 					}
 				}); 
 				break;
+	        case PDF:
+	        	Log.e(TAG, "Display PDF");
+	        	System.out.println("File path: " +  path);
+	        	Uri uriPath = Uri.fromFile(new File(path));
+	        	Intent intent = new Intent(Intent.ACTION_VIEW);
+	        	intent.setDataAndType(uriPath, "application/pdf");
+	        	
+	        	//intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+	        	
+	            startActivity(intent);
+	            finish();
+	            break;
+	        	//startActivity(intent);
 	        case TEXT:
 	            // do nothing
 	            break;
 	        case CSV:
 	        	Log.v(TAG, "CSV file encountered.");
-	    		Intent intent = new Intent(this, QuizActivity.class);
+	    		Intent cvsintent = new Intent(this, QuizActivity.class);
 	    		Bundle bundle = new Bundle();
 	    		bundle.putString(QuizActivity.QUIZ_FILE_FULL_PATH_KEY, path);
-	    		intent.putExtras(bundle);
-	    		this.startActivityForResult(intent, QuizActivity.GET_QUIZ_SCORE_REQUEST);
+	    		cvsintent.putExtras(bundle);
+	    		this.startActivityForResult(cvsintent, QuizActivity.GET_QUIZ_SCORE_REQUEST);
 	            break;
 	        case UNSUPPORTED:
 	            break;
@@ -144,6 +158,8 @@ public class Single extends Activity {
 		    return Filetype.TEXT;
 		} else if (extension.equals("csv")) {
 			return Filetype.CSV;
+		} else if (extension.equals("pdf")) {
+			return Filetype.PDF;
 		} else {
 			return Filetype.UNSUPPORTED;
 		}
