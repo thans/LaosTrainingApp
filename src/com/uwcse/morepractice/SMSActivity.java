@@ -111,7 +111,6 @@ public class SMSActivity extends Activity {
 		        letterCount = 0;
 		        last = 0;
 		        //screenCount++;
-		        sendMessage();
 		    }
 		});
 		
