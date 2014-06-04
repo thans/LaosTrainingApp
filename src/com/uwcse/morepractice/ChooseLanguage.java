@@ -181,7 +181,7 @@ public class ChooseLanguage extends Activity {
 	 */
 	private void setLanguage(String path) {
 	    String name = getName(path);
-	    
+	     
 	    // English is default
 	    String langCode = "en";
 	    
