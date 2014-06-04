@@ -99,7 +99,9 @@ public class NavigationAdapter extends BaseAdapter {
 		    return Filetype.TEXT;
 		}*/ else if (extension.equals("csv")) {
 			holder.img.setImageResource(R.drawable.quiz_img);
-		} else {
+		} else if(extension.equals("pdf")){
+			holder.img.setImageResource(R.drawable.pdf_img);
+		}else {
 			holder.img.setImageBitmap(null);
 		}
 		

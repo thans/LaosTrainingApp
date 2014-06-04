@@ -24,7 +24,7 @@ public class Topic extends Activity {
 	private String packageName;
 	
 	private GridView gridview;
-	private TopicsAdapter adapter;
+	private NavigationAdapter adapter;
 	
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -47,17 +47,15 @@ public class Topic extends Activity {
 		}
 		
 		gridview = (GridView) findViewById(R.id.gridview);
-		if(gridview == null){
-			Log.e("TOPIC", "Gridview is null");
-			
-		}
+		
         // Get the short names of the files to populate the grid view
         
         //adapter = new MyViewAdapter(this, files, appRoot.getAbsolutePath() + "/", R.layout.row_grid );
 		Log.e("TOPIC", "NUMBER OF FILES : " + files.size());
 		Log.e("TOPIC", "package name: " + packageName);
-		adapter = new TopicsAdapter(this, fileNames, R.layout.toic);
 		
+		//adapter = new TopicsAdapter(this, fileNames, R.layout.toic);
+		adapter = new NavigationAdapter(this, fileNames, packageName, R.layout.row_grid );
         // Construct the gridView, sending in the files and the absolute path where the files reside
         gridview.setAdapter(adapter);
 
