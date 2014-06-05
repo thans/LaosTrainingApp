@@ -66,9 +66,7 @@ public class TrainingPackageActivity extends Activity {
 		        (RelativeLayout) this.findViewById(R.id.activity_training_package_layout);
 		
 		FILES = getOrderedFiles(packageName);
-		Log.e(TAG, "in on create");
-		//currentFile = 0;
-		
+
 		currentFile = getIntent().getExtras().getInt(POSITION);
 		
 		// set up the back and next buttons
@@ -88,11 +86,7 @@ public class TrainingPackageActivity extends Activity {
             }
         });
 		
-		// let them choose where in the package to start
-		//showPackageContents();
-		
 		activity.navigateTo(currentFile);
-		
 	}
 
 
@@ -111,7 +105,6 @@ public class TrainingPackageActivity extends Activity {
         lv.setOnItemClickListener(new OnItemClickListener() {
         	@Override
         	public void onItemClick(AdapterView<?> adapter, View v, int pos, long arg4) {
-        		Log.e(TAG, "Position clicked = " + pos);
         		activity.navigateTo(pos);
         		alertDialog.dismiss();
         	}
@@ -263,7 +256,6 @@ public class TrainingPackageActivity extends Activity {
 		// params unused
 		Filetype type = getType(f.getName());
 		String path = f.getAbsolutePath();
-		Log.v(TAG, "Adding a " + type.name() + " file to the activity. File: " + path);
 		layout.removeAllViews();
 		switch (type)  {
 	        case IMAGE:
@@ -278,7 +270,6 @@ public class TrainingPackageActivity extends Activity {
 	            image.requestFocus();
 	            break;
 	        case VIDEO:
-	        	Log.e(TAG, "showing video");
 				// TODO - add the video in a VideoView to the page
 				final VideoView video = new VideoView(this); //(VideoView) findViewById(R.id.VideoView);
 				MediaController mediacontroller = new MediaController(this);
@@ -312,18 +303,13 @@ public class TrainingPackageActivity extends Activity {
 				}); 
 				break;
 	        case PDF:
-	        	Log.e(TAG, "Display PDF");
 	        	System.out.println("File path: " +  path);
 	        	Uri uriPath = Uri.fromFile(new File(path));
 	        	Intent intent = new Intent(Intent.ACTION_VIEW);
 	        	intent.setDataAndType(uriPath, "application/pdf");
-	        	
-	        	//intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-	        	
 	            startActivity(intent);
 	            finish();
 	            break;
-	        	//startActivity(intent);
 	        case TEXT:
 	            // do nothing
 	            break;
@@ -483,7 +469,6 @@ public class TrainingPackageActivity extends Activity {
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
-		Log.d("ID Clicked ", id + "");
 		if (id == R.id.action_settings) {
 			return true;
 		} else if (id == R.id.action_navigate) {

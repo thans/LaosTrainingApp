@@ -12,7 +12,6 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Environment;
-import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -32,7 +31,6 @@ import android.widget.Toast;
 
 public class MainActivity extends Activity {
     public static final String LANGUAGE_KEY = "language";
-    private static final String TAG = MainActivity.class.getSimpleName();
     private MyViewAdapter adapter;
     private String[] fileNames;
     private File appRoot;
@@ -100,18 +98,12 @@ public class MainActivity extends Activity {
     }
 
     public void addTrainingPackageButtons(String baseDir) {
-        //LinearLayout layout =
-            //    (LinearLayout) this.findViewById(R.id.activity_main_linear_layout);
-        Log.e(TAG, "checking in: " + R.string.local_storage_folder);
         File appRoot = new File(baseDir + "/" + getString(R.string.local_storage_folder));
         File[] files = appRoot.listFiles();
 
         for (File f : files) {
 
             Button toTrainingPackage = new Button(this);
-            Log.e(TAG, f.getName());
-            Log.e(TAG, f.getPath());
-
             // Gets the size of the current window and stores it using a Point
             Display display = getWindowManager().getDefaultDisplay();
             Point size = new Point();
