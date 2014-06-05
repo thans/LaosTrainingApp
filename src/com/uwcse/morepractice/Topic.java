@@ -131,7 +131,6 @@ public class Topic extends Activity {
         // the new array to give to the adapter
         String[] filteredArray = filteredList.toArray(new String[filteredList.size()]);
         adapter = null;
-        //adapter = new MyViewAdapter(this, filteredArray, appRoot.getAbsolutePath() + "/", R.layout.row_grid );
         adapter = new NavigationAdapter(this, filteredArray, packageName, R.layout.row_grid );
         
         // Construct the gridView, sending in the files and the absolute path where the files reside
@@ -159,8 +158,4 @@ public class Topic extends Activity {
       hideKeyboard();
     }
 
-    private String getName(String path) {
-        String[] names = path.split("\\/");
-        return names[names.length - 1];
-    }
 }

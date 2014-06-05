@@ -71,7 +71,7 @@ public class TrainingPackageTopics extends Activity {
     			videos.add(f.getName());
     		} else if (extension.equals("csv")) {
     			quizzes.add(f.getName());
-    		} else {
+    		} else if (!f.isDirectory()) {
     			refs.add(f.getName());
     		}
         }
