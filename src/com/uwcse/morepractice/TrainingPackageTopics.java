@@ -19,6 +19,7 @@ public class TrainingPackageTopics extends Activity {
 
 	private static final String TAG = TrainingPackageActivity.class.getSimpleName();
 	public static final String INTENT_KEY_NAME = "packageName";
+	public static final String TOPIC_NAME = "topicName";
 	public static final String POSITION = "0";
 	private static File[] FILES;
 	private int currentFile;
@@ -84,6 +85,7 @@ public class TrainingPackageTopics extends Activity {
 	             intent.putStringArrayListExtra("files", quizzes);
 	    		 intent.putExtra(TrainingPackageActivity.INTENT_KEY_NAME, packageName);
 	             //intent.putExtra(TrainingPackageActivity.POSITION, 0);
+	    		 intent.putExtra(TOPIC_NAME, "Quizzes");
 	             startActivity(intent);
 	        }
 	    });
@@ -96,6 +98,7 @@ public class TrainingPackageTopics extends Activity {
 	             intent.putStringArrayListExtra("files", videos);
 	    		 intent.putExtra(TrainingPackageActivity.INTENT_KEY_NAME, packageName);
 	             //intent.putExtra(TrainingPackageActivity.POSITION, 0);
+	    		 intent.putExtra(TOPIC_NAME, "Videos");
 	             startActivity(intent);
 	        }
 	    });
@@ -108,6 +111,7 @@ public class TrainingPackageTopics extends Activity {
 	             intent.putStringArrayListExtra("files", refs);
 	    		 intent.putExtra(TrainingPackageActivity.INTENT_KEY_NAME, packageName);
 	             //intent.putExtra(TrainingPackageActivity.POSITION, 0);
+	    		 intent.putExtra(TOPIC_NAME, "References");
 	             startActivity(intent);
 	        }
 	    });

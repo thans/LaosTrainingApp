@@ -24,11 +24,13 @@ import android.widget.SearchView.OnQueryTextListener;
 public class Topic extends Activity {
 	private static final String TAG = TrainingPackageActivity.class.getSimpleName();
 	public static final String INTENT_KEY_NAME = "packageName";
+	public static final String TOPIC_NAME = "topicName";
 	
 	public static final String POSITION = "0";
 	private static File[] FILES;
 	private int currentFile;
 	private String packageName;
+	private String topicName;
 	private String[] fileNames;
 	
 	private GridView gridview;
@@ -40,6 +42,8 @@ public class Topic extends Activity {
 		//gestureDetector = new GestureDetector(this, new MyGestureDetector(this)); no swiping for now - make sure to uncomment dispatchTouchEvent
 		
 		packageName = getIntent().getExtras().getString(INTENT_KEY_NAME);
+		topicName = getIntent().getExtras().getString(TOPIC_NAME);
+		setTitle(getFolderName(packageName) + " - " + topicName);
 		
 		//showFiles(retrievedName);
 		//this.setTitle(getNameFromPath(packageName)); 
@@ -54,10 +58,7 @@ public class Topic extends Activity {
 		    String name = files.get(i);
 		    if (!getNameWithoutExtension(name).equals("img") && !name.equals("order.txt")) {
 		        names.add(files.get(i));
-		        Log.e("ADDED", name);
-		    } else {
-		        Log.e("REMOVED", name);
-		    }
+		    } 
 		}
 		
 		fileNames = names.toArray(new String[names.size()]);
@@ -115,6 +116,11 @@ public class Topic extends Activity {
 	private String getNameWithoutExtension(String filename) {
 	    String[] parts = filename.split("\\.");
 	    return parts[0].toLowerCase();
+	}
+	
+	private String getFolderName(String filename) {
+	    String[] parts = filename.split("/");
+	    return parts[parts.length - 1];
 	}
 	
     /**
