@@ -9,13 +9,15 @@ import android.os.Handler;
 import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
+import android.view.animation.ScaleAnimation;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 
 public class Splash extends Activity {
 
-    private final int SPLASH_DISPLAY_LENGTH = 3000;
+    private final int SPLASH_DISPLAY_LENGTH = 2000;
     private final int DELAY = SPLASH_DISPLAY_LENGTH / 6;
+    private final int OFFSET = 10;
 
     /** Called when the activity is first created. */
     @Override
@@ -34,12 +36,18 @@ public class Splash extends Activity {
             @Override
             public void run() {
                 // stop the animation
+            	ScaleAnimation anim = new ScaleAnimation(1, 2, 1, 2, Animation.RELATIVE_TO_SELF, (float)0.5, Animation.RELATIVE_TO_SELF, (float)0.5);
+            	anim.setDuration(((SPLASH_DISPLAY_LENGTH - DELAY) / 2) + OFFSET);
+            	anim.setRepeatMode(Animation.REVERSE);
+            	anim.setRepeatCount(Animation.INFINITE);
+            	/*
                 RotateAnimation anim = new RotateAnimation(0, 360,
                         Animation.RELATIVE_TO_SELF, 0.5f,
                         Animation.RELATIVE_TO_SELF, 0.5f);
                 anim.setInterpolator(new LinearInterpolator());
                 anim.setDuration((SPLASH_DISPLAY_LENGTH - DELAY) / 2);
                 anim.setRepeatCount(Animation.INFINITE);
+                */
 
                 // Start animating the image
                 splash.startAnimation(anim);
