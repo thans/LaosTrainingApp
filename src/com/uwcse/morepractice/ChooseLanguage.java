@@ -12,6 +12,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -36,7 +37,8 @@ public class ChooseLanguage extends Activity {
         super.onCreate(icicle);
         // remove title
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.activity_language);
+        //setContentView(R.layout.activity_language);
+        setContentView(R.layout.language_download);
         //setContentView(R.layout.language);
 	}
 	
@@ -73,14 +75,20 @@ public class ChooseLanguage extends Activity {
 	private void showLanguages(File[] files, LinearLayout layout) {
 		if (files.length == 0) {
 		
-			  final Button button = (Button) findViewById(R.id.language_button);
-		      button.setOnClickListener(new View.OnClickListener() {
+			  //layout.removeAllViews();
+			  Log.e(TAG, "IN IF STATEMENT");
+	            // Create new LayoutInflater - this has to be done this way, as you can't directly inflate an XML without creating an inflater object first
+	            //LayoutInflater inflater = getLayoutInflater();
+	            //layout.addView(inflater.inflate(R.layout.language_download, null));
+			
+			final Button button = (Button) findViewById(R.id.language_button);
+		    button.setOnClickListener(new View.OnClickListener() {
 		            public void onClick(View v) {
 		            	Intent intent = new Intent(ChooseLanguage.this, DownloadActivity.class);
 	                    startActivity(intent);
 		                
 		            }
-		        });
+		    });
 			/*	Button btn = new Button(this);
         	btn.setText("Download Files");
         	//LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
@@ -103,13 +111,24 @@ public class ChooseLanguage extends Activity {
 			// Get the short names of the files to populate the grid view
 			
 			
-					if(layout.findViewById(R.id.language_button ) != null){
+					/*if(layout.findViewById(R.id.language_button ) != null){
 						Button button = (Button)layout.findViewById(R.id.language_button);
 						ViewGroup parent = (ViewGroup) button.getParent();
 						parent.removeView(button);
-					}
+					}*/
 			
-			
+			//LinearLayout lang_button = (LinearLayout)findViewById(R.id.lang_download);
+            //lang_button.removeAllViews();
+ 
+ 
+            // Create new LayoutInflater - this has to be done this way, as you can't directly inflate an XML without creating an inflater object first
+            //LayoutInflater inflater = getLayoutInflater();
+            
+           // lang_button.addView(inflater.inflate(R.layout.language_list, null));
+ 
+			setContentView(R.layout.language_list);		
+					
+					
 			String baseDir = Environment.getExternalStorageDirectory().getAbsolutePath();
             final String laosFilePath = baseDir + "/" + getString(R.string.local_storage_folder);
 			
@@ -125,7 +144,7 @@ public class ChooseLanguage extends Activity {
 	        ListView listView = (ListView) findViewById(R.id.listview);
 	        listView.setAdapter(adapter);
 	        
-	        Log.e(TAG, "IN CHOOSE LANGUAGE");
+	        //Log.e(TAG, "IN CHOOSE LANGUAGE");
 	        /*Log.e(TAG, "File 1" + fileNames[0]);
 	        Log.e(TAG, "File 1" + fileNames[1]);*/
 	        

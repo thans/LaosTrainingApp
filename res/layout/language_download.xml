@@ -1,0 +1,23 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:id="@+id/lang_layout" 
+     android:background="#000000"
+     android:gravity="center">
+   
+    
+    <Button
+        android:id="@+id/language_button"
+        android:layout_width="500dp"
+        android:layout_height="200dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:text="Download Files" 
+        android:gravity="center"
+        android:textSize="60sp" 
+        android:background="#FFFFFF"/>
+    
+</LinearLayout>
+
+
