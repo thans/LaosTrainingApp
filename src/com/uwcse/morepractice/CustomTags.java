@@ -25,20 +25,7 @@ public class CustomTags extends Activity {
 	
 	private static final String[] TEMPS = {"06.1",  "04.7",  "09.7",  "03.7",  "06.4",  "-02.3", "09.6"};
 	private static final String[] TIMES = {"00:00", "00:00", "04:41", "00:00", "00:00", "03:12", "12:52"};
-	private static final String[] COMMENTS = {
-		"If you press READ button once more, a low arrow flash indicates the low temperature setting " +
-			"and it displays the lowest temperature recorded during that day and the time period",
-		"When we press the READ button once more, the high arrow indicator under yesterday " +
-			"column will start flashing.",
-		"Yesterday, the highest temperature recorded was +9.7°C. Even this is higher than the set " +
-			"+8°C alarm condition, this is OK since the exposure was not longer than 4 hours and 41 " +
-			"minutes. It requires 10 hours continuously to trigger this alarm.",
-		"Yesterday, the lowest temperature recorded was +3.7°C, and this is indicated as okay.",
-		"Two days ago, the highest temperature was recorded as +6.4°C which is also okay",
-		"Two days ago, there was a low alarm. The refrigerator was exposed to temperatures below " +
-			"-0.5°C for more than 60 minutes",
-		"Three days ago, there was a high alarm.  The refrigerator was exposed to temperatures above 8°C for 12 hours and 52 minutes"
-	};
+	private static String[] COMMENTS;
 	
 	private static final int LOW_ALARM_INDEX = 5;
 	private static final int HIGH_ALARM_INDEX = 6;
@@ -54,7 +41,7 @@ public class CustomTags extends Activity {
         
         stepNumber = -1;
         stepInstructions = getResources().getStringArray(R.array.custom_tags_instructions);
-        
+        COMMENTS = getResources().getStringArray(R.array.custom_tags_history_instructions);
         next.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
         		act.next();
@@ -82,7 +69,6 @@ public class CustomTags extends Activity {
 			}
 			return;
 		}
-		System.out.println("Step number: " + stepNumber);
 		
 		TextView instructions = (TextView) this.findViewById(R.id.custom_tags_instructions);
 		instructions.setText(stepInstructions[stepNumber]);

@@ -21,4 +21,14 @@
         <item>The alarm icons indicate how long ago a cold/hot alarm was registered.  Use the scale at the top to determine what day they occurred. ▲ indicates a high alarm; ▼ indicates a low alarm</item>
         <item>You have now completed the FridgeTag overview.  Press > to continue</item>
     </string-array>
+    
+    <string-array name="custom_tags_history_instructions">
+        <item>If you press READ button once more, a low arrow flash indicates the low temperature setting and it displays the lowest temperature recorded during that day and the time period</item>
+        <item>When we press the READ button once more, the high arrow indicator under yesterday column will start flashing.</item>
+        <item>Yesterday, the highest temperature recorded was +9.7°C. Even this is higher than the set +8°C alarm condition, this is OK since the exposure was not longer than 4 hours and 41 minutes. It requires 10 hours continuously to trigger this alarm.</item>
+        <item>Yesterday, the lowest temperature recorded was +3.7°C, and this is indicated as okay.</item>
+        <item>Two days ago, the highest temperature was recorded as +6.4°C which is also okay</item>
+        <item>Two days ago, there was a low alarm. The refrigerator was exposed to temperatures below -0.5°C for more than 60 minutes</item>
+   		<item>Three days ago, there was a high alarm.  The refrigerator was exposed to temperatures above 8°C for 12 hours and 52 minutes</item>
+    </string-array>
 </resources>

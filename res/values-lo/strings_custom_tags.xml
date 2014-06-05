@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="title_activity_custom_tags"></string> <!-- CustomTags -->
+    <string name="down_arrow">▼</string>
+    <string name="up_arrow">▲</string>
+    <string name="degrees_c">°C</string>
+    <string name="custom_tags_intro">ໂປແກຣມນີ້ຈະສະແດງໃຫ້ເຮົາເຫັນວ່າອຸປະກອນຕິດຕາມອຸນຫະພູມເຮັດວຽກແນວໃດ. ກົດປຸ່ມ > ເພື່ອສືບຕໍ່</string> <!-- This application will show you how a FridgeTag works.  Click the ">" button to continue. -->
+    <string name="custom_tags_history_intro">ກົດປຸ່ມ READ ຄັ້ງທໍາອິດຈະສະແດງອຸນຫະພູມສູງສຸດທີ່ໄດ້ມີການບັນທຶກ ແລະ ໄລຍະເວລາເປັນ ຊົ່ວໂມງ ແລະ ນາທີທັງໝົດ ທີ່ອຸນຫະພູມກາຍລະດັບທີ່ກຳນົດໃນມື້ນັ້ນ ເຊິ່ງແມ່ນໃນມື້ນີ້.</string> <!-- Pressing READ once displays the highest temperature reached and the cumulative time duration in hours and minutes that the temperature was above the given upper limit for the current day that is today. -->
+    <string name="alarm_ok">OK</string> 
+    <string name="alarm_alarm">ALARM</string>
+    <string name="complete_custom_tags">ທ່ານໄດ້ສໍາເລັດການຝຶກອົບຮົມ ກ່ຽວກັບອຸປະກອນຕິດຕາມອຸນຫະພູມຂອງຕູ້ເຢັນແລ້ວ. ກົດ > ເພື່ອສິ້ນສຸດການອົບຮົມ.</string> <!-- You have completed the Refrigerator Tags training application!  Press next to exit. -->
+    <string name="negative_temperature">-</string>
+    <string name="starting_temp">03.1</string>
+    <string name="starting_time">10:48</string>
+    
+    <string-array name="custom_tags_instructions">
+        <item>ອຸປະກອນຕິດຕາມອຸນຫະພູມ ມີ 2 ປຸ່ມຄື: ປຸ່ມຕັ້ງຄ່າ ແລະປຸ່ມອ່ານ. ປຸ່ມຕັ້ງຄ່າ ໃຊ້ໃນເວລາທີ່ຈະຕັ້ງຄ່າ, ແລະ ປຸ່ມອ່ານ ໃຊ້ເພື່ອເບິ່ງຂໍ້ມູນຍ້ອນຫຼັງ</item> <!-- There are 2 buttons on the FridgeTag - a SET and READ button.  The SET button is used mainly during device setup, and the READ button is used to view the history of the device. -->
+        <item>ການແຈ້ງເຕືອນຈະມີ 2 ແບບເຊັ່ນ “OK” ຫຼື “ALARM” ຂຶ້ນກັບສະຖານະຂອງອຸປະກອນຕິດຕາມອຸນຫະພູມໃນຕອນນັ້ນ, ຫຼື ສະຖານະໃນຊ່ວງເວລາໃດໜຶ່ງໃນການເບິ່ງຂໍໍ້ມູນຍ້ອນຫຼັງ</item> <!-- The Alarm state will show either "OK" or "ALARM" based on the current status of the FridgeTag, or the status at a given point in time when in history mode -->
+        <item>Time/Alarm Duration ແມ່ນຈະສະແດງເວລາໃນຕອນນັ້ນ, ຫຼື ໄລຍະເວລາ, ຈຳນວນຊົ່ວໂມງ, ນາທີ ທີ່ອຸນຫະພູມໄດ້ກາຍຂອບເຂດທີ່ກໍານົດ</item> <!-- The Time/Alarm Duration displays the current time, or the amount of time the since the temperature has exceeded one of the limits -->
+        <item>Temp/Min-Max ແມ່ນສະແດງອຸນຫະພູມຂອງອຸປະກອນຕິດຕາມອຸນຫະພູມໃນຕອນນັ້ນ ຫຼື ອຸນຫະພູມ ສູງສຸດ ຕໍ່າສຸດ ໃນຕອນທີ່ມີການແຈ້ງເຕືອນ</item><!--  The Temp/Min-Max shows the current temperature of the FridgeTag or the max/min temperature reached during an alarm period -->
+        <item>ລູກສອນແມ່ນຕົວຊີ້ບອກວ່າ ການເຕືອນຄວາມຮ້ອນ/ເຢັນເກີດຂຶ້ນດົນປານໃດແລ້ວ. ເບິ່ງຕົວອັກສອນທາງເທິງອຸປະກອນເພື່ອຊີ້ບອກວ່າມື້ໃດທີ່ມີການ ແຈ້ງເຕືອນອຸນຫະພູມໄດ້ເກີດຂຶ້ນ.​ ▲ແມ່ນ ການແຈ້ງເຕືອນ ຄວາມຮ້ອນ; ▼ແມ່ນ ການແຈ້ງເຕືອນ ຄວາມເຢັນ</item> <!-- The alarm icons indicate how long ago a cold/hot alarm was registered.  Use the scale at the top to determine what day they occurred. ▲ indicates a high alarm; ▼ indicates a low alarm -->
+        <item>ທ່ານໄດ້ສໍາເລັດການຮຽນຮູ້ພາບລວມຂອງອຸປະກອນຕິດຕາມອຸນຫະພູມ. ກົດ > ເພື່ອສືບຕໍ່</item> <!-- You have now completed the FridgeTag overview.  Press > to continue -->
+    </string-array>
+    
+    <string-array name="custom_tags_history_instructions">
+        <item>ກົດປຸ່ມ READ ອີກຄັ້ງໜຶ່ງ, ຈະເຫັນລູກສອນຊີ້ລົງໝາຍເຖິງ ອຸນຫະພູມຕໍ່າ ແລະ ຈະສະແດງອຸນຫະພູມທີ່ຕໍ່າທີ່ສຸດທີ່ມີການບັນທຶກໃນມື້ນັ້ນ ແລະ ໄລຍະເວລາທີ່ອຸປະກອນສຳຜັດກັບອຸນຫະພູມນັ້ນ</item> <!-- If you press READ button once more, a low arrow flash indicates the low temperature setting and it displays the lowest temperature recorded during that day and the time period -->
+        <item>ກົດປຸ່ມ READ ອີກຄັ້ງໜຶ່ງ, ຈະເຫັນລູກສອນຊີ້ຂື້ນ ຢູ່ກ້ອງຫ້ອງມື້ວານປາກົດຂຶ້ນ.</item> <!-- When we press the READ button once more, the high arrow indicator under yesterday column will start flashing. -->
+        <item>ມື້ວານນີ້ ອຸນນະພູມສູງສຸດທີ່ມີການບັນທຶກແມ່ນ +9.7°C. ເຖິງແມ່ນວ່າມັນຈະສູງກ່ວາທີ່ໄດ້ກໍານົດໄວ້ຄື +8°C, ແຕ່ກໍບໍ່ເປັນຫຍັງ ເພາະວ່າອຸນນະພູມທີ່ເກີນຈາກກຳນົດນັ້ນ ພຽງແຕ່ 4 ຊົ່ວໂມງ ກັບ 41 ນາທີ. “ການແຈ້ງເຕືອນຈະປາກົດຂື້ນກໍຕໍ່ເມື່ອ ອຸປະກອນສຳຜັດກັບຄວາມຮ້ອນດົນກວ່າ 10 ຊົ່ວໂມງ”.</item> <!-- Yesterday, the highest temperature recorded was +9.7°C. Even this is higher than the set +8°C alarm condition, this is OK since the exposure was not longer than 4 hours and 41 minutes. It requires 10 hours continuously to trigger this alarm. -->
+        <item>ມື້ວານນີ້ ອຸນນະພູມຕໍ່າສຸດທີ່ມີການບັນທຶກແມ່ນ +3.7°C, ແລະ ບົ່ງບອກວ່າຍັງບໍ່ເປັນຫຍັງ (OK).</item> <!-- Yesterday, the lowest temperature recorded was +3.7°C, and this is indicated as okay. -->
+        <item>ໃນສອງມື້ກ່ອນ,ອຸນນະພູມສູງສຸດທີ່ມີການບັນທຶກແມ່ນ +6.4°C ເຊິ່ງກໍ່ຍັງບໍ່ເປັນຫຍັງ (OK)</item> <!-- Two days ago, the highest temperature was recorded as +6.4°C which is also okay -->
+        <item>ໃນສອງມື້ກ່ອນ, ມີການແຈ້ງເຕືອນອຸນຫະພູມຕໍ່າ. “ອຸນຫະພູມໃນຕູ້ເຢັນຕໍ່າກວ່າ -0.5°C ດົນກວ່າ 60 ນາທີ”</item> <!-- Two days ago, there was a low alarm. The refrigerator was exposed to temperatures below -0.5°C for more than 60 minutes -->
+   		<item>ໃນສາມມື້ກ່ອນ, ມີການແຈ້ງເຕືອນອຸນຫະພູມສູງ. ອຸນຫະພູມຕູ້ເຢັນສູງກວ່າ 8°C ເຖິງ 12 ຊົ່ວໂມງ 52 ນາທີ</item> <!-- Three days ago, there was a high alarm.  The refrigerator was exposed to temperatures above 8°C for 12 hours and 52 minutes -->
+    </string-array>
+</resources>
