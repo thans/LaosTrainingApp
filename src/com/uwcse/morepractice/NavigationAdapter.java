@@ -23,22 +23,17 @@ import android.widget.TextView;
 
 public class NavigationAdapter extends BaseAdapter {
 
-	private static final String TAG = NavigationAdapter.class.getSimpleName();
-		//	MainActivity.class.getSimpleName();
-	
 	private Context mContext;
 	private String[] files;
-	private String directory;
 	private String[] colors = {"#A4C400", "#60A917", "#008A00", "#00ABA9","#1BA1E2", "#0050EF","#6A00FF", "#AA00FF", 
 							   "#F472D0", "#D80073", "#A20025", "#E51400", "#FA6800", "#F0A30A", "#E3C800"};
 	
 	public LayoutInflater inflater;
 	public int LayoutResourceId;
 	
-	public NavigationAdapter(Context c, String[] s, String d, int id){
+	public NavigationAdapter(Context c, String[] s, int id){
 		mContext = c;
 		files = s;
-		directory = d;
 		LayoutResourceId = id;
 	}
 	
@@ -67,8 +62,6 @@ public class NavigationAdapter extends BaseAdapter {
 	@Override
 	 public View getView(int position, View convertView, ViewGroup parent) {
 		
-		TextView view;
-		
 		ViewHolder holder = null;
 		
 		View row = convertView;
@@ -95,17 +88,13 @@ public class NavigationAdapter extends BaseAdapter {
 			holder.img.setImageResource(R.drawable.pic_img);
 		} else if (extension.equals("mp4")) {
 			holder.img.setImageResource(R.drawable.video_img);
-		} /*else if (extension.equals("txt")) {
-		    return Filetype.TEXT;
-		}*/ else if (extension.equals("csv")) {
+		} else if (extension.equals("csv")) {
 			holder.img.setImageResource(R.drawable.quiz_img);
 		} else if(extension.equals("pdf")){
 			holder.img.setImageResource(R.drawable.pdf_img);
 		}else {
 			holder.img.setImageBitmap(null);
 		}
-		
-		Random ran = new Random();
 			
 		holder.text.setBackgroundColor(Color.parseColor(colors[position % colors.length]));
 		holder.img.setBackgroundColor(Color.parseColor(colors[position % colors.length]));

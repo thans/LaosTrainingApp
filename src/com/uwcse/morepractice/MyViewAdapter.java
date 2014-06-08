@@ -67,8 +67,6 @@ public class MyViewAdapter extends BaseAdapter {
 	@Override
 	 public View getView(int position, View convertView, ViewGroup parent) {
 		
-		TextView view;
-		
 		ViewHolder holder = null;
 		
 		View row = convertView;
@@ -96,8 +94,6 @@ public class MyViewAdapter extends BaseAdapter {
 		}else {
 			holder.img.setImageBitmap(null);
 		}
-		
-		Random ran = new Random();
 			
 		holder.text.setBackgroundColor(Color.parseColor(colors[position % colors.length]));
 		holder.img.setBackgroundColor(Color.parseColor(colors[position % colors.length]));

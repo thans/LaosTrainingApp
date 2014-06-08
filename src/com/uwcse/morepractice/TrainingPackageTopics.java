@@ -22,7 +22,6 @@ public class TrainingPackageTopics extends Activity {
 	public static final String TOPIC_NAME = "topicName";
 	public static final String POSITION = "0";
 	private static File[] FILES;
-	private int currentFile;
 	private String packageName;
 	
 	
@@ -33,18 +32,9 @@ public class TrainingPackageTopics extends Activity {
 		
 		packageName = getIntent().getExtras().getString(INTENT_KEY_NAME);
 		
-		//showFiles(retrievedName);
 		this.setTitle(getNameFromPath(packageName)); //fileNameParts[fileNameParts.length - 1].split("\\.")[0]); // set the title to the title of the training package
 		
-		//FILES = getOrderedFiles(packageName);
-		Log.e(TAG, "in on create");
-		//currentFile = 0;
-		
-		//currentFile = getIntent().getExtras().getInt(POSITION);
 		packageName = getIntent().getExtras().getString(INTENT_KEY_NAME);
-		// set up the back and next buttons
-		ImageButton backButton = (ImageButton) this.findViewById(R.id.back_button);
-		final TrainingPackageTopics activity = this;
 		
 		Button learning = (Button) this.findViewById(R.id.button_learning);
 		
@@ -84,7 +74,6 @@ public class TrainingPackageTopics extends Activity {
 	    		 Intent intent = new Intent(TrainingPackageTopics.this, Topic.class);
 	             intent.putStringArrayListExtra("files", quizzes);
 	    		 intent.putExtra(TrainingPackageActivity.INTENT_KEY_NAME, packageName);
-	             //intent.putExtra(TrainingPackageActivity.POSITION, 0);
 	    		 intent.putExtra(TOPIC_NAME, "Quizzes");
 	             startActivity(intent);
 	        }
@@ -97,7 +86,6 @@ public class TrainingPackageTopics extends Activity {
 	    		 Intent intent = new Intent(TrainingPackageTopics.this, Topic.class);
 	             intent.putStringArrayListExtra("files", videos);
 	    		 intent.putExtra(TrainingPackageActivity.INTENT_KEY_NAME, packageName);
-	             //intent.putExtra(TrainingPackageActivity.POSITION, 0);
 	    		 intent.putExtra(TOPIC_NAME, "Videos");
 	             startActivity(intent);
 	        }
@@ -110,7 +98,6 @@ public class TrainingPackageTopics extends Activity {
 	    		 Intent intent = new Intent(TrainingPackageTopics.this, Topic.class);
 	             intent.putStringArrayListExtra("files", refs);
 	    		 intent.putExtra(TrainingPackageActivity.INTENT_KEY_NAME, packageName);
-	             //intent.putExtra(TrainingPackageActivity.POSITION, 0);
 	    		 intent.putExtra(TOPIC_NAME, "References");
 	             startActivity(intent);
 	        }

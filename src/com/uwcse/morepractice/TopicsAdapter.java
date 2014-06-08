@@ -22,7 +22,6 @@ public class TopicsAdapter extends BaseAdapter {
 	
 	private Context mContext;
 	private String[] files;
-	private String directory;
 	private String[] colors = {"#A4C400", "#60A917", "#008A00", "#00ABA9","#1BA1E2", "#0050EF","#6A00FF", "#AA00FF", 
 							   "#F472D0", "#D80073", "#A20025", "#E51400", "#FA6800", "#F0A30A", "#E3C800"};
 	
@@ -63,49 +62,23 @@ public class TopicsAdapter extends BaseAdapter {
 		
 		TextView view;
 		
-		//ViewHolder holder = null;
-		
 		View row = convertView;
-		
-		
+	
 		if (convertView == null) {  // if it's not recycled, initialize some attributes
-	       //	LayoutInflater inflater = ((Activity) mContext).getLayoutInflater();
-	       //	row = inflater.inflate(LayoutResourceId, parent, false); 
 			LayoutInflater inflater = ((Activity) mContext).getLayoutInflater();
 	       	row = inflater.inflate(LayoutResourceId, parent, false); 
 	       	view = (TextView) row.findViewById(R.id.topic_text);
-			//view = new TextView(mContext);
-	      // 	holder = new ViewHolder();	
-	       // holder.text = (TextView) row.findViewById(R.id.item_text);
-	       // holder.img = (ImageView) row.findViewById(R.id.item_image);
-	        //row.setTag(holder);
 	       	row.setTag(view);
 	    } else {
-	    	//holder = (ViewHolder) row.getTag();
-	    	//view = (TextView) convertView;
 	    	view = (TextView) row.getTag();
 	    }
 		
-		//String[] parts = files[position].split("\\.");
-		
-		//holder.text.setText(parts[0].toLowerCase());
-			
-		//holder.text.setBackgroundColor(Color.parseColor(colors[position % colors.length]));
-		//holder.img.setBackgroundColor(Color.parseColor(colors[position % colors.length]));
-		//view.setText(parts[0].toLowerCase());
 		String[] parts = files[position].split("\\.");
 		
 		view.setText(parts[0].toLowerCase());
 		
-		//view.setText(files[position]);
-		//view.setTextSize(30);
-		//view.setHeight(100);
-		
-			//Log.e("TOPICADAPTER", files[position]);
-		
 		view.setBackgroundColor(Color.parseColor(colors[position % colors.length]));
 		
-		//return view; 
 		return row;
 	}
 	

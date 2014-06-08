@@ -23,22 +23,17 @@ import android.widget.TextView;
 
 public class LanguageViewAdapter extends BaseAdapter {
 
-	private static final String TAG = LanguageViewAdapter.class.getSimpleName();
-		//	MainActivity.class.getSimpleName();
-	
 	private Context mContext;
 	private String[] files;
-	private String directory;
 	private String[] colors = {"#A4C400", "#60A917", "#008A00", "#00ABA9","#1BA1E2", "#0050EF","#6A00FF", "#AA00FF", 
 							   "#F472D0", "#D80073", "#A20025", "#E51400", "#FA6800", "#F0A30A", "#E3C800"};
 	
 	public LayoutInflater inflater;
 	public int LayoutResourceId;
 	
-	public LanguageViewAdapter(Context c, String[] s, String d, int id){
+	public LanguageViewAdapter(Context c, String[] s, int id){
 		mContext = c;
 		files = s;
-		directory = d;
 		LayoutResourceId = id;
 	}
 	
@@ -69,30 +64,21 @@ public class LanguageViewAdapter extends BaseAdapter {
 		
 		TextView view;
 		
-		//ViewHolder holder = null;
-		
 		View row = convertView;
 		
 		if (row == null) {  // if it's not recycled, initialize some attributes
            	LayoutInflater inflater = ((Activity) mContext).getLayoutInflater();
            	row = inflater.inflate(LayoutResourceId, parent, false); 
            	view = (TextView) row.findViewById(R.id.language_text);
-           	//holder = new ViewHolder();	
-            //holder.text = (TextView) row.findViewById(R.id.item_text);
-            //holder.img = (ImageView) row.findViewById(R.id.item_image);
             row.setTag(view);
         } else {
         	view = (TextView) row.getTag();
         }
 		
 		view.setText(files[position]);
-		  Log.e(TAG, "In language view" + files[position]);
-		//File file = this.getFileImg(new File(directory + files[position]));
-		
-		
 			
 		view.setBackgroundColor(Color.parseColor(colors[position % colors.length]));
-		//holder.img.setBackgroundColor(Color.parseColor(colors[position % colors.length]));
+		
 		return row; 
 	}
 	

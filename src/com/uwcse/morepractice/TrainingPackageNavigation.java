@@ -3,41 +3,26 @@ package com.uwcse.morepractice;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.media.MediaPlayer;
-import android.media.MediaPlayer.OnPreparedListener;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
-import android.widget.ImageView;
-import android.widget.MediaController;
-import android.widget.RelativeLayout;
 import android.widget.SearchView;
-import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.VideoView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.SearchView.OnQueryTextListener;
 
 public class TrainingPackageNavigation extends Activity {
 	
-	private static final String TAG = TrainingPackageNavigation.class.getSimpleName();
 	public static final String INTENT_KEY_NAME = "packageName";
 	private static File[] FILES;
 	private String[] fileNames;
-	private int currentFile;
 	private String packageName;
 	private GridView gridview;
 	private NavigationAdapter adapter;
@@ -63,7 +48,6 @@ public class TrainingPackageNavigation extends Activity {
 		
 		FILES = getOrderedFiles(packageName);
 		
-		currentFile = 0;
         // GridView for layout
         gridview = (GridView) findViewById(R.id.gridview);
 
@@ -72,13 +56,11 @@ public class TrainingPackageNavigation extends Activity {
         for(int i = 0; i < FILES.length; i++){
             fileNames[i] = FILES[i].getName();
         }
-        //adapter = new MyViewAdapter(this, fileNames, appRoot.getAbsolutePath() + "/", R.layout.row_grid );
-        adapter = new NavigationAdapter(this, fileNames, packageName, R.layout.row_grid );
+        
+        adapter = new NavigationAdapter(this, fileNames, R.layout.row_grid );
         
         // Construct the gridView, sending in the files and the absolute path where the files reside
         gridview.setAdapter(adapter);
-
-        //gridview.setVerticalSpacing(100);
 
         // Connect each grid to a new activity with a listener
         gridview.setOnItemClickListener(new OnItemClickListener() {
@@ -86,17 +68,9 @@ public class TrainingPackageNavigation extends Activity {
                 Intent intent = new Intent(TrainingPackageNavigation.this, TrainingPackageActivity.class);
                
                 // Reconstruct the full path of the file to send to the new activity
-                TextView tv = (TextView) v.findViewById(R.id.item_text);
-                //String name = appRoot.getAbsolutePath() + "/" + tv.getText();
-                String name = packageName + "/" + tv.getText();
-                Log.e(TAG, "packageName " + packageName);
-                Log.e(TAG, "text " + tv.getText());
-                // intent.putExtra(TrainingPackageActivity.INTENT_KEY_NAME, name);
                 intent.putExtra(TrainingPackageActivity.INTENT_KEY_NAME, packageName);
                 intent.putExtra(TrainingPackageActivity.POSITION, pos);
-                startActivity(intent);
-                
-            		
+                startActivity(intent);	
             }
         });
         
@@ -144,19 +118,12 @@ public class TrainingPackageNavigation extends Activity {
             if (type == Filetype.TEXT) {
                 textFileFound = true;
                 TextParser parser = new TextParser(path, files);
-                // gets the ordered files
-                /*if (parser.getNumInconsistency() > 0) {
-                    showToast("Inconsistency between text file and directory.");
-                }*/
                 files = parser.getOrderedFiles();
                 break;
             } else {
                 continue;
             }
         }
-		/*if (!textFileFound) {
-            showToast("text file not found;  order is random");
-        }*/
 		return files;
 	}
 	
@@ -227,7 +194,7 @@ public class TrainingPackageNavigation extends Activity {
         // the new array to give to the adapter
         String[] filteredArray = filteredList.toArray(new String[filteredList.size()]);
         adapter = null;
-        adapter = new NavigationAdapter(this, filteredArray, packageName, R.layout.row_grid );
+        adapter = new NavigationAdapter(this, filteredArray, R.layout.row_grid );
         
         // Construct the gridView, sending in the files and the absolute path where the files reside
         gridview.setAdapter(adapter);

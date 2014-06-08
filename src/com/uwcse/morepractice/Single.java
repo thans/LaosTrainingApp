@@ -30,11 +30,7 @@ public class Single extends Activity {
 	private static final String TAG = TrainingPackageActivity.class.getSimpleName();
 	public static final String INTENT_KEY_NAME = "packageName";
 	public static final String POSITION = "0";
-	private static File[] FILES;
-	private int currentFile;
 	private String packageName;
-	private GridView gridview;
-	private TopicsAdapter adapter;
 	
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -42,9 +38,6 @@ public class Single extends Activity {
 		//gestureDetector = new GestureDetector(this, new MyGestureDetector(this)); no swiping for now - make sure to uncomment dispatchTouchEvent
 		
 		packageName = getIntent().getExtras().getString(INTENT_KEY_NAME);
-		
-		//showFiles(retrievedName);
-		//this.setTitle(getNameFromPath(packageName)); 
 		
 		LinearLayout layout = (LinearLayout) findViewById(R.id.single_layout);
 		File file = new File(packageName);
@@ -55,9 +48,6 @@ public class Single extends Activity {
 		
 		path = file.getAbsolutePath();
 		
-		//String path = packageName.getAbsolutePath();
-		//Log.v(TAG, "Adding a " + type.name() + " file to the activity. File: " + path);
-		//layout.removeAllViews();
 		switch (type)  {
 	        case IMAGE:
 	            ImageView image = new ImageView(this);  
@@ -71,9 +61,7 @@ public class Single extends Activity {
 	            image.requestFocus();
 	            break;
 	        case VIDEO:
-	        	Log.e(TAG, "showing video");
-				// TODO - add the video in a VideoView to the page
-				final VideoView video = new VideoView(this); //(VideoView) findViewById(R.id.VideoView);
+				final VideoView video = new VideoView(this);
 				
 				MediaController mediacontroller = new MediaController(this);
 				mediacontroller.setAnchorView(video);
@@ -88,7 +76,7 @@ public class Single extends Activity {
 				pDialog.setIndeterminate(false);
 				pDialog.setCancelable(false);
 				pDialog.show();
-				//video.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
+				
 				layout.addView(video);
 				video.requestFocus();
 				video.setOnPreparedListener(new OnPreparedListener() {
@@ -111,8 +99,6 @@ public class Single extends Activity {
 	        	Uri uriPath = Uri.fromFile(new File(path));
 	        	Intent intent = new Intent(Intent.ACTION_VIEW);
 	        	intent.setDataAndType(uriPath, "application/pdf");
-	        	
-	        	//intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 	        	
 	            startActivity(intent);
 	            finish();

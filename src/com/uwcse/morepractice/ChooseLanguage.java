@@ -56,8 +56,13 @@ public class ChooseLanguage extends Activity {
         return appRoot.listFiles();
 	}
 	
+	/**
+	 * Determines if content needs to be downloaded or if the initial Language options should be shown
+	 * @param files, the empty or full file path of the language folder in local storage
+	 * @param layout, the layout used by this language page
+	 */
 	private void showLanguages(File[] files, LinearLayout layout) {
-		if (files.length == 0) {
+		if (files.length == 0) { // if no content has been loaded, show the download button
 			final Button button = (Button) findViewById(R.id.language_button);
 		    button.setOnClickListener(new View.OnClickListener() {
 		            public void onClick(View v) {
@@ -67,21 +72,18 @@ public class ChooseLanguage extends Activity {
 		            }
 		    });
 		      
-		} else {
+		} else { 
 			setContentView(R.layout.language_list);		
-					
 					
 			String baseDir = Environment.getExternalStorageDirectory().getAbsolutePath();
             final String laosFilePath = baseDir + "/" + getString(R.string.local_storage_folder);
-			
 			
 	        String[] fileNames = new String[files.length];
 	        for(int i = 0; i < files.length; i++){
 	            fileNames[i] = files[i].getName();
 	        }
 	        
-	       // LanguageViewAdapter adapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, fileNames);
-	        adapter = new LanguageViewAdapter(this, fileNames, baseDir + "/", R.layout.list_view );
+	        adapter = new LanguageViewAdapter(this, fileNames, R.layout.list_view );
 	        
 	        ListView listView = (ListView) findViewById(R.id.listview);
 	        listView.setAdapter(adapter);
@@ -89,7 +91,6 @@ public class ChooseLanguage extends Activity {
 	        listView.setOnItemClickListener(new OnItemClickListener() {
 	            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
 	                Intent intent = new Intent(ChooseLanguage.this, MainActivity.class);
-	                final String f = (String) parent.getItemAtPosition(position);
 	                
 	                TextView tv = (TextView) v.findViewById(R.id.language_text);
 	                String name = laosFilePath + "/" + tv.getText();

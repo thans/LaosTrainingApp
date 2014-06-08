@@ -72,7 +72,7 @@ public class Topic extends Activity {
 		Log.e("TOPIC", "package name: " + packageName);
 		
 		//adapter = new TopicsAdapter(this, fileNames, R.layout.toic);
-		adapter = new NavigationAdapter(this, fileNames, packageName, R.layout.row_grid );
+		adapter = new NavigationAdapter(this, fileNames, R.layout.row_grid );
         // Construct the gridView, sending in the files and the absolute path where the files reside
         gridview.setAdapter(adapter);
 
@@ -137,7 +137,7 @@ public class Topic extends Activity {
         // the new array to give to the adapter
         String[] filteredArray = filteredList.toArray(new String[filteredList.size()]);
         adapter = null;
-        adapter = new NavigationAdapter(this, filteredArray, packageName, R.layout.row_grid );
+        adapter = new NavigationAdapter(this, filteredArray, R.layout.row_grid );
         
         // Construct the gridView, sending in the files and the absolute path where the files reside
         gridview.setAdapter(adapter);
