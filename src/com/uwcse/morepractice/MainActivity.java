@@ -35,21 +35,16 @@ public class MainActivity extends Activity {
     private String[] fileNames;
     private File appRoot;
     private GridView gridview;
-    private Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        context = getApplicationContext();
  
         ActionBar actionBar = getActionBar();
         actionBar.show();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
-        String baseDir = Environment.getExternalStorageDirectory().getAbsolutePath();
-
-        // for first design iteration
         String laosFilePath = getIntent().getExtras().getString(LANGUAGE_KEY);
         setTitle(getName(laosFilePath));
         appRoot = new File(laosFilePath);
@@ -64,23 +59,9 @@ public class MainActivity extends Activity {
             fileNames[i] = files[i].getName();
         }
         adapter = new MyViewAdapter(this, fileNames, appRoot.getAbsolutePath() + "/", R.layout.row_grid );
+        
         // Construct the gridView, sending in the files and the absolute path where the files reside
         gridview.setAdapter(adapter);
-
-        //gridview.setVerticalSpacing(100);
-
-        // Connect each grid to a new activity with a listener
-        /*gridview.setOnItemClickListener(new OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-                Intent intent = new Intent(MainActivity.this, TrainingPackageNavigation.class);
-
-                // Reconstruct the full path of the file to send to the new activity
-                TextView tv = (TextView) v.findViewById(R.id.item_text);
-                String name = appRoot.getAbsolutePath() + "/" + tv.getText();
-                intent.putExtra(TrainingPackageNavigation.INTENT_KEY_NAME, name);
-                startActivity(intent);
-            }
-        });*/
         
         gridview.setOnItemClickListener(new OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
@@ -93,17 +74,16 @@ public class MainActivity extends Activity {
                 startActivity(intent);
             }
         });
-
-
     }
 
+    
     public void addTrainingPackageButtons(String baseDir) {
         File appRoot = new File(baseDir + "/" + getString(R.string.local_storage_folder));
         File[] files = appRoot.listFiles();
 
         for (File f : files) {
-
             Button toTrainingPackage = new Button(this);
+            
             // Gets the size of the current window and stores it using a Point
             Display display = getWindowManager().getDefaultDisplay();
             Point size = new Point();
@@ -120,7 +100,6 @@ public class MainActivity extends Activity {
             Intent intent = new Intent(MainActivity.this, TrainingPackageActivity.class);
             intent.putExtra(TrainingPackageActivity.INTENT_KEY_NAME, f.getAbsolutePath());
             toTrainingPackage.setOnClickListener(new TrainingPackageClickListener((Activity) this, intent));
-            //layout.addView(toTrainingPackage);
         }
     }
 
@@ -129,6 +108,7 @@ public class MainActivity extends Activity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
 
+        // search
         final SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
         searchView.setQueryHint(getString(R.string.search_packages));
         

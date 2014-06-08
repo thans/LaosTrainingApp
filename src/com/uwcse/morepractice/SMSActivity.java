@@ -1,40 +1,21 @@
 package com.uwcse.morepractice;
 
-import java.util.Random;
-
 import android.app.Activity;
-import android.app.ActionBar;
 import android.app.AlertDialog;
-import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.os.Build;
 
 public class SMSActivity extends Activity {
-	
-	private static int stepNumber;
-	private static String[] stepInstructions;
-	
-	private int[] counters;
 	private char[] text;
 	private int last;
 	private int screenCount;
@@ -44,7 +25,7 @@ public class SMSActivity extends Activity {
 	private SharedPreferences sp;  
     public static final String VERSION = "version"; 
 	
-	private static final String[] answers = {"A32", "A70", "0"};
+	private static final String[] answers = {"32", "70", "0"};
 	private static final int[] images = {R.drawable.tag1, R.drawable.tag2, R.drawable.tag3};
 	private int index;
 	
@@ -53,9 +34,9 @@ public class SMSActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_sms);
 		setTitle(getString(R.string.sms_training));
-		RelativeLayout layout = (RelativeLayout) this.findViewById(R.id.sms_relative_layout);
 		
 		sp = getPreferences(Context.MODE_PRIVATE);
+		
 		// get the last version; if not set, version is 0
         index = sp.getInt(VERSION, 0);
         SharedPreferences.Editor editor = sp.edit();
@@ -66,7 +47,6 @@ public class SMSActivity extends Activity {
 		imageView.setImageResource(images[index]);
 		Log.e("ANSWER", "'" + answers[index] + "'");
 		
-		counters = new int[10];
 		text = new char[48];
 		screenCount = 0;
 		letterCount = 0;

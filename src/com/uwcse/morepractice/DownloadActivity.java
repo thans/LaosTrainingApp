@@ -26,7 +26,6 @@ import com.google.api.services.drive.model.FileList;
 import android.accounts.AccountManager;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.NotificationManager;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -36,7 +35,6 @@ import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -47,7 +45,6 @@ public class DownloadActivity extends Activity {
     static final int                    REQUEST_AUTHORIZATION = 2;
     private static Drive                mService;
     private GoogleAccountCredential     mCredential;
-    private Context                     mContext;
     
     // pertaining to files
     private java.io.File                targetDir;
@@ -55,9 +52,6 @@ public class DownloadActivity extends Activity {
     // for progress bar in notification bar
     private int                         numDownloading;
     private int                         updateMax;
-    private int                         updateProgress;
-    private NotificationManager         nm;
-    private NotificationCompat.Builder  mBuilder;
     
     // for progress bar on screen
     private ProgressBar                 mProgress;
@@ -94,7 +88,6 @@ public class DownloadActivity extends Activity {
         setContentView(R.layout.activity_download);
         setTitle(getString(R.string.update));
         getActionBar().show();
-        mContext = getApplicationContext();
         
         sp = getPreferences(Context.MODE_PRIVATE);
     
@@ -146,7 +139,6 @@ public class DownloadActivity extends Activity {
         checking();
         numDownloading = 0;
         updateMax = 0;
-        updateProgress = 0;
         readPref();
         writePref();
         update();
@@ -193,14 +185,6 @@ public class DownloadActivity extends Activity {
                 Log.e("START NUM", "" + numDownloading);
                 updateMax = numDownloading;
                 
-                // notification progress bar
-                String note = getResources().getString(R.string.notification_message);
-                nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                mBuilder = new NotificationCompat.Builder(mContext);
-                mBuilder.setContentTitle(note)
-                        .setSmallIcon(android.R.drawable.stat_sys_download)
-                        .setTicker(note);
-
                 // main progress bar
                 mProgress = (ProgressBar) findViewById(R.id.progressBar1);
                 new Thread(new Runnable() {
@@ -384,11 +368,6 @@ public class DownloadActivity extends Activity {
                     Log.e("DL NOT NEEDED", local.getParentFile().getName() + "/" + local.getName());
                     numDownloading--;
                     Log.e("STATUS NOT DL","numDownloading is at " + numDownloading);
-                    
-                    setNotification();
-                    if (numDownloading <= 0) {
-                        setFinalNotification();
-                    }
                 }
             }
         }
@@ -418,7 +397,6 @@ public class DownloadActivity extends Activity {
                         try {
                             final java.io.File file = new java.io.File(targetFolder, mFile.getTitle());
                             System.out.println("Downloading: " + mFile.getTitle() + " to " + file.getPath());
-                            //numDownloading++;
                             storeFile(file, inputStream);
                         } finally {
                             inputStream.close();
@@ -468,14 +446,7 @@ public class DownloadActivity extends Activity {
         check = 1;
         System.out.println("Downloaded file " + file.getAbsolutePath());
         Log.e("STATUS","numDownloading is at " + numDownloading);
-        if (--numDownloading <= 0) {
-            //finished downloading all files
-            Log.e("STATUS","numDownloading is at " + numDownloading);
-            setFinalNotification();
-            back();
-        } else {
-            setNotification();
-        }
+        numDownloading--;
     }
     
     
@@ -570,33 +541,6 @@ public class DownloadActivity extends Activity {
     
     
     /**
-     * Updates the notification progress bar
-     */
-    private void setNotification() {
-        mBuilder.setProgress(updateMax, ++updateProgress, false)
-        .setContentTitle(getResources().getString(R.string.notification_message));
-        // Issues the notification
-        nm.notify(0, mBuilder.build());
-    }
-    
-    
-    /**
-     * Finishes the notification progress bar
-     */
-    private void setFinalNotification() {
-      //finished downloading all files
-        // update notification
-        String note = getResources().getString(R.string.update_complete);
-        mBuilder.setContentTitle(note)
-                .setContentText("")
-                .setSmallIcon(R.drawable.ic_launcher_mp)
-                .setTicker(note)
-                .setProgress(0, 0, false);
-        nm.notify(0, mBuilder.build());
-    }
-    
-    
-    /**
      * Converts milliseconds to the corresponding date in the form dd/MM/yy
      * @param msec, the time in milliseconds to convert
      * @return the String date
@@ -627,6 +571,9 @@ public class DownloadActivity extends Activity {
         System.out.println("Time of current update: " + getDateFromLong(currentTime));
     }
     
+    /**
+     * Goes back to the languages page
+     */
     private void back() {
         Intent intent = new Intent(this, ChooseLanguage.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -663,7 +610,7 @@ public class DownloadActivity extends Activity {
   
     private Drive getDriveService(GoogleAccountCredential credential) {
         return new Drive.Builder(AndroidHttp.newCompatibleTransport(), new GsonFactory(), credential)
-            .build();
+             .build();
     }
     
     public void showToast(final String toast) {

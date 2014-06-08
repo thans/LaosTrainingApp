@@ -8,12 +8,16 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
+import android.widget.SearchView;
 import android.widget.TextView;
+import android.widget.SearchView.OnQueryTextListener;
 
 public class TrainingPackageTopics extends Activity {
 
@@ -85,7 +89,7 @@ public class TrainingPackageTopics extends Activity {
 	             intent.putStringArrayListExtra("files", quizzes);
 	    		 intent.putExtra(TrainingPackageActivity.INTENT_KEY_NAME, packageName);
 	             //intent.putExtra(TrainingPackageActivity.POSITION, 0);
-	    		 intent.putExtra(TOPIC_NAME, "Quizzes");
+	    		 intent.putExtra(TOPIC_NAME, getString(R.string.quizzes));
 	             startActivity(intent);
 	        }
 	    });
@@ -98,7 +102,7 @@ public class TrainingPackageTopics extends Activity {
 	             intent.putStringArrayListExtra("files", videos);
 	    		 intent.putExtra(TrainingPackageActivity.INTENT_KEY_NAME, packageName);
 	             //intent.putExtra(TrainingPackageActivity.POSITION, 0);
-	    		 intent.putExtra(TOPIC_NAME, "Videos");
+	    		 intent.putExtra(TOPIC_NAME, getString(R.string.videos));
 	             startActivity(intent);
 	        }
 	    });
@@ -111,7 +115,7 @@ public class TrainingPackageTopics extends Activity {
 	             intent.putStringArrayListExtra("files", refs);
 	    		 intent.putExtra(TrainingPackageActivity.INTENT_KEY_NAME, packageName);
 	             //intent.putExtra(TrainingPackageActivity.POSITION, 0);
-	    		 intent.putExtra(TOPIC_NAME, "References");
+	    		 intent.putExtra(TOPIC_NAME, getString(R.string.references));
 	             startActivity(intent);
 	        }
 	    });
@@ -132,4 +136,27 @@ public class TrainingPackageTopics extends Activity {
 		String[] parts = path.split("/");
 		return parts[parts.length - 1].split("\\.")[0];
 	}
+	
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.package_topics, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+	
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        if (id == R.id.action_custom) { 
+            new ActionBarFunctions().customActivity(this);
+        }
+        
+        if (id == R.id.action_sms) {
+            new ActionBarFunctions().smsActivity(this);
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }
