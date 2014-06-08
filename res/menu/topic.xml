@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.uwcse.morepractice.MainActivity" >
+
+    <item android:id="@+id/action_search"
+          android:icon="@drawable/ic_action_search"
+          android:title="@string/action_search"
+          android:showAsAction="ifRoom"
+          android:actionViewClass="android.widget.SearchView"/>
+    
+    <item
+         android:id="@+id/action_custom"
+         android:icon="@drawable/tag"
+         android:showAsAction="ifRoom"
+         android:title="@string/begin"/>
+
+    <item
+        android:id="@+id/action_sms"
+        android:icon="@drawable/cell"
+        android:showAsAction="ifRoom"
+        android:title="@string/action_sms" />
+      
+</menu>
