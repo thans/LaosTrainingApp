@@ -2,18 +2,12 @@ package com.uwcse.morepractice;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 public class TrainingPackageTopics extends Activity {
 
@@ -74,7 +68,7 @@ public class TrainingPackageTopics extends Activity {
 	    		 Intent intent = new Intent(TrainingPackageTopics.this, Topic.class);
 	             intent.putStringArrayListExtra("files", quizzes);
 	    		 intent.putExtra(TrainingPackageActivity.INTENT_KEY_NAME, packageName);
-	    		 intent.putExtra(TOPIC_NAME, "Quizzes");
+	    		 intent.putExtra(TOPIC_NAME, getString(R.string.quizzes));
 	             startActivity(intent);
 	        }
 	    });
@@ -86,7 +80,7 @@ public class TrainingPackageTopics extends Activity {
 	    		 Intent intent = new Intent(TrainingPackageTopics.this, Topic.class);
 	             intent.putStringArrayListExtra("files", videos);
 	    		 intent.putExtra(TrainingPackageActivity.INTENT_KEY_NAME, packageName);
-	    		 intent.putExtra(TOPIC_NAME, "Videos");
+	    		 intent.putExtra(TOPIC_NAME, getString(R.string.videos));
 	             startActivity(intent);
 	        }
 	    });
@@ -98,7 +92,7 @@ public class TrainingPackageTopics extends Activity {
 	    		 Intent intent = new Intent(TrainingPackageTopics.this, Topic.class);
 	             intent.putStringArrayListExtra("files", refs);
 	    		 intent.putExtra(TrainingPackageActivity.INTENT_KEY_NAME, packageName);
-	    		 intent.putExtra(TOPIC_NAME, "References");
+	    		 intent.putExtra(TOPIC_NAME, getString(R.string.references));
 	             startActivity(intent);
 	        }
 	    });

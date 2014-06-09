@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="begin">ເລີ່ມຕົ້ນການຝຶກອົບຮົມ </string>                              <!-- Begin Training  -->
     <string name="wait">ກະລຸນາລໍຖ້າ </string>                                     <!-- Please wait -->
     <string name="checking_message">ກວດເບິ່ງການປັບປຸງ &#8230;</string>      <!-- Checking for updates ... -->
     <string name="updating">ກໍາລັງປັບປຸງ </string>                        <!-- Update in progress -->
@@ -12,19 +11,18 @@
     <string name="check_wifi">ກວດເບິ່ງການເຊື່ອມຕໍ່WIFI ຂອງທ່ານ </string>                <!-- Check your WIFI connection -->
     <string name="update">ປັບປຸງ </string>                                   <!-- Update -->
     
+    <string name="yes">ແມ່ນແລ້ວ</string>                    <!-- yes -->
+    <string name="no">ບໍ່ມີ</string>                        <!-- no -->
+    <string name="texting_correct">ຖືກຕ້ອງ!</string>        <!-- Correct! -->
+    <string name="texting_answer">ຄໍາຕອບທີ່ຖືກຕ້ອງແມ່ນ  </string>   <!-- The correct answer is   -->
+    <string name="send_text_button">ສົ່ງຂໍ້ຄວາມ</string>        <!-- Send Text Message -->
+    <string name="sms_training">ການຝຶກອົບຮົມ SMS</string>       <!-- SMS Training -->
     
-    <string name="please_try_again">ກະລຸນາລອງໃໝ່!</string>              <!-- Please try again! -->
-    <string name="try_again">ລອງໃໝ່ອີກຄັ້ງ?</string>                         <!-- Try again? -->
-    <string name="next">ຕໍ່ໄປ </string>                                         <!-- Next -->
-    <string name="hint">ຄຳແນະນຳ </string>                                          <!-- Hint -->
-    
-    <string name="yes">ແມ່ນແລ້ວ</string>
-    <string name="no">ບໍ່ມີ</string>
-    <string name="texting_correct">Correct!</string>
-    <string name="texting_answer">The correct answer is </string>
-    <string name="send_text_button">Send Text Message</string>
-    
-    <string name="refrigerator">Refrigerator A</string>
-    <string name="okay_tag">Message does not need to be sent.</string>
-    <string name="sms_training">SMS Training</string>
+    <string name="begin">ເລີ່ມຕົ້ນການຝຶກອົບຮົມ </string>            <!-- Begin Training  -->
+    <string name="learning">ການຮຽນຮູ້</string>                  <!-- Learning -->
+    <string name="quizzes">ບົດສອບເສັງ</string>                  <!-- Quizzes -->
+    <string name="videos">ວີດີໂອ</string>                       <!-- Videos -->
+    <string name="references">ເອກະສານອ້າງອິງ</string>               <!-- References -->
+    <string name="title_activity_topics">ຫົວຂໍ້</string>        <!-- Topics -->
+    <string name="title_topics">ຫົວຂໍ້</string>                 <!-- Topic -->
 </resources>    

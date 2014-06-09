@@ -133,7 +133,7 @@
             android:layout_alignTop="@+id/back_button"
             android:background="@android:color/transparent" />
         
-        <TextView
+        <!-- <TextView
             android:id="@+id/fridge_id"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -143,18 +143,18 @@
             android:layout_toRightOf="@+id/back_button"
             android:text="@string/refrigerator"
             android:textColor="@android:color/white"
-            android:textSize="38sp" />
+            android:textSize="38sp" /> -->
 
         <ImageView
             android:id="@+id/tag_img"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/fridge_id"
+            android:layout_alignParentTop="true"
             android:layout_marginLeft="100dp"
-            android:layout_marginTop="15dp"
+            android:layout_marginTop="30dp"
             android:layout_toRightOf="@+id/back_button"
             android:adjustViewBounds="true"
-            android:maxHeight="500dp"
+            android:maxHeight="400dp"
             android:maxWidth="500dp" />
 
         <Button
@@ -168,7 +168,7 @@
             android:layout_marginTop="20dp"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
-            android:textSize="35sp" />
+            android:textSize="30sp" />
 
     </RelativeLayout>
 
