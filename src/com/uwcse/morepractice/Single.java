@@ -35,7 +35,6 @@ public class Single extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.single);
-		//gestureDetector = new GestureDetector(this, new MyGestureDetector(this)); no swiping for now - make sure to uncomment dispatchTouchEvent
 		
 		packageName = getIntent().getExtras().getString(INTENT_KEY_NAME);
 		

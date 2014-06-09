@@ -8,17 +8,4 @@
           android:title="@string/action_search"
           android:showAsAction="ifRoom"
           android:actionViewClass="android.widget.SearchView"/>
-    
-    <item
-         android:id="@+id/action_custom"
-         android:icon="@drawable/tag"
-         android:showAsAction="ifRoom"
-         android:title="@string/begin"/>
-
-    <item
-        android:id="@+id/action_sms"
-        android:icon="@drawable/cell"
-        android:showAsAction="ifRoom"
-        android:title="@string/action_sms" />
-      
 </menu>

@@ -1,12 +1,4 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.uwcse.morepractice.TrainingPackageActivity" >
-
-    <item
-        android:id="@+id/action_navigate"
-        android:orderInCategory="100"
-        android:showAsAction="ifRoom"
-        android:icon="@drawable/ic_action_select_all"
-        android:title="@string/action_navigate"/>
-
 </menu>

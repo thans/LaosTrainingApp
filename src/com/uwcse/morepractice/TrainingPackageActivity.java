@@ -56,7 +56,6 @@ public class TrainingPackageActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_training_package);
-		//gestureDetector = new GestureDetector(this, new MyGestureDetector(this)); no swiping for now - make sure to uncomment dispatchTouchEvent
 		
 		packageName = getIntent().getExtras().getString(INTENT_KEY_NAME);
 		
@@ -87,31 +86,6 @@ public class TrainingPackageActivity extends Activity {
         });
 		
 		activity.navigateTo(currentFile);
-	}
-
-
-	private void showPackageContents() {
-		String names[] = new String[FILES.length]; //{"A","B","C","D"};
-		for (int i = 0; i < FILES.length; i++) {
-			names[i] = getNameFromPath(FILES[i].getPath());
-		}
-        final AlertDialog alertDialog = new AlertDialog.Builder(this).create();
-        LayoutInflater inflater = getLayoutInflater();
-        View convertView = (View) inflater.inflate(R.layout.list, null);
-        alertDialog.setView(convertView);
-        alertDialog.setTitle(getNameFromPath(packageName));
-        ListView lv = (ListView) convertView.findViewById(R.id.navigate_list);
-        final TrainingPackageActivity activity = this;
-        lv.setOnItemClickListener(new OnItemClickListener() {
-        	@Override
-        	public void onItemClick(AdapterView<?> adapter, View v, int pos, long arg4) {
-        		activity.navigateTo(pos);
-        		alertDialog.dismiss();
-        	}
-        });
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, names);
-        lv.setAdapter(adapter);
-        alertDialog.show();
 	}
 	
 	/**
@@ -239,10 +213,6 @@ public class TrainingPackageActivity extends Activity {
             if (type == Filetype.TEXT) {
                 textFileFound = true;
                 TextParser parser = new TextParser(path, files);
-                // gets the ordered files
-                /*if (parser.getNumInconsistency() > 0) {
-                    showToast("Inconsistency between text file and directory.");
-                }*/
                 files = parser.getOrderedFiles();
                 break;
             } else {
@@ -270,8 +240,7 @@ public class TrainingPackageActivity extends Activity {
 	            image.requestFocus();
 	            break;
 	        case VIDEO:
-				// TODO - add the video in a VideoView to the page
-				final VideoView video = new VideoView(this); //(VideoView) findViewById(R.id.VideoView);
+				final VideoView video = new VideoView(this);
 				MediaController mediacontroller = new MediaController(this);
 				mediacontroller.setAnchorView(video);
 				video.setMediaController(mediacontroller);
@@ -285,7 +254,6 @@ public class TrainingPackageActivity extends Activity {
 				pDialog.setIndeterminate(false);
 				pDialog.setCancelable(false);
 				pDialog.show();
-				//video.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
 				layout.addView(video);
 				video.requestFocus();
 				video.setOnPreparedListener(new OnPreparedListener() {
@@ -471,8 +439,6 @@ public class TrainingPackageActivity extends Activity {
 		int id = item.getItemId();
 		if (id == R.id.action_settings) {
 			return true;
-		} else if (id == R.id.action_navigate) {
-			showPackageContents();
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -485,58 +451,5 @@ public class TrainingPackageActivity extends Activity {
     
         Toast toast = Toast.makeText(context, text, duration);
         toast.show();
-	}
-	
-//    @Override
-//    public boolean dispatchTouchEvent(MotionEvent e) {
-//        super.dispatchTouchEvent(e);
-//        return gestureDetector.onTouchEvent(e);
-//    }
-	
-	private static final int SWIPE_MIN_DISTANCE = 10;
-	private static final int SWIPE_MAX_OFF_PATH = 250;
-	private static final int SWIPE_THRESHOLD_VELOCITY = 200;
-	
-	private class MyGestureDetector extends SimpleOnGestureListener {
-		
-		private TrainingPackageActivity activity;
-		
-		public MyGestureDetector(TrainingPackageActivity currentActivity) {
-			super();
-			this.activity = currentActivity;
-		}
-		
-		public boolean onTouchEvent(MotionEvent e) {
-			return true;
-		}
-		
-	    @Override
-	    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-	    	//showToast("fling");
-	        try {
-	            if (Math.abs(e1.getY() - e2.getY()) > SWIPE_MAX_OFF_PATH)
-	                return false;
-	            if(e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-	                //showToast("leftSwipe");
-	                gotoNext();
-	            }  else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-	            	//showToast("rightSwipe");
-	            	gotoPrevious();
-	            }
-	        } catch (Exception e) {
-	            // nothing
-	        }
-	        return false;
-	    }
-
-		private void gotoPrevious() {
-			activity.showPreviousFile();
-			
-		}
-
-		private void gotoNext() {
-			activity.showNextFile();
-		}
-
 	}
 }

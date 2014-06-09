@@ -39,7 +39,6 @@ public class Topic extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		//gestureDetector = new GestureDetector(this, new MyGestureDetector(this)); no swiping for now - make sure to uncomment dispatchTouchEvent
 		
 		packageName = getIntent().getExtras().getString(INTENT_KEY_NAME);
 		topicName = getIntent().getExtras().getString(TOPIC_NAME);
@@ -91,7 +90,7 @@ public class Topic extends Activity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
+        getMenuInflater().inflate(R.menu.topic, menu);
 
         final SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
         searchView.setQueryHint(getString(R.string.search_packages));

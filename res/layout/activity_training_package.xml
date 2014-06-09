@@ -1,44 +1,64 @@
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
 	    xmlns:tools="http://schemas.android.com/tools"
-	    android:id="@+id/container"
-	    android:layout_width="fill_parent"
-	    android:layout_height="fill_parent"
-	    android:fillViewport="true">
-    <LinearLayout
             android:id="@+id/container_layout"
-    		android:layout_width="match_parent"
-   			android:layout_height="wrap_content">
+    		android:layout_width="fill_parent"
+   			android:layout_height="fill_parent"
+   			android:fillViewport="true">
    		
-       <ImageButton
-		    android:id="@+id/back_button"
-		    android:layout_width="96dp"
-		    android:layout_height="match_parent"
-		    android:src="@drawable/ic_action_previous_item"
-		    android:layout_weight="1"
-		    android:contentDescription="@string/back_button"
-		    android:background="#000000">
-		</ImageButton>
+        <LinearLayout
+            android:id="@+id/firstColumn"
+	        android:orientation="vertical"
+	        android:gravity="center_horizontal"
+	        android:layout_width="0dp"
+	        android:layout_height="match_parent"
+	        android:layout_weight="1">
+           <ImageButton
+			    android:id="@+id/back_button"
+			    android:layout_width="96dp"
+			    android:layout_height="match_parent"
+			    android:src="@drawable/ic_action_previous_item"
+			    android:contentDescription="@string/back_button"
+			    android:background="#000000">
+			</ImageButton>
+        </LinearLayout>
+
 		
-	    <RelativeLayout
-		    android:orientation="vertical"
-		    android:id="@+id/activity_training_package_layout"
-		    tools:context="com.uwcse.morepractice.TrainingPackageActivity"
-		    tools:ignore="MergeRootFrame"
-		    android:layout_width="match_parent"
-        	android:layout_height="match_parent"
-		    android:background="#FFFFFF"
-		    android:layout_weight="8">
-       	</RelativeLayout>
+        <LinearLayout
+            android:id="@+id/secondColumn"
+	        android:orientation="vertical"
+	        android:gravity="center_horizontal"
+	        android:layout_width="0dp"
+	        android:layout_height="match_parent"
+	        android:layout_weight="8">
+           <RelativeLayout
+			    android:orientation="vertical"
+			    android:gravity="center_horizontal"
+			    android:id="@+id/activity_training_package_layout"
+			    tools:context="com.uwcse.morepractice.TrainingPackageActivity"
+			    tools:ignore="MergeRootFrame"
+			    android:layout_height="match_parent"
+			    android:layout_width="match_parent"
+			    android:background="#FFFFFF">
+	       	</RelativeLayout>
+        </LinearLayout>
        	
-		<ImageButton
-		    android:id="@+id/next_button"
-		    android:layout_height="match_parent"
-		    android:layout_width="96dp"
-		    android:src="@drawable/ic_action_next_item"
-		    android:layout_weight="1"
-		    android:contentDescription="@string/next_button"
-		    android:background="#000000">
-		    
-		</ImageButton>
-    </LinearLayout>
-</ScrollView>
+        <LinearLayout
+            android:id="@+id/thirdColumn"
+	        android:orientation="vertical"
+	        android:gravity="center_horizontal"
+	        android:layout_width="0dp"
+	        android:layout_height="match_parent"
+	        android:layout_weight="1">
+            <ImageButton
+			    android:id="@+id/next_button"
+			    android:layout_height="match_parent"
+			    android:layout_width="96dp"
+			    android:src="@drawable/ic_action_next_item"
+			    android:contentDescription="@string/next_button"
+			    android:background="#000000">
+			    
+			</ImageButton>
+        </LinearLayout>
+		
+</LinearLayout>
